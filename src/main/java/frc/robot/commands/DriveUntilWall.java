@@ -31,7 +31,7 @@ double currentDistance;
   @Override
   protected void execute() {
   
-    if (currentDistance < 8) {
+    if (currentDistance < 24) {
 
 
       stop = true;

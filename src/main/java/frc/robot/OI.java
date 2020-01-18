@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.DriveUntilWall;
+import frc.robot.commands.UltraSonicAutoDrive;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 
 
@@ -26,8 +27,8 @@ public class OI {
   // You create one by telling it which joystick it's on and which button
   // number it is.
   Joystick stick = new Joystick(0);
-  Button button = new JoystickButton(stick, 0);
-
+  Button abutton = new JoystickButton(stick, 0);
+  Button bButton = new JoystickButton(stick, 1);
   // There are a few additional built in buttons you can use. Additionally,
   // by subclassing Button you can create custom triggers and bind those to
   // commands the same as any other Button.
@@ -39,7 +40,9 @@ public class OI {
   // Start the command when the button is pressed and let it run the command
   // until it is finished as determined by it's isFinished method.
   OI() {
-    button.whenPressed(new DriveUntilWall());
+    abutton.whenPressed(new DriveUntilWall());
+    bButton.whenPressed(new UltraSonicAutoDrive());
+
   }
 
 
