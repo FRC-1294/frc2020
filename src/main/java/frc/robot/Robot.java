@@ -14,7 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.TestSubsystem;;
+import frc.robot.subsystems.TestSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 
 /**
@@ -27,6 +28,7 @@ import frc.robot.subsystems.TestSubsystem;;
 public class Robot extends TimedRobot {
   public static ExampleSubsystem m_subsystem = new ExampleSubsystem();
   public static TestSubsystem testSubsystem = new TestSubsystem();
+  public static VisionSubsystem vision = new VisionSubsystem();
   public static OI m_oi;
 
   Command m_autonomousCommand;
