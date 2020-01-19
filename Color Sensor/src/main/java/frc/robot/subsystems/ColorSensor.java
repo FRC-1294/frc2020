@@ -33,7 +33,28 @@ public class ColorSensor extends SubsystemBase {
     Scanner parser = new Scanner(hexString).useDelimiter("@");
     parser.next();
     String hex = parser.next();
-    System.out.println(hex);
+    //System.out.println(hex);
+    String color = hex.substring(0, 6);
+    int colVal = Integer.parseInt(color, 16);
+    //System.out.println(colVal);
+    int red = Integer.parseInt("bf7dec", 16);
+    int blue = Integer.parseInt("52739c", 16);
+    int yellow = Integer.parseInt("989682", 16);
+    int green = Integer.parseInt("638164", 16);
+    //System.out.println(red + " " + blue + " " + yellow + " " + green);
+    int result = closeTo(colVal, red, blue, yellow, green);
+    //System.out.println(result);
+    if(result == red){
+      System.out.println("RED \n");
+    } else if(result == blue){
+      System.out.println("BLUE \n");
+    } else if(result == yellow){
+      System.out.println("YELLOW \n");
+    } else if(result == green){
+      System.out.println("GREEN \n");
+    } else {
+      System.out.println("HAHA RIP \n");
+    }
     /*
     String color = hex.substring(0,1);
     int colVal = Integer.parseInt(color="0", 16);
@@ -58,14 +79,24 @@ public class ColorSensor extends SubsystemBase {
   }
 
   public static int closeTo(int value, int comp1, int comp2, int comp3, int comp4){
-    comp1 = Math.abs(value - comp1);
-    comp2 = Math.abs(value - comp2);
-    comp3 = Math.abs(value - comp3);
-    comp4 = Math.abs(value - comp4);
-    int greater1 = lesser(comp1, comp2);
-    int greater2 = lesser(comp3, comp4);
-    int greatest = lesser(greater1, greater2);
-    return greatest;
+    int dif1 = Math.abs(value - comp1);
+    int dif2 = Math.abs(value - comp2);
+    int dif3 = Math.abs(value - comp3);
+    int dif4 = Math.abs(value - comp4);
+    //System.out.println(comp1 + " " + comp2 + " " + comp3 + " " + comp4);
+    int lesser1 = lesser(dif1, dif2);
+    int lesser2 = lesser(dif3, dif4);
+    int least = lesser(lesser1, lesser2);
+    //System.out.println(least);
+    if(least == dif1){
+      return comp1;
+    } else if (least == dif2){
+      return comp2;
+    } else if (least == dif3){
+      return comp3;
+    } else {
+      return comp4;
+    }
   }
 
   public static int lesser(int a, int b){
