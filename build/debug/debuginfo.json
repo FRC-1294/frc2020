@@ -1,0 +1,9 @@
+[
+  {
+    "artifact": "frcJava (in project WestCoastDrive-Imported)",
+    "target": "roborio",
+    "debugfile": "frcJava_roborio.debugconfig",
+    "project": "WestCoastDrive-Imported",
+    "language": "java"
+  }
+]
