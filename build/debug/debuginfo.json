@@ -1,9 +1,9 @@
 [
   {
-    "artifact": "frcJava (in project WestCoastDrive-Imported)",
+    "artifact": "frcJava (in project PIDTest)",
     "target": "roborio",
     "debugfile": "frcJava_roborio.debugconfig",
-    "project": "WestCoastDrive-Imported",
+    "project": "PIDTest",
     "language": "java"
   }
 ]

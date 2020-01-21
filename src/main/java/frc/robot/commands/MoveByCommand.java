@@ -1,39 +1,57 @@
 package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
+import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.Gains;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.ControlType;
 
 public class MoveByCommand extends CommandBase {
-  double targetPositionRotations = 1000;
-  double m_amountLeft;
-  double m_amountRight;
-  double recordedTime = 0;
-  double delta = 2;
+  double targetPositionRotations = 0.54;
+  double m_targetLeft;
+  double m_targetRight;
+
+  double startingGyro;
   boolean isFinished = false;
+  double delta = 50;
   Timer timer = new Timer();
+  double recordedTime = 0;
 
   public MoveByCommand(int amount) {
-    m_amountLeft = amount*targetPositionRotations + Robot.driver.frontLeftSpark.getEncoder().getPosition();
-    m_amountRight = amount*targetPositionRotations + Robot.driver.frontRightSpark.getEncoder().getPosition();
+    m_targetLeft = (amount)*targetPositionRotations + Robot.driver.frontLeftSpark.getEncoder().getPosition();
+    m_targetRight = (amount)*targetPositionRotations + Robot.driver.frontRightSpark.getEncoder().getPosition();
+
+    Robot.driver.frontLeftPID.setOutputRange(-1, 1);
+    Robot.driver.frontRightPID.setOutputRange(-1, 1);
+
+    Robot.driver.frontLeftSpark.setClosedLoopRampRate(0.5);
+    Robot.driver.frontRightSpark.setClosedLoopRampRate(0.5);
+
     timer.start();
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Robot.driver.frontLeftPID.setReference(m_amountLeft, ControlType.kPosition);
-    Robot.driver.frontRightPID.setReference(m_amountRight, ControlType.kPosition);
-    Robot.driver.rearLeftTalon.set(Robot.driver.frontLeftSpark.get());
-    Robot.driver.rearRightTalon.set(Robot.driver.frontRightSpark.get());
-    
-    if (Robot.driver.frontLeftSpark.getEncoder().getPosition() == m_amountLeft && Robot.driver.frontRightSpark.getEncoder().getPosition() == m_amountRight) {
-      if (recordedTime-timer.get() >= 3) {
+    DriveSubsystem.lock = true;
+
+    Robot.driver.frontLeftPID.setReference(m_targetLeft, ControlType.kPosition);
+    double leftSpeed = Robot.driver.frontLeftSpark.get();
+    Robot.driver.frontRightPID.setReference(m_targetRight, ControlType.kPosition);
+    double rightSpeed = Robot.driver.frontRightSpark.get();
+
+    Robot.driver.rearLeftTalon.set(ControlMode.Velocity, leftSpeed);
+    Robot.driver.rearRightTalon.set(ControlMode.Velocity, rightSpeed);
+
+    if (Math.abs(leftSpeed) <= 0.1 && Math.abs(rightSpeed) <= 0.1) {
+      if (timer.get() - recordedTime >= 1) {
         isFinished = true;
       }
     }
@@ -49,9 +67,14 @@ public class MoveByCommand extends CommandBase {
     Robot.driver.frontRightSpark.set(0);
     Robot.driver.rearLeftTalon.set(0);
     Robot.driver.rearRightTalon.set(0);
+    Robot.driver.frontLeftSpark.setClosedLoopRampRate(1);
+    Robot.driver.frontRightSpark.setClosedLoopRampRate(1);
+    Robot.driver.frontLeftPID.setOutputRange(-0.5, 0.5);
+    Robot.driver.frontRightPID.setOutputRange(-0.5, 0.5);
+    Robot.driver.lock = false;
   }
 
-  // Returns true when the command should end.3
+  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return isFinished;
