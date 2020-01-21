@@ -1,0 +1,9 @@
+[
+  {
+    "artifact": "frcJava (in project PIDTest)",
+    "target": "roborio",
+    "debugfile": "frcJava_roborio.debugconfig",
+    "project": "PIDTest",
+    "language": "java"
+  }
+]
