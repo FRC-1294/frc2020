@@ -3,7 +3,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.Gains;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -20,13 +19,17 @@ public class TurnByCommand extends CommandBase {
   double recordedTime = 0;
 
   public TurnByCommand(int amount) {
-    m_targetLeft = (amount)*targetPositionRotations + Robot.driver.frontLeftSpark.getEncoder().getPosition();
-    m_targetRight = -(amount)*targetPositionRotations+ Robot.driver.frontRightSpark.getEncoder().getPosition();
+    m_targetLeft = (amount)*targetPositionRotations + Robot.driveAuto.frontLeftSpark.getEncoder().getPosition();
+    m_targetRight = -(amount)*targetPositionRotations+ Robot.driveAuto.frontRightSpark.getEncoder().getPosition();
 
-    Robot.driver.frontLeftSpark.setClosedLoopRampRate(0.5);
-    Robot.driver.frontRightSpark.setClosedLoopRampRate(0.5);
+    Robot.driveAuto.frontLeftSpark.setClosedLoopRampRate(0.5);
+    Robot.driveAuto.frontRightSpark.setClosedLoopRampRate(0.5);
 
     timer.start();
+
+    if (Robot.driveAuto.sequence) {
+      Robot.driveAuto.step++;
+    }
   }
 
   // Called when the command is initially scheduled.
@@ -36,15 +39,15 @@ public class TurnByCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    DriveSubsystem.lock = true;
+    Robot.driveAuto.lock = true;
 
-    Robot.driver.frontLeftPID.setReference(m_targetLeft, ControlType.kPosition);
-    double leftSpeed = Robot.driver.frontLeftSpark.get();
-    Robot.driver.frontRightPID.setReference(m_targetRight, ControlType.kPosition);
-    double rightSpeed = Robot.driver.frontRightSpark.get();
+    Robot.driveAuto.frontLeftPID.setReference(m_targetLeft, ControlType.kPosition);
+    double leftSpeed = Robot.driveAuto.frontLeftSpark.get();
+    Robot.driveAuto.frontRightPID.setReference(m_targetRight, ControlType.kPosition);
+    double rightSpeed = Robot.driveAuto.frontRightSpark.get();
 
-    Robot.driver.rearLeftTalon.set(ControlMode.Velocity, leftSpeed);
-    Robot.driver.rearRightTalon.set(ControlMode.Velocity, rightSpeed);
+    Robot.driveAuto.rearLeftTalon.set(ControlMode.Velocity, leftSpeed);
+    Robot.driveAuto.rearRightTalon.set(ControlMode.Velocity, rightSpeed);
 
     if (Math.abs(leftSpeed) <= 0.1 && Math.abs(rightSpeed) <= 0.1) {
       if (timer.get() - recordedTime >= 1) {
@@ -59,15 +62,15 @@ public class TurnByCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Robot.driver.frontLeftSpark.set(0);
-    Robot.driver.frontRightSpark.set(0);
-    Robot.driver.rearLeftTalon.set(0);
-    Robot.driver.rearRightTalon.set(0);
+    Robot.driveAuto.frontLeftSpark.set(0);
+    Robot.driveAuto.frontRightSpark.set(0);
+    Robot.driveAuto.rearLeftTalon.set(0);
+    Robot.driveAuto.rearRightTalon.set(0);
 
-    Robot.driver.frontLeftSpark.setClosedLoopRampRate(1);
-    Robot.driver.frontRightSpark.setClosedLoopRampRate(1);
+    Robot.driveAuto.frontLeftSpark.setClosedLoopRampRate(1);
+    Robot.driveAuto.frontRightSpark.setClosedLoopRampRate(1);
 
-    Robot.driver.lock = false;
+    Robot.driveAuto.lock = false;
   }
 
   // Returns true when the command should end.

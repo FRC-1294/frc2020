@@ -27,37 +27,31 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.Gains;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-public class DriveSubsystem extends SubsystemBase {
+public class DriveAutoSubsystem extends SubsystemBase {
   public CANSparkMax frontLeftSpark = new CANSparkMax(1, MotorType.kBrushless);
   public CANPIDController frontLeftPID = frontLeftSpark.getPIDController();
   public CANSparkMax frontRightSpark = new CANSparkMax(2, MotorType.kBrushless);
   public CANPIDController frontRightPID = frontRightSpark.getPIDController();
-
   public WPI_TalonSRX rearLeftTalon = new WPI_TalonSRX(3);
   public WPI_TalonSRX rearRightTalon = new WPI_TalonSRX(4);
 
-  XboxController joystick = new XboxController(0);
-
-  public final AHRS navX = new AHRS(SPI.Port.kMXP);
-
-  public static final int kSlotIdx = 0;
-	public static final int kPIDLoopIdx = 0;
-	public static final int kTimeoutMs = 30;
-	public static boolean kSensorPhase = true;
-  public static boolean kMotorInvert = false;
-  public static boolean lock = false;
-  static final Gains kGains = new Gains(0.4, 0.00001, 0.5, 0.0, 0.0, -0.5, 0.5);
-  double prevPos = 0;
   XboxController driveJoystick = new XboxController(0);
   JoystickButton driveXButton = new JoystickButton(driveJoystick, 3);
+  AHRS navX = new AHRS(SPI.Port.kMXP);
+
+  public static boolean lock = false;
+  public static boolean sequence = false;
+  public int step = 0;
+  static final Gains kGains = new Gains(0.4, 0.00001, 0.5, 0.0, 0.0, -0.5, 0.5);
   Timer timer = new Timer();
   double prevTime = 0;
 
-  public DriveSubsystem() {
+  public DriveAutoSubsystem() {
     frontLeftSpark.setInverted(true);
     rearRightTalon.setInverted(true);
 
@@ -86,27 +80,45 @@ public class DriveSubsystem extends SubsystemBase {
       prevTime = timer.get();
     }
 
-    if (driveJoystick.getYButtonPressed() && !this.lock) {
-      CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-        new MoveByCommand(26*12),
-        new DelayCommand(2000),
-        new TurnByCommand(180),
-        new DelayCommand(2000),
-        new MoveByCommand(26*12)));
+    if (driveJoystick.getYButtonPressed() && !lock) {
+      sequence = true;
+
+      if (step == 0 && !lock) {
+        CommandScheduler.getInstance().schedule(new MoveByCommand(26 * 12));
+      }
+      if (step == 1 && !lock) {
+        CommandScheduler.getInstance().schedule(new DelayCommand(2000));
+      }
+      if (step == 2 && !lock) {
+        CommandScheduler.getInstance().schedule(new TurnByCommand(180));
+      }
+      if (step == 3 && !lock) {
+        CommandScheduler.getInstance().schedule(new DelayCommand(2000));
+      }
+      if (step == 4 && !lock) {
+        CommandScheduler.getInstance().schedule(new MoveByCommand(26 * 12));
+      }
+
+      // CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+      //   new MoveByCommand(26*12),
+      //   new DelayCommand(2000),
+      //   new TurnByCommand(180),
+      //   new DelayCommand(2000),
+      //   new MoveByCommand(26*12)));
     }
-    else if (driveJoystick.getBumper(Hand.kRight) && !this.lock) {
+    else if (driveJoystick.getBumper(Hand.kRight) && !lock && !sequence) {
       CommandScheduler.getInstance().schedule(new TurnByCommand(-90));
       lock = true;
     }
-    else if (driveJoystick.getBumper(Hand.kLeft) && !this.lock) {
+    else if (driveJoystick.getBumper(Hand.kLeft) && !lock && !sequence) {
       CommandScheduler.getInstance().schedule(new TurnByCommand(90));
       lock = true;
     }
-    else if (driveJoystick.getAButtonPressed() && !this.lock) {
+    else if (driveJoystick.getAButtonPressed() && !lock && !sequence) {
       CommandScheduler.getInstance().schedule(new MoveByCommand(192));
       lock = true;
     }
-    else if (driveJoystick.getBButtonPressed() && !this.lock) {
+    else if (driveJoystick.getBButtonPressed() && !lock && !sequence) {
       CommandScheduler.getInstance().schedule(new MoveByCommand(-192));
       lock = true;
     }

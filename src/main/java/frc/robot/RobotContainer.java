@@ -10,7 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.TurnByCommand;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DriveAutoSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem driver = new DriveSubsystem();
+  private final DriveAutoSubsystem driveAuto = new DriveAutoSubsystem();
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
