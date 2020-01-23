@@ -80,25 +80,33 @@ public class DriveAutoSubsystem extends SubsystemBase {
       prevTime = timer.get();
     }
 
-    if (driveJoystick.getYButtonPressed() && !lock) {
+    if (driveJoystick.getYButtonPressed() && !lock || sequence) {
       sequence = true;
 
+      //IF OVERRIDE (ex if robot detected, then avoid)
+
+      //ELSE continue the sequence (if this doesn't work, create commands as objects and use .getFinished())
       if (step == 0 && !lock) {
         CommandScheduler.getInstance().schedule(new MoveByCommand(26 * 12));
       }
-      if (step == 1 && !lock) {
+      else if (step == 1 && !lock) {
         CommandScheduler.getInstance().schedule(new DelayCommand(2000));
       }
-      if (step == 2 && !lock) {
+      else if (step == 2 && !lock) {
         CommandScheduler.getInstance().schedule(new TurnByCommand(180));
       }
-      if (step == 3 && !lock) {
+      else if (step == 3 && !lock) {
         CommandScheduler.getInstance().schedule(new DelayCommand(2000));
       }
-      if (step == 4 && !lock) {
+      else if (step == 4 && !lock) {
         CommandScheduler.getInstance().schedule(new MoveByCommand(26 * 12));
       }
+      else if (step == 5 && !lock) {
+        sequence = false;
+        step = 0;
+      }
 
+      // COMMAND SCHEDULAR SYNTAX (in case we need it again):
       // CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
       //   new MoveByCommand(26*12),
       //   new DelayCommand(2000),
