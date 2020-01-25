@@ -33,24 +33,32 @@ public class ColorSensor extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putString("Colour", Integer.toString(colour.hashCode()));
     String hexString = colour.getColor().toString();
-    readColor(hexString);
+    readColorClosest(hexString);
 
-    /*
-     * String color = hex.substring(0,1); int colVal = Integer.parseInt(color="0",
-     * 16);
-     * 
-     * int red = Integer.parseInt("c0", 16); int blue = Integer.parseInt("40", 16);
-     * int yellow = Integer.parseInt("90", 16); int green = Integer.parseInt("50",
-     * 16); int range = 10; if(colVal >= red-range && colVal <= red+range){
-     * System.out.println("RED \n"); } else if(colVal >= blue-range && colVal <=
-     * blue+range){ System.out.println("BLUE \n"); } else if(colVal >= yellow-range
-     * && colVal <= yellow+range){ System.out.println("YELLOW \n"); } else if(colVal
-     * >= green-range && colVal <= green+range){ System.out.println("GREEN \n"); }
-     * else { System.out.println("NOT WORKING"); }
-     */
+  }
+  public static void readColorRange(String hexString){
+    Scanner parser = new Scanner(hexString).useDelimiter("@");
+    parser.next();
+    String hex = parser.next();
+    // System.out.println(hex);
+    String color = hex.substring(0, 6);
+    int colVal = Integer.parseInt(color, 16);
+    int range = 500000;
+    if(colVal >= red-range && colVal <= red+range){
+      System.out.println("RED \n"); 
+    } else if(colVal >= blue-range && colVal <= blue+range){ 
+      System.out.println("BLUE \n"); 
+    } else if(colVal >= yellow-range && colVal <= yellow+range){
+      System.out.println("YELLOW \n"); 
+    } else if(colVal >= green-range && colVal <= green+range){
+      System.out.println("GREEN \n"); }
+      else { 
+      System.out.println("NOT WORKING"); 
+    }
   }
 
-  public static void readColor(String hexString) {
+
+  public static void readColorClosest(String hexString) {
     Scanner parser = new Scanner(hexString).useDelimiter("@");
     parser.next();
     String hex = parser.next();
