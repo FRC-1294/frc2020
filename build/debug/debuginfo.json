@@ -1,5 +1,12 @@
 [
   {
+    "artifact": "frcJava (in project frc2020)",
+    "target": "roborio",
+    "debugfile": "frcJava_roborio.debugconfig",
+    "project": "frc2020",
+    "language": "java"
+  },
+  {
     "artifact": "frcJava (in project PIDTest)",
     "target": "roborio",
     "debugfile": "frcJava_roborio.debugconfig",

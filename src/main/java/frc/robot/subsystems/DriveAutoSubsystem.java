@@ -73,15 +73,17 @@ public class DriveAutoSubsystem extends SubsystemBase {
   public void periodic() {
     if (timer.get() - prevTime > 0.5) {
       SmartDashboard.putBoolean("Functions/Lock", lock);
-      SmartDashboard.putNumber("PID/leftEncoder", frontLeftSpark.getEncoder().getPosition());
-      SmartDashboard.putNumber("PID/rightEncoder", frontRightSpark.getEncoder().getPosition());
-      SmartDashboard.putNumber("PID/leftSpeed", frontLeftSpark.getEncoder().getVelocity());
-      SmartDashboard.putNumber("PID/rightSpeed", frontRightSpark.getEncoder().getVelocity());
+      // SmartDashboard.putNumber("PID/leftEncoder", frontLeftSpark.getEncoder().getPosition());
+      // SmartDashboard.putNumber("PID/rightEncoder", frontRightSpark.getEncoder().getPosition());
+      // SmartDashboard.putNumber("PID/leftSpeed", frontLeftSpark.getEncoder().getVelocity());
+      // SmartDashboard.putNumber("PID/rightSpeed", frontRightSpark.getEncoder().getVelocity());
       prevTime = timer.get();
     }
 
     if (driveJoystick.getYButtonPressed() && !lock || sequence) {
       sequence = true;
+
+      System.out.println("here");
 
       //IF OVERRIDE (ex if robot detected, then avoid)
 
