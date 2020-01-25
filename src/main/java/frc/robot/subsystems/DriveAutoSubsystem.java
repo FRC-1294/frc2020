@@ -43,12 +43,12 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   XboxController driveJoystick = new XboxController(0);
   JoystickButton driveXButton = new JoystickButton(driveJoystick, 3);
-  AHRS navX = new AHRS(SPI.Port.kMXP);
+  //AHRS navX = new AHRSE(SPI.Port.kMXP);
 
   public static boolean lock = false;
   public static boolean sequence = false;
   public int step = 0;
-  static final Gains kGains = new Gains(0.4, 0.00001, 0.5, 0.0, 0.0, -0.5, 0.5);
+  static final Gains kGains = new Gains(0.6, 0.00001, 0.5, 0.0, 0.0, -0.5, 0.5);
   Timer timer = new Timer();
   double prevTime = 0;
 
@@ -65,6 +65,8 @@ public class DriveAutoSubsystem extends SubsystemBase {
     setPidControllers(frontRightPID);
     setPidControllers(rearLeftPID);
     setPidControllers(rearRightPID);
+
+    frontLeftSpark.setInverted(true);
 
     timer.start();
   }

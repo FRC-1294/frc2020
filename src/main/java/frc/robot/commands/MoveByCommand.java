@@ -48,8 +48,8 @@ public class MoveByCommand extends CommandBase {
     Robot.driveAuto.frontRightPID.setReference(m_targetRight, ControlType.kPosition);
     final double rightSpeed = Robot.driveAuto.frontRightSpark.get();
 
-    Robot.driveAuto.rearLeftPID.setReference(leftSpeed, ControlType.kSmartVelocity);
-    Robot.driveAuto.rearRightPID.setReference(rightSpeed, ControlType.kSmartVelocity);
+    Robot.driveAuto.rearLeftTalon.set(leftSpeed);
+    Robot.driveAuto.rearRightTalon.set(rightSpeed);
 
     if (Math.abs(leftSpeed) <= 0.1 && Math.abs(rightSpeed) <= 0.1) {
       if (timer.get() - recordedTime >= 1) {
