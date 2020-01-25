@@ -18,7 +18,7 @@ public class MoveByCommand extends CommandBase {
   double recordedTime = 0;
 
   public MoveByCommand(int amount) {
-    m_targetLeft = (amount)*targetPositionRotations + Robot.driveAuto.frontLeftSpark.getEncoder().getPosition();
+    m_targetLeft = -(amount)*targetPositionRotations + Robot.driveAuto.frontLeftSpark.getEncoder().getPosition();
     m_targetRight = (amount)*targetPositionRotations + Robot.driveAuto.frontRightSpark.getEncoder().getPosition();
 
     Robot.driveAuto.frontLeftPID.setOutputRange(-0.5, 0.5);
@@ -48,8 +48,8 @@ public class MoveByCommand extends CommandBase {
     Robot.driveAuto.frontRightPID.setReference(m_targetRight, ControlType.kPosition);
     final double rightSpeed = Robot.driveAuto.frontRightSpark.get();
 
-    Robot.driveAuto.rearLeftTalon.set(leftSpeed);
-    Robot.driveAuto.rearRightTalon.set(rightSpeed);
+    // Robot.driveAuto.rearLeftTalon.set(leftSpeed);
+    // Robot.driveAuto.rearRightTalon.set(rightSpeed);
 
     if (Math.abs(leftSpeed) <= 0.1 && Math.abs(rightSpeed) <= 0.1) {
       if (timer.get() - recordedTime >= 1) {

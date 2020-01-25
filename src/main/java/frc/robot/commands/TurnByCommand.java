@@ -46,8 +46,8 @@ public class TurnByCommand extends CommandBase {
     Robot.driveAuto.frontRightPID.setReference(m_targetRight, ControlType.kPosition);
     double rightSpeed = Robot.driveAuto.frontRightSpark.get();
 
-    Robot.driveAuto.rearLeftTalon.set(leftSpeed);
-    Robot.driveAuto.rearRightTalon.set(rightSpeed);
+    // Robot.driveAuto.rearLeftTalon.set(leftSpeed);
+    // Robot.driveAuto.rearRightTalon.set(rightSpeed);
 
     if (Math.abs(leftSpeed) <= 0.1 && Math.abs(rightSpeed) <= 0.1) {
       if (timer.get() - recordedTime >= 1) {
@@ -69,7 +69,7 @@ public class TurnByCommand extends CommandBase {
 
     Robot.driveAuto.frontLeftSpark.setClosedLoopRampRate(1);
     Robot.driveAuto.frontRightSpark.setClosedLoopRampRate(1);
-
+ 
     Robot.driveAuto.lock = false;
   }
 

@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.subsystems;
 
 import frc.robot.commands.DelayCommand;
@@ -48,7 +41,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   public static boolean lock = false;
   public static boolean sequence = false;
   public int step = 0;
-  static final Gains kGains = new Gains(0.6, 0.00001, 0.5, 0.0, 0.0, -0.5, 0.5);
+  static final Gains kGains = new Gains(0.2, 0.00001, 0.2, 0.0, 0.0, -0.5, 0.5);
   Timer timer = new Timer();
   double prevTime = 0;
 
@@ -61,12 +54,12 @@ public class DriveAutoSubsystem extends SubsystemBase {
     rearRightTalon.setClosedLoopRampRate(1);
     rearLeftTalon.setClosedLoopRampRate(1);
     rearRightTalon.setClosedLoopRampRate(1);
+    rearRightTalon.follow(frontRightSpark);
+    rearLeftTalon.follow(frontLeftSpark);
     setPidControllers(frontLeftPID);
     setPidControllers(frontRightPID);
     setPidControllers(rearLeftPID);
     setPidControllers(rearRightPID);
-
-    frontLeftSpark.setInverted(true);
 
     timer.start();
   }
