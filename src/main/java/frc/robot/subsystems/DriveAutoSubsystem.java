@@ -63,14 +63,14 @@ public class DriveAutoSubsystem extends SubsystemBase {
     rearRightTalon.setClosedLoopRampRate(1);
     setPidControllers(frontLeftPID);
     setPidControllers(frontRightPID);
+    setPidControllers(rearLeftPID);
+    setPidControllers(rearRightPID);
 
     timer.start();
   }
 
   @Override
   public void periodic() {
-    frontLeftSpark.set(0.5);
-
     if (timer.get() - prevTime > 0.5) {
       SmartDashboard.putBoolean("Functions/Lock", lock);
       // SmartDashboard.putNumber("PID/leftEncoder", frontLeftSpark.getEncoder().getPosition());
