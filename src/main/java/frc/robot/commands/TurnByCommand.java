@@ -1,11 +1,7 @@
 package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
-import frc.robot.Gains;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.ControlType;
 
 public class TurnByCommand extends CommandBase {
@@ -28,7 +24,8 @@ public class TurnByCommand extends CommandBase {
     timer.start();
 
     if (Robot.driveAuto.sequence) {
-      Robot.driveAuto.step++;
+      Robot.driveAuto.currentAngle += amount;
+      Robot.driveAuto.currentAngle %= 360;
     }
   }
 
@@ -46,8 +43,8 @@ public class TurnByCommand extends CommandBase {
     Robot.driveAuto.frontRightPID.setReference(m_targetRight, ControlType.kPosition);
     double rightSpeed = Robot.driveAuto.frontRightSpark.get();
 
-    // Robot.driveAuto.rearLeftTalon.set(leftSpeed);
-    // Robot.driveAuto.rearRightTalon.set(rightSpeed);
+    Robot.driveAuto.rearLeftSpark.set(leftSpeed);
+    Robot.driveAuto.rearRightSpark.set(rightSpeed);
 
     if (Math.abs(leftSpeed) <= 0.1 && Math.abs(rightSpeed) <= 0.1) {
       if (timer.get() - recordedTime >= 1) {
@@ -64,8 +61,8 @@ public class TurnByCommand extends CommandBase {
   public void end(boolean interrupted) {
     Robot.driveAuto.frontLeftSpark.set(0);
     Robot.driveAuto.frontRightSpark.set(0);
-    Robot.driveAuto.rearLeftTalon.set(0);
-    Robot.driveAuto.rearRightTalon.set(0);
+    Robot.driveAuto.rearLeftSpark.set(0);
+    Robot.driveAuto.rearRightSpark.set(0);
 
     Robot.driveAuto.frontLeftSpark.setClosedLoopRampRate(1);
     Robot.driveAuto.frontRightSpark.setClosedLoopRampRate(1);

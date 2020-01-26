@@ -20,10 +20,6 @@ public class DelayCommand extends CommandBase {
     delayAmount = amount;
     timer.start();
 
-    if (Robot.driveAuto.sequence) {
-      Robot.driveAuto.step++;
-    }
-
     Robot.driveAuto.lock = true;
   }
 

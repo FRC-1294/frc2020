@@ -4,12 +4,9 @@ import frc.robot.commands.DelayCommand;
 import frc.robot.commands.MoveByCommand;
 import frc.robot.commands.TurnByCommand;
 
-import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax; //Shacuando was here
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -19,8 +16,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.Gains;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
@@ -29,10 +24,10 @@ public class DriveAutoSubsystem extends SubsystemBase {
   public CANPIDController frontLeftPID = frontLeftSpark.getPIDController();
   public CANSparkMax frontRightSpark = new CANSparkMax(1, MotorType.kBrushless);
   public CANPIDController frontRightPID = frontRightSpark.getPIDController();
-  public CANSparkMax rearLeftTalon = new CANSparkMax(4, MotorType.kBrushless);
-  public CANPIDController rearLeftPID = rearLeftTalon.getPIDController();
-  public CANSparkMax rearRightTalon = new CANSparkMax(2, MotorType.kBrushless);
-  public CANPIDController rearRightPID = rearRightTalon.getPIDController();
+  public CANSparkMax rearLeftSpark = new CANSparkMax(4, MotorType.kBrushless);
+  public CANPIDController rearLeftPID = rearLeftSpark.getPIDController();
+  public CANSparkMax rearRightSpark = new CANSparkMax(2, MotorType.kBrushless);
+  public CANPIDController rearRightPID = rearRightSpark.getPIDController();
 
   XboxController driveJoystick = new XboxController(0);
   JoystickButton driveXButton = new JoystickButton(driveJoystick, 3);
@@ -40,26 +35,35 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   public static boolean lock = false;
   public static boolean sequence = false;
-  public int step = 0;
+  public static int currentAngle = 0;
+  public static int[] amountTraveled = new int[] {0, 0};
   static final Gains kGains = new Gains(0.2, 0.00001, 0.2, 0.0, 0.0, -0.5, 0.5);
   Timer timer = new Timer();
   double prevTime = 0;
+  SequentialCommandGroup autoPath;
 
   public DriveAutoSubsystem() {
     frontLeftSpark.setOpenLoopRampRate(1);
     frontRightSpark.setOpenLoopRampRate(1);
     frontLeftSpark.setClosedLoopRampRate(1);
     frontRightSpark.setClosedLoopRampRate(1);
-    rearLeftTalon.setClosedLoopRampRate(1);
-    rearRightTalon.setClosedLoopRampRate(1);
-    rearLeftTalon.setClosedLoopRampRate(1);
-    rearRightTalon.setClosedLoopRampRate(1);
-    rearRightTalon.follow(frontRightSpark);
-    rearLeftTalon.follow(frontLeftSpark);
+    rearLeftSpark.setClosedLoopRampRate(1);
+    rearRightSpark.setClosedLoopRampRate(1);
+    rearLeftSpark.setClosedLoopRampRate(1);
+    rearRightSpark.setClosedLoopRampRate(1);
+    rearRightSpark.follow(frontRightSpark);
+    rearLeftSpark.follow(frontLeftSpark);
     setPidControllers(frontLeftPID);
     setPidControllers(frontRightPID);
     setPidControllers(rearLeftPID);
     setPidControllers(rearRightPID);
+
+    autoPath = new SequentialCommandGroup(
+    new MoveByCommand(5*12),
+    new DelayCommand(2000),
+    new TurnByCommand(180),
+    new DelayCommand(2000),
+    new MoveByCommand(5*12));
 
     timer.start();
   }
@@ -82,39 +86,11 @@ public class DriveAutoSubsystem extends SubsystemBase {
     if (driveJoystick.getYButtonPressed() && !lock || sequence) {
       sequence = true;
 
-      //IF OVERRIDE (ex if robot detected, then avoid)
+      //IF OVERRIDE (ex if robot detected, then avoid), autoPath.cancel();
 
-      //ELSE continue the sequence (if this doesn't work, create commands as objects and use .getFinished())
-      if (step == 0 && !lock) {
-        System.out.println("Step 0");
-        CommandScheduler.getInstance().schedule(new MoveByCommand(26 * 12));
+      if (!autoPath.isScheduled()) {
+       CommandScheduler.getInstance().schedule(autoPath);
       }
-      else if (step == 1 && !lock) {
-        System.out.println("Step 1");
-        CommandScheduler.getInstance().schedule(new DelayCommand(2000));
-      }
-      else if (step == 2 && !lock) {
-        System.out.println("Step 2");
-        CommandScheduler.getInstance().schedule(new TurnByCommand(180));
-      }
-      else if (step == 3 && !lock) {
-        CommandScheduler.getInstance().schedule(new DelayCommand(2000));
-      }
-      else if (step == 4 && !lock) {
-        CommandScheduler.getInstance().schedule(new MoveByCommand(26 * 12));
-      }
-      else if (step == 5 && !lock) {
-        sequence = false;
-        step = 0;
-      }
-
-      // COMMAND SCHEDULAR SYNTAX (in case we need it again):
-      // CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-      //   new MoveByCommand(26*12),
-      //   new DelayCommand(2000),
-      //   new TurnByCommand(180),
-      //   new DelayCommand(2000),
-      //   new MoveByCommand(26*12)));
     }
     else if (driveJoystick.getBumper(Hand.kRight) && !lock && !sequence) {
       CommandScheduler.getInstance().schedule(new TurnByCommand(-90));
@@ -125,11 +101,11 @@ public class DriveAutoSubsystem extends SubsystemBase {
       lock = true;
     }
     else if (driveJoystick.getAButtonPressed() && !lock && !sequence) {
-      CommandScheduler.getInstance().schedule(new MoveByCommand(192));
+      CommandScheduler.getInstance().schedule(new MoveByCommand(5*12));
       lock = true;
     }
     else if (driveJoystick.getBButtonPressed() && !lock && !sequence) {
-      CommandScheduler.getInstance().schedule(new MoveByCommand(-192));
+      CommandScheduler.getInstance().schedule(new MoveByCommand(-5*12));
       lock = true;
     }
   }
