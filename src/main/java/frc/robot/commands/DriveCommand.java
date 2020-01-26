@@ -9,10 +9,10 @@ package frc.robot.commands;
 import frc.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
-public class TestCommand extends Command {
-  public TestCommand() {
+public class DriveCommand extends Command {
+  public DriveCommand() {
     // Use requires() here to declare subsystem dependencies
-    requires(Robot.testSubsystem);
+    requires(Robot.driveSubsystem);
   }
 
   // Called just before this Command runs the first time
@@ -23,7 +23,7 @@ public class TestCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.testSubsystem.arcadeDrive(Robot.m_oi.driveLeftY(), Robot.m_oi.driveRightX());
+    Robot.driveSubsystem.arcadeDrive(Robot.m_oi.driveLeftY(), Robot.m_oi.driveRightX());
   }
 
   // Make this return true when this Command no longer needs to run execute()

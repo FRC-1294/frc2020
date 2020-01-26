@@ -9,7 +9,7 @@ package frc.robot.subsystems;
 
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.robot.commands.TestCommand;
+import frc.robot.commands.DriveCommand;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.XboxController;
@@ -22,18 +22,17 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import frc.robot.Robot;
 
-
-public class TestSubsystem extends Subsystem {
+public class DriveSubsystem extends Subsystem {
   CANSparkMax rightFrontTalon = new CANSparkMax(RobotMap.rightFrontTalon, MotorType.kBrushless);
   CANSparkMax rightRearTalon = new CANSparkMax(RobotMap.rightRearTalon, MotorType.kBrushless);
   CANSparkMax leftFrontTalon = new CANSparkMax(RobotMap.leftFrontTalon, MotorType.kBrushless);
   CANSparkMax leftRearTalon = new CANSparkMax(RobotMap.leftRearTalon, MotorType.kBrushless);
   SpeedControllerGroup sparkDriveLeft = new SpeedControllerGroup(leftFrontTalon,leftRearTalon);
   SpeedControllerGroup sparkDriveRight = new SpeedControllerGroup(rightFrontTalon,rightRearTalon);
-  DifferentialDrive sparkDrive = new DifferentialDrive(sparkDriveLeft,sparkDriveRight);
+  public DifferentialDrive sparkDrive = new DifferentialDrive(sparkDriveLeft,sparkDriveRight);
   XboxController driveControl = new XboxController(0);
 
-  public TestSubsystem() {
+  public DriveSubsystem() {
     rightFrontTalon.setSmartCurrentLimit(60);
     rightRearTalon.setSmartCurrentLimit(60);
     leftFrontTalon.setSmartCurrentLimit(60);
@@ -47,6 +46,9 @@ public class TestSubsystem extends Subsystem {
     // rightFrontTalon.setInverted(true);
     // leftRearTalon.setInverted(false);
     // rightRearTalon.setInverted(true);
+
+    rightRearTalon.follow(rightFrontTalon);
+    leftRearTalon.follow(leftFrontTalon);
   }
 
   public void arcadeDrive(double forward, double turn) {
@@ -64,6 +66,6 @@ public class TestSubsystem extends Subsystem {
   }
 
   public void initDefaultCommand() {
-    setDefaultCommand(new TestCommand());
+    setDefaultCommand(new DriveCommand());
   }
 }
