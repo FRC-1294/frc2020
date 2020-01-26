@@ -85,22 +85,26 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
       //if (!detectObstacle.isScheduled()) {
       //  autoPath.cancel();
+      //  frontLeftSpark.set(0);
+      //  frontRightSpark.set(0);
+      //  rearLeftSpark.set(0);
+      //  rearRightSpark.set(0);
       //  CommandScheduler.getInstance().schedule(avoidObstacle);
       //  if(!avoidObstacle.isScheduled()) {
       //    CommandScheduler.getInstance().schedule(detectObstacle);
-          autoPath = new SequentialCommandGroup();
-          autoPath.addCommands(new DelayCommand(2000));
-          if (step == 0) {
-            autoPath.addCommands(new MoveByCommand(5*12));
-            autoPath.addCommands(new DelayCommand(2000));
-          }
-          if (step <= 1) {
-            autoPath.addCommands(new TurnByCommand(180));
-            autoPath.addCommands(new DelayCommand(2000));
-          }
-          if (step <= 2) {
-            autoPath.addCommands(new MoveByCommand(5*12));
-          }
+      //    autoPath = new SequentialCommandGroup();
+      //    autoPath.addCommands(new DelayCommand(2000));
+      //    if (step == 0) {
+      //      autoPath.addCommands(new MoveByCommand(5*12));
+      //      autoPath.addCommands(new DelayCommand(2000));
+      //    }
+      //    if (step <= 1) {
+      //       autoPath.addCommands(new TurnByCommand(180));
+      //       autoPath.addCommands(new DelayCommand(2000));
+      //    }
+      //    if (step <= 2) {
+      //       autoPath.addCommands(new MoveByCommand(5*12));
+      //    }
       //    CommandScheduler.getInstance().schedule(autoPath);
       //  }
       //}
