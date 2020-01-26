@@ -24,6 +24,7 @@ public class TurnByCommand extends CommandBase {
     timer.start();
 
     if (Robot.driveAuto.sequence) {
+      Robot.driveAuto.step++;
       Robot.driveAuto.currentAngle += amount;
       Robot.driveAuto.currentAngle %= 360;
     }

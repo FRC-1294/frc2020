@@ -35,6 +35,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   public static boolean lock = false;
   public static boolean sequence = false;
+  public static int step = 0;
   public static int currentAngle = 0;
   public static int[] amountTraveled = new int[] {0, 0};
   static final Gains kGains = new Gains(0.2, 0.00001, 0.2, 0.0, 0.0, -0.5, 0.5);
@@ -72,10 +73,6 @@ public class DriveAutoSubsystem extends SubsystemBase {
   public void periodic() {
     if (timer.get() - prevTime > 0.5) {
       SmartDashboard.putBoolean("Functions/Lock", lock);
-      // SmartDashboard.putNumber("PID/leftEncoder", frontLeftSpark.getEncoder().getPosition());
-      // SmartDashboard.putNumber("PID/rightEncoder", frontRightSpark.getEncoder().getPosition());
-      // SmartDashboard.putNumber("PID/leftSpeed", frontLeftSpark.getEncoder().getVelocity());
-      // SmartDashboard.putNumber("PID/rightSpeed", frontRightSpark.getEncoder().getVelocity());
       prevTime = timer.get();
     }
 
@@ -86,7 +83,27 @@ public class DriveAutoSubsystem extends SubsystemBase {
     if (driveJoystick.getYButtonPressed() && !lock || sequence) {
       sequence = true;
 
-      //IF OVERRIDE (ex if robot detected, then avoid), autoPath.cancel();
+      //if (!detectObstacle.isScheduled()) {
+      //  autoPath.cancel();
+      //  CommandScheduler.getInstance().schedule(avoidObstacle);
+      //  if(!avoidObstacle.isScheduled()) {
+      //    CommandScheduler.getInstance().schedule(detectObstacle);
+          autoPath = new SequentialCommandGroup();
+          autoPath.addCommands(new DelayCommand(2000));
+          if (step == 0) {
+            autoPath.addCommands(new MoveByCommand(5*12));
+            autoPath.addCommands(new DelayCommand(2000));
+          }
+          if (step <= 1) {
+            autoPath.addCommands(new TurnByCommand(180));
+            autoPath.addCommands(new DelayCommand(2000));
+          }
+          if (step <= 2) {
+            autoPath.addCommands(new MoveByCommand(5*12));
+          }
+      //    CommandScheduler.getInstance().schedule(autoPath);
+      //  }
+      //}
 
       if (!autoPath.isScheduled()) {
        CommandScheduler.getInstance().schedule(autoPath);
