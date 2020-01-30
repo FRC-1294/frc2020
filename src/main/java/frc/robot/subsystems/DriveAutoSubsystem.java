@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import frc.robot.commands.AutoPath;
 import frc.robot.commands.DelayCommand;
 import frc.robot.commands.MoveByCommand;
 import frc.robot.commands.TurnByCommand;
@@ -41,7 +42,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   static final Gains kGains = new Gains(0.2, 0.00001, 0.2, 0.0, 0.0, -0.5, 0.5);
   Timer timer = new Timer();
   double prevTime = 0;
-  SequentialCommandGroup autoPath;
+  AutoPath autoPooth;
 
   public DriveAutoSubsystem() {
     frontLeftSpark.setOpenLoopRampRate(1);
@@ -59,15 +60,10 @@ public class DriveAutoSubsystem extends SubsystemBase {
     setPidControllers(rearLeftPID);
     setPidControllers(rearRightPID);
 
-  //   autoPath = new SequentialCommandGroup(
-  //   new MoveByCommand(5*12),
-  //   new DelayCommand(2000),
-  //   new TurnByCommand(180),
-  //   new DelayCommand(2000),
-  //   new MoveByCommand(5*12));
+    autoPooth = new AutoPath();
 
-  //   timer.start();
-   }
+    timer.start();
+  }
 
   @Override
   public void periodic() {
@@ -109,17 +105,8 @@ public class DriveAutoSubsystem extends SubsystemBase {
       //  }
       //}
 
-      if (!autoPath.isScheduled()) {
-        autoPath = new SequentialCommandGroup(
-          new MoveByCommand(5*12),
-          new DelayCommand(2000),
-          new TurnByCommand(180),
-          new DelayCommand(2000),
-          new MoveByCommand(5*12));
-      
-          timer.start();
-        
-       CommandScheduler.getInstance().schedule(autoPath);
+      if (!autoPooth.isScheduled()) {
+       CommandScheduler.getInstance().schedule(autoPooth);
       }
     }
     else if (driveJoystick.getBumper(Hand.kRight) && !lock && !sequence) {
