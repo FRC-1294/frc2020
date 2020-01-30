@@ -59,15 +59,15 @@ public class DriveAutoSubsystem extends SubsystemBase {
     setPidControllers(rearLeftPID);
     setPidControllers(rearRightPID);
 
-    autoPath = new SequentialCommandGroup(
-    new MoveByCommand(5*12),
-    new DelayCommand(2000),
-    new TurnByCommand(180),
-    new DelayCommand(2000),
-    new MoveByCommand(5*12));
+  //   autoPath = new SequentialCommandGroup(
+  //   new MoveByCommand(5*12),
+  //   new DelayCommand(2000),
+  //   new TurnByCommand(180),
+  //   new DelayCommand(2000),
+  //   new MoveByCommand(5*12));
 
-    timer.start();
-  }
+  //   timer.start();
+   }
 
   @Override
   public void periodic() {
@@ -110,6 +110,15 @@ public class DriveAutoSubsystem extends SubsystemBase {
       //}
 
       if (!autoPath.isScheduled()) {
+        autoPath = new SequentialCommandGroup(
+          new MoveByCommand(5*12),
+          new DelayCommand(2000),
+          new TurnByCommand(180),
+          new DelayCommand(2000),
+          new MoveByCommand(5*12));
+      
+          timer.start();
+        
        CommandScheduler.getInstance().schedule(autoPath);
       }
     }
