@@ -19,12 +19,12 @@ public class VisionSubsystem extends SubsystemBase {
    * Creates a new VisionSubsystem.
    */
 
-  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-  NetworkTableEntry tx = table.getEntry("tx");
-  NetworkTableEntry tv = table.getEntry("tv");
+  private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+  private NetworkTableEntry tx = table.getEntry("tx");
+  private NetworkTableEntry tv = table.getEntry("tv");
 
-  public static boolean targetAquired = false;
-  public static double horizontalOffset = 0.0f;
+  private static boolean targetAquired = false;
+  private static double horizontalOffset = 0.0f;
 
   public VisionSubsystem() {    
 
