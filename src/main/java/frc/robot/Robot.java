@@ -12,8 +12,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.commands.ToShootBall;
 
 
 /**
@@ -24,10 +23,8 @@ import frc.robot.subsystems.VisionSubsystem;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static DriveSubsystem driveSubsystem = new DriveSubsystem();
-  public static VisionSubsystem vision = new VisionSubsystem();
   public static OI m_oi;
-
+  ToShootBall shooter = new ToShootBall();
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
 

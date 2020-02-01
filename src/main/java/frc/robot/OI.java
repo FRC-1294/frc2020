@@ -14,14 +14,16 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
-  XboxController driveControl = new XboxController(0);
-  JoystickButton driveAButton = new JoystickButton(driveControl, 1);
+  XboxController gameShootingArm = new XboxController(0);
 
   public OI (){
   // driveAButton.whenPressed(new DriveByAmount(5));
-}
-
-  public double LeftTrigger(){
+  }
+  
+  public int getDpadGame() {
+    return (gameShootingArm.getPOV());
+  }
+  /*public double LeftTrigger(){
     return driveControl.getTriggerAxis(Hand.kLeft);
   }
   public double RightTrigger(){
@@ -44,7 +46,7 @@ public class OI {
   }
   public double driveRightY(){
     return driveControl.getX(Hand.kRight);
-  }
+  }*/
   //// CREATING BUTTONS
   // One type of button is a joystick button which is any button on a
   //// joystick.
