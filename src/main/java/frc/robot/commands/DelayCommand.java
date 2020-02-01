@@ -26,14 +26,18 @@ public class DelayCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    timer.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     if (timer.get() >= delayAmount) {
+      timer.reset();
       isFinished = true;
     }
+    System.out.println("in DelayCommand");
+
   }
 
   // Called once the command ends or is interrupted.

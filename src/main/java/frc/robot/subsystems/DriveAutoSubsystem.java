@@ -9,26 +9,30 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANSparkMax; //Shacuando was here
 import com.revrobotics.ControlType;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import frc.robot.Constants;
 import frc.robot.Gains;
+import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class DriveAutoSubsystem extends SubsystemBase {
-  private final CANSparkMax frontLeftSpark = new CANSparkMax(3, MotorType.kBrushless);
+  private final CANSparkMax frontLeftSpark = new CANSparkMax(Constants.frontLeftSpark, MotorType.kBrushless);
   private final CANPIDController frontLeftPID = frontLeftSpark.getPIDController();
-  private final CANSparkMax frontRightSpark = new CANSparkMax(1, MotorType.kBrushless);
+  private final CANSparkMax frontRightSpark = new CANSparkMax(Constants.frontRightSpark, MotorType.kBrushless);
   private final CANPIDController frontRightPID = frontRightSpark.getPIDController();
-  private final CANSparkMax rearLeftSpark = new CANSparkMax(4, MotorType.kBrushless);
+  private final CANSparkMax rearLeftSpark = new CANSparkMax(Constants.rearLeftSpark, MotorType.kBrushless);
   private final CANPIDController rearLeftPID = rearLeftSpark.getPIDController();
-  private final CANSparkMax rearRightSpark = new CANSparkMax(2, MotorType.kBrushless);
+  private final CANSparkMax rearRightSpark = new CANSparkMax(Constants.rearRightSpark, MotorType.kBrushless);
   private final CANPIDController rearRightPID = rearRightSpark.getPIDController();
+  private final WPI_TalonSRX intakeTalon = new WPI_TalonSRX(Constants.intakeTalon);
 
-  private final XboxController driveJoystick = new XboxController(0);
+  private final XboxController driveJoystick = new XboxController(Constants.driveJoystick);
 
   private boolean lock = false;
   private boolean sequence = false;
@@ -53,7 +57,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
     setPidControllers(frontLeftPID);
     setPidControllers(frontRightPID);
     setPidControllers(rearLeftPID);
-    setPidControllers(rearRightPID);
+    setPidControllers(rearRightPID);  
 
     timer.start();
   }

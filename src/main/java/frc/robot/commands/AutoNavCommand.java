@@ -14,12 +14,14 @@ import frc.robot.subsystems.DriveAutoSubsystem;
 public class AutoNavCommand extends CommandBase {
   int iterations = 0;
   boolean isFinished = false;
+  DriveAutoSubsystem m_driveAuto;
   AutoPath autoPath;
 
   public AutoNavCommand(DriveAutoSubsystem driveAuto) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveAuto);
     autoPath = new AutoPath(5*12, 2000, driveAuto);
+    m_driveAuto = driveAuto;
   }
 
   // Called when the command is initially scheduled.
@@ -57,7 +59,7 @@ public class AutoNavCommand extends CommandBase {
     //  }
     //}
     
-    if (!autoPath.isScheduled()) {
+    if (autoPath.isFinished()) {
       isFinished = true;
     }
   }
@@ -65,6 +67,8 @@ public class AutoNavCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_driveAuto.setFrontLeftSpeed(0);
+    m_driveAuto.setFrontRightSpeed(0);
   }
 
   // Returns true when the command should end.

@@ -25,6 +25,7 @@ public class MoveByCommand extends CommandBase {
     m_targetRight = (amount)*targetPositionRotations + m_driveAuto.getFrontRightSparkEncoder();
 
     m_driveAuto.setRamp(0.5);
+    System.out.println("In command");
 
     timer.start();
 
@@ -38,17 +39,19 @@ public class MoveByCommand extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    System.out.println("In intitialize");
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     m_driveAuto.setLock(true);
-
+    System.out.println("in execute");
     m_driveAuto.setFrontLeftPID(m_targetLeft, ControlType.kPosition);
     final double leftSpeed = m_driveAuto.getFrontLeftSpeed();
-    final double leftVelocity = m_driveAuto.getFrontLeftVelocity();
-    m_driveAuto.setFrontRightPID(leftVelocity, ControlType.kSmartVelocity);
+    //final double leftVelocity = m_driveAuto.getFrontLeftVelocity();
+    m_driveAuto.setFrontRightPID(m_targetRight, ControlType.kPosition);
     final double rightSpeed = m_driveAuto.getFrontRightSpeed();
 
     // m_driveAuto.rearLeftSpark.set(leftSpeed);
@@ -67,6 +70,7 @@ public class MoveByCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    System.out.println("In end");
     m_driveAuto.setFrontLeftSpeed(0);
     m_driveAuto.setFrontRightSpeed(0);
     // m_driveAuto.rearLeftSpark.set(0);

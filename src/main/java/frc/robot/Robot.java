@@ -63,6 +63,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
+    driveAuto.setFrontLeftSpeed(0);
+    driveAuto.setFrontRightSpeed(0);
+    driveAuto.setRearLeftSpeed(0);
+    driveAuto.setRearRightSpeed(0);
+
+    CommandScheduler.getInstance().cancelAll();
   }
 
   /**

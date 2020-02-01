@@ -18,7 +18,7 @@ public class TurnByCommand extends CommandBase {
 
   public TurnByCommand(int amount, DriveAutoSubsystem driveAuto) {
     m_driveAuto = driveAuto;
-    m_targetLeft = (amount)*targetPositionRotations + m_driveAuto.getFrontLeftSparkEncoder();
+    m_targetLeft = -(amount)*targetPositionRotations + m_driveAuto.getFrontLeftSparkEncoder();
     m_targetRight = (amount)*targetPositionRotations + m_driveAuto.getFrontRightSparkEncoder();
 
     m_driveAuto.setRamp(0.5);
@@ -40,7 +40,7 @@ public class TurnByCommand extends CommandBase {
   @Override
   public void execute() {
     m_driveAuto.setLock(true);
-
+    System.out.println("in TurnCommand");
     m_driveAuto.setFrontLeftPID(m_targetLeft, ControlType.kPosition);
     double leftSpeed = m_driveAuto.getFrontLeftSpeed();
     m_driveAuto.setFrontRightPID(m_targetRight, ControlType.kPosition);
