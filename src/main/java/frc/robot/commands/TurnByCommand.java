@@ -11,15 +11,17 @@ public class TurnByCommand extends CommandBase {
   double m_targetLeft;
   double m_targetRight;
   double startingGyro;
-  boolean isFinished = false;
   double delta = 50;
   Timer timer = new Timer();
   double recordedTime = 0;
 
+  double leftSpeed;
+  double rightSpeed;
+
   public TurnByCommand(int amount, DriveAutoSubsystem driveAuto) {
     m_driveAuto = driveAuto;
-    m_targetLeft = -(amount)*targetPositionRotations + m_driveAuto.getFrontLeftSparkEncoder();
-    m_targetRight = (amount)*targetPositionRotations + m_driveAuto.getFrontRightSparkEncoder();
+    m_targetLeft = -(amount)*targetPositionRotations + m_driveAuto.getFrontLeftPosition();
+    m_targetRight = (amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
 
     m_driveAuto.setRamp(0.5);
     System.out.println("In command");
@@ -41,21 +43,9 @@ public class TurnByCommand extends CommandBase {
   public void execute() {
     System.out.println("in TurnCommand");
     m_driveAuto.setFrontLeftPID(m_targetLeft, ControlType.kPosition);
-    double leftSpeed = m_driveAuto.getFrontLeftSpeed();
+    leftSpeed = m_driveAuto.getFrontLeftSpeed();
     m_driveAuto.setFrontRightPID(m_targetRight, ControlType.kPosition);
-    double rightSpeed = m_driveAuto.getFrontRightSpeed();
-
-    // m_driveAuto.rearLeftSpark.set(leftSpeed);
-    // m_driveAuto.rearRightSpark.set(rightSpeed);
-
-    if (Math.abs(leftSpeed) <= 0.1 && Math.abs(rightSpeed) <= 0.1) {
-      if (timer.get() - recordedTime >= 1) {
-        isFinished = true;
-      }
-    }
-    else {
-      recordedTime = timer.get();
-    }
+    rightSpeed = m_driveAuto.getFrontRightSpeed();
   }
 
   // Called once the command ends or is interrupted.
@@ -63,8 +53,6 @@ public class TurnByCommand extends CommandBase {
   public void end(boolean interrupted) {
     m_driveAuto.setFrontLeftSpeed(0);
     m_driveAuto.setFrontRightSpeed(0);
-    // m_driveAuto.rearLeftSpark.set(0);
-    // m_driveAuto.rearRightSpark.set(0);
 
     m_driveAuto.setRamp(1);
     System.out.println("end");
@@ -73,6 +61,17 @@ public class TurnByCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return isFinished;
+    boolean atPos = false;
+    boolean atSpeed = false;
+
+    if (Math.abs(Math.abs(m_targetLeft)-Math.abs(m_driveAuto.getFrontLeftPosition())) < delta) {
+      atPos = true;
+    }
+
+    if (Math.abs(leftSpeed) <= 0.1 && Math.abs(rightSpeed) <= 0.1) {
+      atSpeed = true;
+    }
+
+    return atSpeed && atPos;
   }
 }

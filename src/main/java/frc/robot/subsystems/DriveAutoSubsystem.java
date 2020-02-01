@@ -115,19 +115,19 @@ public class DriveAutoSubsystem extends SubsystemBase {
     return frontRightSpark.getEncoder().getVelocity();
   }
 
-  public double getFrontLeftSparkEncoder() {
+  public double getFrontLeftPosition() {
     return frontLeftSpark.getEncoder().getPosition();
   }
 
-  public double getFrontRightSparkEncoder() {
+  public double getFrontRightPosition() {
     return frontRightSpark.getEncoder().getPosition();
   }
 
-  public double getRearLeftSparkEncoder() {
+  public double getRearLeftPosition() {
     return rearLeftSpark.getEncoder().getPosition();
   }
 
-  public double getRearRightSparkEncoder() {
+  public double getRearRightPosition() {
     return rearRightSpark.getEncoder().getPosition();
   }
 
