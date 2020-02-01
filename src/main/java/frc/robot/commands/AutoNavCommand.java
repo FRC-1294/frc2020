@@ -27,8 +27,13 @@ public class AutoNavCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    CommandScheduler.getInstance().schedule(autoPath);
-  }
+    if ( !autoPath.isScheduled())
+      CommandScheduler.getInstance().schedule(autoPath);
+  
+//new comment
+
+
+}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -69,6 +74,9 @@ public class AutoNavCommand extends CommandBase {
   public void end(boolean interrupted) {
     m_driveAuto.setFrontLeftSpeed(0);
     m_driveAuto.setFrontRightSpeed(0);
+
+
+    
   }
 
   // Returns true when the command should end.
