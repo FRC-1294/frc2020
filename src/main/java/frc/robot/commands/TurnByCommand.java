@@ -7,11 +7,12 @@ import com.revrobotics.ControlType;
 
 public class TurnByCommand extends CommandBase {
   DriveAutoSubsystem m_driveAuto;
+  int m_amount;
   double targetPositionRotations = 0.1335;
   double m_targetLeft;
   double m_targetRight;
   double startingGyro;
-  double delta = 50;
+  double delta = 5 * targetPositionRotations;
   Timer timer = new Timer();
   double recordedTime = 0;
 
@@ -20,22 +21,24 @@ public class TurnByCommand extends CommandBase {
 
   public TurnByCommand(int amount, DriveAutoSubsystem driveAuto) {
     m_driveAuto = driveAuto;
-    m_targetLeft = -(amount)*targetPositionRotations + m_driveAuto.getFrontLeftPosition();
-    m_targetRight = (amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
-
-    m_driveAuto.setRamp(0.5);
-    System.out.println("In command");
-
-    timer.start();
-
-    m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() + amount);
-    m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() % 360);
+    m_amount = amount;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     System.out.println("In intitialize");
+
+    m_targetLeft = -(m_amount)*targetPositionRotations + m_driveAuto.getFrontLeftPosition();
+    m_targetRight = (m_amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
+
+    m_driveAuto.setRamp(0.5);
+    System.out.println("In command");
+
+    timer.start();
+
+    m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() + m_amount);
+    m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() % 360);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

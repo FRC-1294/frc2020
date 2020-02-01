@@ -54,7 +54,12 @@ public class DriveAutoSubsystem extends SubsystemBase {
     setPidControllers(frontLeftPID);
     setPidControllers(frontRightPID);
     setPidControllers(rearLeftPID);
-    setPidControllers(rearRightPID);  
+    setPidControllers(rearRightPID);
+
+    frontLeftSpark.setInverted(false);
+    frontRightSpark.setInverted(false);
+    rearLeftSpark.setInverted(false);
+    rearRightSpark.setInverted(false);
 
     timer.start();
   }

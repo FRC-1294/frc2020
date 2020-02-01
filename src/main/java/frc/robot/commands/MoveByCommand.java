@@ -12,31 +12,33 @@ public class MoveByCommand extends CommandBase {
   double targetPositionRotations = 0.54;
   double m_targetLeft;
   double m_targetRight;
+  int m_amount;
 
   final double delta = 2 * targetPositionRotations;
   double startingGyro;
   double recordedTime = 0;
 
-  double leftSpeed = m_driveAuto.getFrontLeftSpeed();
-  double rightSpeed = m_driveAuto.getFrontRightSpeed();
+  double leftSpeed;
+  double rightSpeed;
 
   public MoveByCommand(int amount, DriveAutoSubsystem driveAuto) {
     m_driveAuto = driveAuto;
-    m_targetLeft = (amount)*targetPositionRotations + m_driveAuto.getFrontLeftPosition();
-    m_targetRight = (amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
-
-    m_driveAuto.setRamp(0.5);
-    System.out.println("In command");
-
-    int currentAngle = Math.abs(m_driveAuto.getCurrentAngle());
-    m_driveAuto.setAmountTraveled(0, (int)Math.cos(currentAngle) * amount);
-
+    m_amount = amount;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     System.out.println("In intitialize");
+
+    m_targetLeft = (m_amount)*targetPositionRotations + m_driveAuto.getFrontLeftPosition();
+    m_targetRight = (m_amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
+
+    m_driveAuto.setRamp(0.5);
+    System.out.println("In command");
+
+    int currentAngle = Math.abs(m_driveAuto.getCurrentAngle());
+    m_driveAuto.setAmountTraveled(0, (int)Math.cos(currentAngle) * m_amount);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

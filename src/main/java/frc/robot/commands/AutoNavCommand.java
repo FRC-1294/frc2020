@@ -29,7 +29,7 @@ public class AutoNavCommand extends CommandBase {
   @Override
   public void initialize() {
     //if ( !autoPath.isScheduled())
-    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(new MoveByCommand(5*12, m_driveAuto), new MoveByCommand(5*12, m_driveAuto)));
+    CommandScheduler.getInstance().schedule(autoPath);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
