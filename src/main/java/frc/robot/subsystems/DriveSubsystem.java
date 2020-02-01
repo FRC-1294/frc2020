@@ -24,13 +24,13 @@ import frc.robot.Robot;
 
 public class DriveSubsystem extends Subsystem {
   private CANSparkMax rightFrontTalon = new CANSparkMax(RobotMap.rightFrontTalon, MotorType.kBrushless);
-  CANSparkMax rightRearTalon = new CANSparkMax(RobotMap.rightRearTalon, MotorType.kBrushless);
-  CANSparkMax leftFrontTalon = new CANSparkMax(RobotMap.leftFrontTalon, MotorType.kBrushless);
-  CANSparkMax leftRearTalon = new CANSparkMax(RobotMap.leftRearTalon, MotorType.kBrushless);
-  SpeedControllerGroup sparkDriveLeft = new SpeedControllerGroup(leftFrontTalon,leftRearTalon);
-  SpeedControllerGroup sparkDriveRight = new SpeedControllerGroup(rightFrontTalon,rightRearTalon);
-  public DifferentialDrive sparkDrive = new DifferentialDrive(sparkDriveLeft,sparkDriveRight);
-  XboxController driveControl = new XboxController(0);
+  private CANSparkMax rightRearTalon = new CANSparkMax(RobotMap.rightRearTalon, MotorType.kBrushless);
+  private CANSparkMax leftFrontTalon = new CANSparkMax(RobotMap.leftFrontTalon, MotorType.kBrushless);
+  private CANSparkMax leftRearTalon = new CANSparkMax(RobotMap.leftRearTalon, MotorType.kBrushless);
+  private SpeedControllerGroup sparkDriveLeft = new SpeedControllerGroup(leftFrontTalon,leftRearTalon);
+  private SpeedControllerGroup sparkDriveRight = new SpeedControllerGroup(rightFrontTalon,rightRearTalon);
+  private DifferentialDrive sparkDrive = new DifferentialDrive(sparkDriveLeft,sparkDriveRight);
+  private XboxController driveControl = new XboxController(0);
 
   public DriveSubsystem() {
     rightFrontTalon.setSmartCurrentLimit(60);
