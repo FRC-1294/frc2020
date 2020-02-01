@@ -28,13 +28,9 @@ public class MoveByCommand extends CommandBase {
     System.out.println("In command");
 
     timer.start();
+    int currentAngle = Math.abs(m_driveAuto.getCurrentAngle());
+    m_driveAuto.setAmountTraveled(0, (int)Math.cos(currentAngle) * amount);
 
-    if (m_driveAuto.getSequence()) {
-      int currentAngle = Math.abs(m_driveAuto.getCurrentAngle());
-      m_driveAuto.setStep(m_driveAuto.getStep()+1);
-      m_driveAuto.setAmountTraveled(0, (int)Math.cos(currentAngle) * amount);
-      m_driveAuto.setAmountTraveled(1, (int)Math.sin(currentAngle) * amount);
-    }
   }
 
   // Called when the command is initially scheduled.
@@ -46,7 +42,6 @@ public class MoveByCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_driveAuto.setLock(true);
     System.out.println("in execute");
     m_driveAuto.setFrontLeftPID(m_targetLeft, ControlType.kPosition);
     final double leftSpeed = m_driveAuto.getFrontLeftSpeed();
@@ -76,7 +71,6 @@ public class MoveByCommand extends CommandBase {
     // m_driveAuto.rearLeftSpark.set(0);
     // m_driveAuto.rearRightSpark.set(0);
     m_driveAuto.setRamp(1);
-    m_driveAuto.setLock(false);
   }
 
   // Returns true when the command should end.

@@ -22,24 +22,23 @@ public class TurnByCommand extends CommandBase {
     m_targetRight = (amount)*targetPositionRotations + m_driveAuto.getFrontRightSparkEncoder();
 
     m_driveAuto.setRamp(0.5);
+    System.out.println("In command");
 
     timer.start();
 
-    if (m_driveAuto.getSequence()) {
-      m_driveAuto.setStep(m_driveAuto.getStep()+1);
-      m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() + amount);
-      m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() % 360);
-    }
+    m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() + amount);
+    m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() % 360);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    System.out.println("In intitialize");
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_driveAuto.setLock(true);
     System.out.println("in TurnCommand");
     m_driveAuto.setFrontLeftPID(m_targetLeft, ControlType.kPosition);
     double leftSpeed = m_driveAuto.getFrontLeftSpeed();
@@ -68,7 +67,7 @@ public class TurnByCommand extends CommandBase {
     // m_driveAuto.rearRightSpark.set(0);
 
     m_driveAuto.setRamp(1);
-    m_driveAuto.setLock(false);
+    System.out.println("end");
   }
 
   // Returns true when the command should end.

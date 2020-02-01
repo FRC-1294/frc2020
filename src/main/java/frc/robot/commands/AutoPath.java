@@ -22,11 +22,12 @@ public class AutoPath extends SequentialCommandGroup {
    */
   public AutoPath(int driveDis, int delay, DriveAutoSubsystem driveAuto) {
     addCommands(
-      new MoveByCommand(driveDis, driveAuto), 
-      new DelayCommand(delay), 
-      new TurnByCommand(180, driveAuto), 
-      new DelayCommand(delay), 
       new MoveByCommand(driveDis, driveAuto)
     );
+
+    addCommands(
+    new TurnByCommand(180, driveAuto),
+    //new DelayCommand(delay),
+    new MoveByCommand(driveDis, driveAuto));
   }
 }

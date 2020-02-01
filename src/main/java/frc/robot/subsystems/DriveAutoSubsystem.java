@@ -34,9 +34,6 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   private final XboxController driveJoystick = new XboxController(Constants.driveJoystick);
 
-  private boolean lock = false;
-  private boolean sequence = false;
-  private int step = 0;
   private int currentAngle = 0;
   private int[] amountTraveled = new int[] {0, 0};
   private final Gains kGains = new Gains(0.2, 0.00001, 0.2, 0.0, 0.0, -0.5, 0.5);
@@ -65,7 +62,6 @@ public class DriveAutoSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     if (timer.get() - prevTime > 0.5) {
-      SmartDashboard.putBoolean("Functions/Lock", lock);
       prevTime = timer.get();
     }
 
@@ -73,26 +69,20 @@ public class DriveAutoSubsystem extends SubsystemBase {
       CommandScheduler.getInstance().cancelAll();
     }
 
-    if (driveJoystick.getYButtonPressed() && !lock || sequence) {
-      sequence = true;
-
+    if (driveJoystick.getYButtonPressed()) {
       CommandScheduler.getInstance().schedule(new AutoNavCommand(this));
     }
-    else if (driveJoystick.getBumper(Hand.kRight) && !lock && !sequence) {
+    else if (driveJoystick.getBumper(Hand.kRight)) {
       CommandScheduler.getInstance().schedule(new TurnByCommand(-90, this));
-      lock = true;
     }
-    else if (driveJoystick.getBumper(Hand.kLeft) && !lock && !sequence) {
+    else if (driveJoystick.getBumper(Hand.kLeft)) {
       CommandScheduler.getInstance().schedule(new TurnByCommand(90, this));
-      lock = true;
     }
-    else if (driveJoystick.getAButtonPressed() && !lock && !sequence) {
+    else if (driveJoystick.getAButtonPressed()) {
       CommandScheduler.getInstance().schedule(new MoveByCommand(5*12, this));
-      lock = true;
     }
-    else if (driveJoystick.getBButtonPressed() && !lock && !sequence) {
+    else if (driveJoystick.getBButtonPressed()) {
       CommandScheduler.getInstance().schedule(new MoveByCommand(-5*12, this));
-      lock = true;
     }
   }
 
@@ -103,18 +93,6 @@ public class DriveAutoSubsystem extends SubsystemBase {
     pidController.setIZone(kGains.kIz);
     pidController.setFF(kGains.kFF);
     pidController.setOutputRange(kGains.kMinOutput, kGains.kMaxOutput);
-  }
-
-  public boolean getLock() {
-    return lock;
-  }
-
-  public boolean getSequence() {
-    return sequence;
-  }
-
-  public int getStep() {
-    return step;
   }
 
   public int getCurrentAngle() {
@@ -153,16 +131,8 @@ public class DriveAutoSubsystem extends SubsystemBase {
     return rearRightSpark.getEncoder().getPosition();
   }
 
-  public void setLock(boolean val) {
-    this.lock = val;
-  }
-
   public void setCurrentAngle(int val) {
     this.currentAngle = val;
-  }
-
-  public void setStep(int val) {
-    this.step = val;
   }
 
   public void setAmountTraveled(int id, int val) {

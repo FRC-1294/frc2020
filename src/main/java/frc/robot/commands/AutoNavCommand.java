@@ -9,6 +9,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveAutoSubsystem;
 
 public class AutoNavCommand extends CommandBase {
@@ -20,20 +21,16 @@ public class AutoNavCommand extends CommandBase {
   public AutoNavCommand(DriveAutoSubsystem driveAuto) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveAuto);
-    autoPath = new AutoPath(5*12, 2000, driveAuto);
+    autoPath = new AutoPath(5*12, 5, driveAuto);
     m_driveAuto = driveAuto;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if ( !autoPath.isScheduled())
-      CommandScheduler.getInstance().schedule(autoPath);
-  
-//new comment
-
-
-}
+    //if ( !autoPath.isScheduled())
+    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(new MoveByCommand(5*12, m_driveAuto), new MoveByCommand(5*12, m_driveAuto)));
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -74,9 +71,6 @@ public class AutoNavCommand extends CommandBase {
   public void end(boolean interrupted) {
     m_driveAuto.setFrontLeftSpeed(0);
     m_driveAuto.setFrontRightSpeed(0);
-
-
-    
   }
 
   // Returns true when the command should end.

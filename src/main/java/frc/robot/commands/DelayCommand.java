@@ -19,31 +19,28 @@ public class DelayCommand extends CommandBase {
   public DelayCommand(int amount) {
     delayAmount = amount;
     timer.start();
-
-    Robot.driveAuto.setLock(true);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    timer.reset();
+    //timer.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     if (timer.get() >= delayAmount) {
-      timer.reset();
+      //timer.reset();
       isFinished = true;
     }
-    System.out.println("in DelayCommand");
+    System.out.println(timer.get());
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Robot.driveAuto.setLock(false);
   }
 
   // Returns true when the command should end.
