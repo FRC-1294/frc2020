@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.DelayCommand;
 import frc.robot.commands.MoveByCommand;
 import frc.robot.commands.TurnByCommand;
+import frc.robot.subsystems.DriveAutoSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -19,9 +20,13 @@ public class AutoPath extends SequentialCommandGroup {
   /**
    * Creates a new nlasduh.
    */
-  public AutoPath() {
-    // Add your commands in the super() call, e.g.
-    // super(new FooCommand(), new BarCommand());
-    super(new MoveByCommand(5*12), new DelayCommand(2000), new TurnByCommand(180), new DelayCommand(2000), new MoveByCommand(5*12));
+  public AutoPath(int driveDis, int delay, DriveAutoSubsystem driveAuto) {
+    addCommands(
+      new MoveByCommand(driveDis, driveAuto), 
+      new DelayCommand(delay), 
+      new TurnByCommand(180, driveAuto), 
+      new DelayCommand(delay), 
+      new MoveByCommand(driveDis, driveAuto)
+    );
   }
 }

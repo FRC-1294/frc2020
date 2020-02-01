@@ -20,7 +20,7 @@ public class DelayCommand extends CommandBase {
     delayAmount = amount;
     timer.start();
 
-    Robot.driveAuto.lock = true;
+    Robot.driveAuto.setLock(true);
   }
 
   // Called when the command is initially scheduled.
@@ -39,7 +39,7 @@ public class DelayCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Robot.driveAuto.lock = false;
+    Robot.driveAuto.setLock(false);
   }
 
   // Returns true when the command should end.

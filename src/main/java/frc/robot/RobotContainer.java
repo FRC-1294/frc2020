@@ -48,6 +48,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new TurnByCommand(0);
+    return new TurnByCommand(0, driveAuto);
   }
 }

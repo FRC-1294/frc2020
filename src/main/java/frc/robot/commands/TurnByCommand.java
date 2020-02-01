@@ -1,10 +1,12 @@
 package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Robot;
+import frc.robot.subsystems.DriveAutoSubsystem;
+
 import com.revrobotics.ControlType;
 
 public class TurnByCommand extends CommandBase {
+  DriveAutoSubsystem m_driveAuto;
   double targetPositionRotations = 0.1335;
   double m_targetLeft;
   double m_targetRight;
@@ -14,19 +16,19 @@ public class TurnByCommand extends CommandBase {
   Timer timer = new Timer();
   double recordedTime = 0;
 
-  public TurnByCommand(int amount) {
-    m_targetLeft = (amount)*targetPositionRotations + Robot.driveAuto.frontLeftSpark.getEncoder().getPosition();
-    m_targetRight = -(amount)*targetPositionRotations+ Robot.driveAuto.frontRightSpark.getEncoder().getPosition();
+  public TurnByCommand(int amount, DriveAutoSubsystem driveAuto) {
+    m_driveAuto = driveAuto;
+    m_targetLeft = (amount)*targetPositionRotations + m_driveAuto.getFrontLeftSparkEncoder();
+    m_targetRight = (amount)*targetPositionRotations + m_driveAuto.getFrontRightSparkEncoder();
 
-    Robot.driveAuto.frontLeftSpark.setClosedLoopRampRate(0.5);
-    Robot.driveAuto.frontRightSpark.setClosedLoopRampRate(0.5);
+    m_driveAuto.setRamp(0.5);
 
     timer.start();
 
-    if (Robot.driveAuto.sequence) {
-      Robot.driveAuto.step++;
-      Robot.driveAuto.currentAngle += amount;
-      Robot.driveAuto.currentAngle %= 360;
+    if (m_driveAuto.getSequence()) {
+      m_driveAuto.setStep(m_driveAuto.getStep()+1);
+      m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() + amount);
+      m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() % 360);
     }
   }
 
@@ -37,15 +39,15 @@ public class TurnByCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Robot.driveAuto.lock = true;
+    m_driveAuto.setLock(true);
 
-    Robot.driveAuto.frontLeftPID.setReference(m_targetLeft, ControlType.kPosition);
-    double leftSpeed = Robot.driveAuto.frontLeftSpark.get();
-    Robot.driveAuto.frontRightPID.setReference(m_targetRight, ControlType.kPosition);
-    double rightSpeed = Robot.driveAuto.frontRightSpark.get();
+    m_driveAuto.setFrontLeftPID(m_targetLeft, ControlType.kPosition);
+    double leftSpeed = m_driveAuto.getFrontLeftSpeed();
+    m_driveAuto.setFrontRightPID(m_targetRight, ControlType.kPosition);
+    double rightSpeed = m_driveAuto.getFrontRightSpeed();
 
-    Robot.driveAuto.rearLeftSpark.set(leftSpeed);
-    Robot.driveAuto.rearRightSpark.set(rightSpeed);
+    // m_driveAuto.rearLeftSpark.set(leftSpeed);
+    // m_driveAuto.rearRightSpark.set(rightSpeed);
 
     if (Math.abs(leftSpeed) <= 0.1 && Math.abs(rightSpeed) <= 0.1) {
       if (timer.get() - recordedTime >= 1) {
@@ -60,15 +62,13 @@ public class TurnByCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Robot.driveAuto.frontLeftSpark.set(0);
-    Robot.driveAuto.frontRightSpark.set(0);
-    Robot.driveAuto.rearLeftSpark.set(0);
-    Robot.driveAuto.rearRightSpark.set(0);
+    m_driveAuto.setFrontLeftSpeed(0);
+    m_driveAuto.setFrontRightSpeed(0);
+    // m_driveAuto.rearLeftSpark.set(0);
+    // m_driveAuto.rearRightSpark.set(0);
 
-    Robot.driveAuto.frontLeftSpark.setClosedLoopRampRate(1);
-    Robot.driveAuto.frontRightSpark.setClosedLoopRampRate(1);
- 
-    Robot.driveAuto.lock = false;
+    m_driveAuto.setRamp(1);
+    m_driveAuto.setLock(false);
   }
 
   // Returns true when the command should end.
