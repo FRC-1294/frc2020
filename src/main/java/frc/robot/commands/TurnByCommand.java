@@ -8,12 +8,12 @@ import com.revrobotics.ControlType;
 public class TurnByCommand extends CommandBase {
   DriveAutoSubsystem m_driveAuto;
   int m_amount;
-  double targetPositionRotations = 0.1335;
+  double targetPositionRotations = 0.1;
   double m_targetLeft;
   double m_targetRight;
   double startingGyro;
-  double delta = 5 * targetPositionRotations;
-  Timer timer = new Timer();
+  double delta;
+  Timer timer;
   double recordedTime = 0;
 
   double leftSpeed;
@@ -22,6 +22,8 @@ public class TurnByCommand extends CommandBase {
   public TurnByCommand(int amount, DriveAutoSubsystem driveAuto) {
     m_driveAuto = driveAuto;
     m_amount = amount;
+    timer = new Timer();
+    delta = amount*0.1 * targetPositionRotations;
   }
 
   // Called when the command is initially scheduled.
@@ -30,7 +32,7 @@ public class TurnByCommand extends CommandBase {
     System.out.println("In intitialize");
 
     m_targetLeft = -(m_amount)*targetPositionRotations + m_driveAuto.getFrontLeftPosition();
-    m_targetRight = (m_amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
+    m_targetRight = -(m_amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
 
     m_driveAuto.setRamp(0.5);
     System.out.println("In command");
@@ -66,8 +68,10 @@ public class TurnByCommand extends CommandBase {
   public boolean isFinished() {
     boolean atPos = false;
     boolean atSpeed = false;
+    boolean timeHold = false;
 
-    if (Math.abs(Math.abs(m_targetLeft)-Math.abs(m_driveAuto.getFrontLeftPosition())) < delta) {
+    if (Math.abs(Math.abs(m_targetLeft)-Math.abs(m_driveAuto.getFrontLeftPosition())) < delta
+    && Math.abs(Math.abs(m_targetRight)-Math.abs(m_driveAuto.getFrontRightPosition())) < delta) {
       atPos = true;
     }
 
@@ -75,6 +79,17 @@ public class TurnByCommand extends CommandBase {
       atSpeed = true;
     }
 
-    return atSpeed && atPos;
+    if (atSpeed) {
+      if(timer.get() >= 0.3){
+        timeHold = true;
+      }
+    }
+    else {
+      timer.reset();
+    }
+
+    System.out.println(timer.get());
+
+    return atSpeed && timeHold;
   }
 }

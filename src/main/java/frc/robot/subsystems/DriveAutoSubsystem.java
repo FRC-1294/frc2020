@@ -36,7 +36,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   private int currentAngle = 0;
   private int[] amountTraveled = new int[] {0, 0};
-  private final Gains kGains = new Gains(0.2, 0.00001, 0.2, 0.0, 0.0, -0.5, 0.5);
+  private final Gains kGains = new Gains(0.2, 0.00001, 0.5, 0.0, 0.0, -0.3, 0.3);
   private Timer timer = new Timer();
   private double prevTime = 0;
 

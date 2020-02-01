@@ -21,7 +21,7 @@ public class AutoNavCommand extends CommandBase {
   public AutoNavCommand(DriveAutoSubsystem driveAuto) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveAuto);
-    autoPath = new AutoPath(5*12, 5, driveAuto);
+    autoPath = new AutoPath(10*12, 5*12, 0.5, driveAuto);
     m_driveAuto = driveAuto;
   }
 
@@ -43,11 +43,11 @@ public class AutoNavCommand extends CommandBase {
     //  rearRightSpark.set(0);
     //  CommandScheduler.getInstance().schedule(avoidObstacle);
     //  if(!avoidObstacle.isScheduled()) {
-    //    CommandScheduler.getInstance().schedule(detectObstacle);
+    //    CommandScheduler.getInstan-ce().schedule(detectObstacle);
     //    autoPath = new SequentialCommandGroup();
     //    autoPath.addCommands(new DelayCommand(2000));
     //    if (step == 0) {
-    //      autoPath.addCommands(new MoveByCommand(5*12));
+    //      autoPath.addCommands(new- MoveByCommand(5*12));
     //      autoPath.addCommands(new DelayCommand(2000));
     //    }
     //    if (step <= 1) {

@@ -14,16 +14,18 @@ public class MoveByCommand extends CommandBase {
   double m_targetRight;
   int m_amount;
 
-  final double delta = 2 * targetPositionRotations;
+  final double delta;
   double startingGyro;
   double recordedTime = 0;
-
+  Timer timer = new Timer();
   double leftSpeed;
   double rightSpeed;
 
   public MoveByCommand(int amount, DriveAutoSubsystem driveAuto) {
     m_driveAuto = driveAuto;
     m_amount = amount;
+
+    delta = amount*0.1 * targetPositionRotations;
   }
 
   // Called when the command is initially scheduled.
@@ -32,13 +34,14 @@ public class MoveByCommand extends CommandBase {
     System.out.println("In intitialize");
 
     m_targetLeft = (m_amount)*targetPositionRotations + m_driveAuto.getFrontLeftPosition();
-    m_targetRight = (m_amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
+    m_targetRight = -(m_amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
 
     m_driveAuto.setRamp(0.5);
     System.out.println("In command");
 
     int currentAngle = Math.abs(m_driveAuto.getCurrentAngle());
     m_driveAuto.setAmountTraveled(0, (int)Math.cos(currentAngle) * m_amount);
+    timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -47,7 +50,6 @@ public class MoveByCommand extends CommandBase {
     System.out.println("in execute");
     m_driveAuto.setFrontLeftPID(m_targetLeft, ControlType.kPosition);
     leftSpeed = m_driveAuto.getFrontLeftSpeed();
-    //final double leftVelocity = m_driveAuto.getFrontLeftVelocity();
     m_driveAuto.setFrontRightPID(m_targetRight, ControlType.kPosition);
     rightSpeed = m_driveAuto.getFrontRightSpeed();
   }
@@ -66,8 +68,10 @@ public class MoveByCommand extends CommandBase {
   public boolean isFinished() {
     boolean atPos = false;
     boolean atSpeed = false;
+    boolean timeHold = false;
 
-    if (Math.abs(Math.abs(m_targetLeft)-Math.abs(m_driveAuto.getFrontLeftPosition())) < delta) {
+    if (Math.abs(Math.abs(m_targetLeft)-Math.abs(m_driveAuto.getFrontLeftPosition())) < delta
+    && Math.abs(Math.abs(m_targetRight)-Math.abs(m_driveAuto.getFrontRightPosition())) < delta) {
       atPos = true;
     }
 
@@ -75,6 +79,15 @@ public class MoveByCommand extends CommandBase {
       atSpeed = true;
     }
 
-    return atSpeed && atPos;
+    if (atSpeed) {
+      if(timer.get() >= 0.3){
+        timeHold = true;
+      }
+    }
+    else {
+      timer.reset();
+    }
+
+    return atSpeed && timeHold;
   }
 }

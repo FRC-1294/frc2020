@@ -14,9 +14,9 @@ import edu.wpi.first.wpilibj.Timer;
 public class DelayCommand extends CommandBase {
   Timer timer = new Timer();
   boolean isFinished = false;
-  int delayAmount;
+  double delayAmount;
 
-  public DelayCommand(int amount) {
+  public DelayCommand(double amount) {
     delayAmount = amount;
     timer.start();
   }
