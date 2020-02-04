@@ -9,10 +9,11 @@ import frc.robot.subsystems.DriveAutoSubsystem;
 
 public class MoveByCommand extends CommandBase {
   DriveAutoSubsystem m_driveAuto;
-  double targetPositionRotations = 0.54;
+  double targetPositionRotations;
   double m_targetLeft;
   double m_targetRight;
-  int m_amount;
+  double m_amount;
+  double startingEncoderPos;
 
   final double delta;
   double startingGyro;
@@ -21,33 +22,30 @@ public class MoveByCommand extends CommandBase {
   double leftSpeed;
   double rightSpeed;
 
-  public MoveByCommand(int amount, DriveAutoSubsystem driveAuto) {
+  public MoveByCommand(double amount, DriveAutoSubsystem driveAuto) {
     m_driveAuto = driveAuto;
     m_amount = amount;
 
+    targetPositionRotations = m_driveAuto.getMoveByFactor();
     delta = amount*0.1 * targetPositionRotations;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("In intitialize");
-
     m_targetLeft = (m_amount)*targetPositionRotations + m_driveAuto.getFrontLeftPosition();
     m_targetRight = -(m_amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
 
-    m_driveAuto.setRamp(0.5);
-    System.out.println("In command");
+    startingEncoderPos = m_driveAuto.getFrontLeftPosition();
 
-    int currentAngle = Math.abs(m_driveAuto.getCurrentAngle());
-    m_driveAuto.setAmountTraveled(0, (int)Math.cos(currentAngle) * m_amount);
+    m_driveAuto.setRamp(0.5);
+
     timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("in execute");
     m_driveAuto.setFrontLeftPID(m_targetLeft, ControlType.kPosition);
     leftSpeed = m_driveAuto.getFrontLeftSpeed();
     m_driveAuto.setFrontRightPID(m_targetRight, ControlType.kPosition);
@@ -57,10 +55,14 @@ public class MoveByCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println("In end");
     m_driveAuto.setFrontLeftSpeed(0);
     m_driveAuto.setFrontRightSpeed(0);
     m_driveAuto.setRamp(1);
+
+    double changePos = (m_driveAuto.getFrontLeftPosition() - startingEncoderPos) / targetPositionRotations;
+
+    m_driveAuto.setAmountTraveled(0, (int)(m_driveAuto.getAmountTraveled(0) + (changePos * Math.cos(m_driveAuto.getCurrentAngle() * (Math.PI/180)))));
+    m_driveAuto.setAmountTraveled(1, (int)(m_driveAuto.getAmountTraveled(1) + (changePos * Math.sin(m_driveAuto.getCurrentAngle() * (Math.PI/180)))));
   }
 
   // Returns true when the command should end.

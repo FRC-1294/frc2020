@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.Constants;
 import frc.robot.Gains;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -34,11 +35,15 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   private final XboxController driveJoystick = new XboxController(Constants.driveJoystick);
 
-  private int currentAngle = 0;
-  private int[] amountTraveled = new int[] {0, 0};
-  private final Gains kGains = new Gains(0.2, 0.00001, 0.5, 0.0, 0.0, -0.3, 0.3);
+  private final double targetPositionRotations = 0.54;
+  private static int currentAngle;
+  private static double[] amountTraveled = new double[] {0, 0};
+  private final Gains kGains = new Gains(0.2, 0.00001, 0.4, 0.0, 0.0, -0.3, 0.3);
   private Timer timer = new Timer();
   private double prevTime = 0;
+
+  AutoNavCommand autLeft;
+  AutoNavCommand autRight;
 
   public DriveAutoSubsystem() {
     frontLeftSpark.setOpenLoopRampRate(1);
@@ -49,7 +54,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
     rearRightSpark.setClosedLoopRampRate(1);
     rearLeftSpark.setClosedLoopRampRate(1);
     rearRightSpark.setClosedLoopRampRate(1);
-    rearRightSpark.follow(frontRightSpark);
+    //rearRightSpark.follow(frontRightSpark);
     rearLeftSpark.follow(frontLeftSpark);
     setPidControllers(frontLeftPID);
     setPidControllers(frontRightPID);
@@ -66,6 +71,13 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    frontLeftSpark.set(0.3);
+    frontRightSpark.set(0.3);
+    rearRightSpark.set(0.3);
+
+    SmartDashboard.putString("AmountTraveled", amountTraveled[0] + " , " + amountTraveled[1]);
+    SmartDashboard.putNumber("currentAngle", currentAngle);
+
     if (timer.get() - prevTime > 0.5) {
       prevTime = timer.get();
     }
@@ -74,20 +86,11 @@ public class DriveAutoSubsystem extends SubsystemBase {
       CommandScheduler.getInstance().cancelAll();
     }
 
-    if (driveJoystick.getYButtonPressed()) {
-      CommandScheduler.getInstance().schedule(new AutoNavCommand(this));
-    }
-    else if (driveJoystick.getBumper(Hand.kRight)) {
+    if (driveJoystick.getXButtonPressed()) {
       CommandScheduler.getInstance().schedule(new TurnByCommand(-90, this));
     }
-    else if (driveJoystick.getBumper(Hand.kLeft)) {
-      CommandScheduler.getInstance().schedule(new TurnByCommand(90, this));
-    }
-    else if (driveJoystick.getAButtonPressed()) {
-      CommandScheduler.getInstance().schedule(new MoveByCommand(5*12, this));
-    }
     else if (driveJoystick.getBButtonPressed()) {
-      CommandScheduler.getInstance().schedule(new MoveByCommand(-5*12, this));
+      CommandScheduler.getInstance().schedule(new TurnByCommand(90, this));
     }
   }
 
@@ -136,12 +139,20 @@ public class DriveAutoSubsystem extends SubsystemBase {
     return rearRightSpark.getEncoder().getPosition();
   }
 
-  public void setCurrentAngle(int val) {
-    this.currentAngle = val;
+  public double getMoveByFactor() {
+    return targetPositionRotations;
   }
 
-  public void setAmountTraveled(int id, int val) {
-    this.amountTraveled[id] = val;
+  public double getAmountTraveled(int id) {
+    return amountTraveled[id];
+  }
+
+  public void setCurrentAngle(int val) {
+    currentAngle = val;
+  }
+
+  public void setAmountTraveled(int id, double val) {
+    amountTraveled[id] = val;
   }
 
   public void setRamp(double time) {
@@ -170,6 +181,13 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   public void setRearRightPID(double val, ControlType controlType) {
     this.rearRightPID.setReference(val, controlType);
+  }
+
+  public void resetEncoders() {
+    this.frontLeftSpark.getEncoder().setPosition(0);
+    this.frontRightSpark.getEncoder().setPosition(0);
+    this.rearLeftSpark.getEncoder().setPosition(0);
+    this.rearRightSpark.getEncoder().setPosition(0);
   }
 
   public void setFrontLeftSpeed(double val) {

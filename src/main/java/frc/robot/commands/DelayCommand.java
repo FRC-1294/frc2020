@@ -8,7 +8,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
 import edu.wpi.first.wpilibj.Timer;
 
 public class DelayCommand extends CommandBase {
@@ -34,8 +33,6 @@ public class DelayCommand extends CommandBase {
       //timer.reset();
       isFinished = true;
     }
-    System.out.println(timer.get());
-
   }
 
   // Called once the command ends or is interrupted.

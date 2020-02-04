@@ -7,12 +7,14 @@
 
 package frc.robot;
 
+import frc.robot.commands.AutoNavCommand;
 import frc.robot.subsystems.DriveAutoSubsystem;
-
+import frc.robot.subsystems.UltrasonicSubsystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -21,8 +23,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+  private SequentialCommandGroup m_autonomousCommand;
   public static DriveAutoSubsystem driveAuto;
+  public static UltrasonicSubsystem ultrasonic;
   private RobotContainer m_robotContainer;
 
   /**
@@ -32,6 +35,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     driveAuto = new DriveAutoSubsystem();
+    ultrasonic = new UltrasonicSubsystem();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -76,7 +80,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    driveAuto.resetEncoders();
+
+    m_autonomousCommand = new SequentialCommandGroup(new AutoNavCommand(driveAuto, ultrasonic, true), new AutoNavCommand(driveAuto, ultrasonic, true));
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {

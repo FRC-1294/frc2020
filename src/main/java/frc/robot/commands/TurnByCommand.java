@@ -29,24 +29,21 @@ public class TurnByCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("In intitialize");
-
     m_targetLeft = -(m_amount)*targetPositionRotations + m_driveAuto.getFrontLeftPosition();
     m_targetRight = -(m_amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
 
     m_driveAuto.setRamp(0.5);
-    System.out.println("In command");
 
     timer.start();
 
     m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() + m_amount);
-    m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() % 360);
+    //System.out.println("New: " + (m_driveAuto.getCurrentAngle() + m_amount));
+    //m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() % 360);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("in TurnCommand");
     m_driveAuto.setFrontLeftPID(m_targetLeft, ControlType.kPosition);
     leftSpeed = m_driveAuto.getFrontLeftSpeed();
     m_driveAuto.setFrontRightPID(m_targetRight, ControlType.kPosition);
@@ -60,7 +57,6 @@ public class TurnByCommand extends CommandBase {
     m_driveAuto.setFrontRightSpeed(0);
 
     m_driveAuto.setRamp(1);
-    System.out.println("end");
   }
 
   // Returns true when the command should end.
@@ -80,15 +76,13 @@ public class TurnByCommand extends CommandBase {
     }
 
     if (atSpeed) {
-      if(timer.get() >= 0.3){
+      if(timer.get() >= 0.5){
         timeHold = true;
       }
     }
     else {
       timer.reset();
     }
-
-    System.out.println(timer.get());
 
     return atSpeed && timeHold;
   }
