@@ -33,6 +33,11 @@ public class DriveSubsystem extends Subsystem {
   private XboxController driveControl = new XboxController(0);
 
   public DriveSubsystem() {
+    rightFrontTalon.restoreFactoryDefaults();
+    leftFrontTalon.restoreFactoryDefaults();
+    rightRearTalon.restoreFactoryDefaults();
+    leftRearTalon.restoreFactoryDefaults();
+
     rightFrontTalon.setSmartCurrentLimit(60);
     rightRearTalon.setSmartCurrentLimit(60);
     leftFrontTalon.setSmartCurrentLimit(60);
@@ -42,10 +47,10 @@ public class DriveSubsystem extends Subsystem {
     rightRearTalon.setClosedLoopRampRate(5);
     leftFrontTalon.setClosedLoopRampRate(5);
     leftRearTalon.setClosedLoopRampRate(5);
-    // leftFrontTalon.setInverted(false);
-    // rightFrontTalon.setInverted(true);
-    // leftRearTalon.setInverted(false);
-    // rightRearTalon.setInverted(true);
+    leftFrontTalon.setInverted(false);
+    rightFrontTalon.setInverted(false);
+    leftRearTalon.setInverted(false);
+    rightRearTalon.setInverted(false);
 
     rightRearTalon.follow(rightFrontTalon);
     leftRearTalon.follow(leftFrontTalon);
@@ -55,10 +60,13 @@ public class DriveSubsystem extends Subsystem {
     forward*=0.8;
     turn*=0.8;
     
-    sparkDrive.arcadeDrive(forward, -turn);
+    sparkDrive.arcadeDrive(forward, turn);
   }
 
-  public void execute() {
+  @Override
+  public void periodic() {
+    //rightFrontTalon.set(0.3);
+    //leftFrontTalon.set(0.3);
     // SmartDashboard.putNumber("PID/leftEncoder", rightFrontTalon.getEncoder().getVelocity());
     // SmartDashboard.putNumber("PID/rightEncoder", rightRearTalon.getEncoder().getVelocity());
     // SmartDashboard.putNumber("PID/leftSpeed", leftFrontTalon.getEncoder().getVelocity());
