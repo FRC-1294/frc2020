@@ -1,15 +1,9 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
-import edu.wpi.first.wpilibj.PWMVictorSPX;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class UltrasonicSubsystem extends SubsystemBase {
 
@@ -23,7 +17,7 @@ public class UltrasonicSubsystem extends SubsystemBase {
   JoystickButton bButton = new JoystickButton(stick, 2);
   JoystickButton yButton = new JoystickButton(stick, 3);
 
-  public static double getSensour() {
+  public double getSensour() {
     double currentDistance = m_ultrasonic.getValue() * kValueToInches;
     return currentDistance;
   }
