@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.ToShootBall;
+import frc.robot.subsystems.*;
 
 
 /**
@@ -24,7 +24,7 @@ import frc.robot.commands.ToShootBall;
  */
 public class Robot extends TimedRobot {
   public static OI m_oi;
-  ToShootBall shooter = new ToShootBall();
+  ShootingBall letsShoot = new ShootingBall();
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
 
