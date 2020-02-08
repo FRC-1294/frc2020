@@ -47,7 +47,7 @@ public class AutoNavCommand extends CommandBase {
     left1 = true;
     left2 = true;
     xTarget = 3*12;
-    yTarget = 10*12;
+    yTarget = 15*12;
     targetAngle = 180;
 
     autoPath = new AutoPath(xTarget, yTarget, left1, left2, m_driveAuto);
@@ -63,6 +63,10 @@ public class AutoNavCommand extends CommandBase {
     //distance left to travel
     double xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0));
     double yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1));
+
+    System.out.println("Xrem: " + xRem + " Yrem: " + yRem +
+    " left1: " + left1 + " left2: " + left2 + " targetAngle: " + targetAngle +
+    " currentAngle " + m_driveAuto.getCurrentAngle());
 
     if (!autoPath.isScheduled() && ultraFuse.isScheduled()) {
       if (Math.abs(xRem) <= delta && Math.abs(yRem) <= delta) {
@@ -111,11 +115,7 @@ public class AutoNavCommand extends CommandBase {
         else if (targetAngle - m_driveAuto.getCurrentAngle() == 180) {
           left1 = true;
           left2 = true;
-        } 
-
-        System.out.println("Xrem: " + xRem + " Yrem: " + yRem +
-        " left1: " + left1 + " left2: " + left2 + " targetAngle: " + targetAngle +
-        " currentAngle " + m_driveAuto.getCurrentAngle());
+        }
 
         if (xRem >= delta || yRem >= delta) {
           autoPath = new AutoPath(xRem, yRem, left1, left2, m_driveAuto);

@@ -17,8 +17,8 @@ package frc.robot;
  */
 public final class Constants {
     public static final int frontLeftSpark = 1;
-    public static final int rearLeftSpark = 3;
     public static final int frontRightSpark = 2;
+    public static final int rearLeftSpark = 3;
     public static final int rearRightSpark = 4;
     public static final int intakeTalon = 5;
 

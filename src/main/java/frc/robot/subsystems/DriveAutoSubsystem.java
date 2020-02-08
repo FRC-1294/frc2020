@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.commands.AutoNavCommand;
+import frc.robot.commands.MoveByCommand;
 import frc.robot.commands.TurnByCommand;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Timer;
@@ -23,28 +24,27 @@ import frc.robot.Gains;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class DriveAutoSubsystem extends SubsystemBase {
-  private final CANSparkMax frontLeftSpark = new CANSparkMax(Constants.frontLeftSpark, MotorType.kBrushless);
-  private final CANPIDController frontLeftPID = frontLeftSpark.getPIDController();
-  private final CANSparkMax frontRightSpark = new CANSparkMax(Constants.frontRightSpark, MotorType.kBrushless);
-  private final CANPIDController frontRightPID = frontRightSpark.getPIDController();
-  private final CANSparkMax rearLeftSpark = new CANSparkMax(Constants.rearLeftSpark, MotorType.kBrushless);
-  private final CANPIDController rearLeftPID = rearLeftSpark.getPIDController();
-  private final CANSparkMax rearRightSpark = new CANSparkMax(Constants.rearRightSpark, MotorType.kBrushless);
-  private final CANPIDController rearRightPID = rearRightSpark.getPIDController();
+  private CANSparkMax frontLeftSpark = new CANSparkMax(Constants.frontLeftSpark, MotorType.kBrushless);
+  private CANPIDController frontLeftPID = frontLeftSpark.getPIDController();
+  private CANSparkMax frontRightSpark = new CANSparkMax(Constants.frontRightSpark, MotorType.kBrushless);
+  private CANPIDController frontRightPID = frontRightSpark.getPIDController();
+  private CANSparkMax rearLeftSpark = new CANSparkMax(Constants.rearLeftSpark, MotorType.kBrushless);
+  private CANPIDController rearLeftPID = rearLeftSpark.getPIDController();
+  private CANSparkMax rearRightSpark = new CANSparkMax(Constants.rearRightSpark, MotorType.kBrushless);
+  private CANPIDController rearRightPID = rearRightSpark.getPIDController();
+
+  private SpeedControllerGroup sparkDriveLeft = new SpeedControllerGroup(frontLeftSpark, rearLeftSpark);
+  private SpeedControllerGroup sparkDriveRight = new SpeedControllerGroup(frontRightSpark, rearRightSpark);
+  private DifferentialDrive sparkDrive = new DifferentialDrive(sparkDriveLeft,sparkDriveRight);
   //private final WPI_TalonSRX intakeTalon = new WPI_TalonSRX(Constants.intakeTalon);
 
-  //private final SpeedControllerGroup leftSide = new SpeedControllerGroup(frontLeftSpark, rearLeftSpark);
-  //private final SpeedControllerGroup rightSide = new SpeedControllerGroup(frontRightSpark, rearRightSpark);
-  
-  //private final DifferentialDrive drive = new DifferentialDrive(leftSide, rightSide);
-
-  private final XboxController driveJoystick = new XboxController(Constants.driveJoystick);
+  private XboxController driveJoystick = new XboxController(Constants.driveJoystick);
  // private final XboxController gameJoystick = new XboxController(1);
 
   private final double targetPositionRotations = 0.54;
   private static int currentAngle;
   private static double[] amountTraveled = new double[] {0, 0};
-  private final Gains kGains = new Gains(0.2, 0.00001, 0.4, 0.0, 0.0, -0.3, 0.3);
+  private final Gains kGains = new Gains(0.2, 0.00001, 0.5, 0.0, 0.0, -0.5, 0.5);
   private Timer timer = new Timer();
   private double prevTime = 0;
 
@@ -56,7 +56,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
     // frontRightSpark.restoreFactoryDefaults(true);
     // rearLeftSpark.restoreFactoryDefaults(true);
     // rearRightSpark.restoreFactoryDefaults(true);
-
+ 
     frontLeftSpark.setMotorType(MotorType.kBrushless);
     frontRightSpark.setMotorType(MotorType.kBrushless);
     rearLeftSpark.setMotorType(MotorType.kBrushless);
@@ -98,13 +98,18 @@ public class DriveAutoSubsystem extends SubsystemBase {
     if (driveJoystick.getStartButtonPressed()) {
       CommandScheduler.getInstance().cancelAll();
     }
-
   
     if (driveJoystick.getXButtonPressed()) {
       CommandScheduler.getInstance().schedule(new TurnByCommand(-90, this));
     }
     else if (driveJoystick.getBButtonPressed()) {
       CommandScheduler.getInstance().schedule(new TurnByCommand(90, this));
+    }
+    else if (driveJoystick.getYButtonPressed()) {
+      CommandScheduler.getInstance().schedule(new MoveByCommand(3*12, this));
+    }
+    else if (driveJoystick.getAButtonPressed()) {
+      CommandScheduler.getInstance().schedule(new MoveByCommand(-3*12, this));
     }
 
     if (driveJoystick.getBumper(Hand.kRight)) {
@@ -118,7 +123,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   }
 
   public void arcadeDrive(double forward, double turn) {
-    //drive.arcadeDrive(-forward, turn*0.5);
+    sparkDrive.arcadeDrive(-forward, turn*0.5);
   }
 
   public void setTurning(boolean val) {
