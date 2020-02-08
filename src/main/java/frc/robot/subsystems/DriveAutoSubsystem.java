@@ -33,10 +33,10 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private final CANPIDController rearRightPID = rearRightSpark.getPIDController();
   //private final WPI_TalonSRX intakeTalon = new WPI_TalonSRX(Constants.intakeTalon);
 
-  private final SpeedControllerGroup leftSide = new SpeedControllerGroup(frontLeftSpark, rearLeftSpark);
-  private final SpeedControllerGroup rightSide = new SpeedControllerGroup(frontRightSpark, rearRightSpark);
+  //private final SpeedControllerGroup leftSide = new SpeedControllerGroup(frontLeftSpark, rearLeftSpark);
+  //private final SpeedControllerGroup rightSide = new SpeedControllerGroup(frontRightSpark, rearRightSpark);
   
-  private final DifferentialDrive drive = new DifferentialDrive(leftSide, rightSide);
+  //private final DifferentialDrive drive = new DifferentialDrive(leftSide, rightSide);
 
   private final XboxController driveJoystick = new XboxController(Constants.driveJoystick);
  // private final XboxController gameJoystick = new XboxController(1);
@@ -50,9 +50,6 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   private boolean shouldSwootch = true;
   private boolean isTurning = false;
-
-  AutoNavCommand autLeft;
-  AutoNavCommand autRight;
 
   public DriveAutoSubsystem() {
     // frontLeftSpark.restoreFactoryDefaults(true);
@@ -102,6 +99,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
       CommandScheduler.getInstance().cancelAll();
     }
 
+  
     if (driveJoystick.getXButtonPressed()) {
       CommandScheduler.getInstance().schedule(new TurnByCommand(-90, this));
     }
@@ -109,13 +107,18 @@ public class DriveAutoSubsystem extends SubsystemBase {
       CommandScheduler.getInstance().schedule(new TurnByCommand(90, this));
     }
 
+    if (driveJoystick.getBumper(Hand.kRight)) {
+      setMode("brake");
+    }
+    else {
+      setMode("coast");
+    }
+
     arcadeDrive(driveJoystick.getY(Hand.kLeft), driveJoystick.getX(Hand.kRight));
   }
 
   public void arcadeDrive(double forward, double turn) {
-   // if (Math.abs(forward) <= 0.1 ||  Math.abs(turn) <= 0.1) {
-      drive.arcadeDrive(-forward, turn*0.5);
-   // }
+    //drive.arcadeDrive(-forward, turn*0.5);
   }
 
   public void setTurning(boolean val) {
