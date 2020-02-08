@@ -28,10 +28,11 @@ public class ShootingBall extends SubsystemBase {
   @Override
   public void periodic() {
     if(Robot.m_oi.getAButtonPressed()){
-      CommandScheduler.getInstance().schedule(new ToShootBall(this, "shoot"));
-    }
-    if(Robot.m_oi.getXButtonPressed()){
-      CommandScheduler.getInstance().schedule(new ToShootBall(this, "intake"));
+      intake();
+    } else if (Robot.m_oi.getXButtonPressed()){
+      shoot();
+    } else {
+      stopMostors();
     }
   }
 
