@@ -113,7 +113,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   public void arcadeDrive(double forward, double turn) {
    // if (Math.abs(forward) <= 0.1 ||  Math.abs(turn) <= 0.1) {
-      drive.arcadeDrive(-forward, turn);
+      drive.arcadeDrive(-forward, turn*0.5);
    // }
   }
 

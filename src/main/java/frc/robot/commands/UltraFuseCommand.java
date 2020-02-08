@@ -35,6 +35,8 @@ public class UltraFuseCommand extends CommandBase {
   @Override
   public void initialize() {
     timer.start();
+    timer.reset();
+    isFinished = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -43,13 +45,7 @@ public class UltraFuseCommand extends CommandBase {
     double currentDistance = ultrasonic.getSensour();
    
     if (currentDistance <= ultrasonic.MIN_DIS) {
-      driveSub.setMode("brake");
-      driveSub.setFrontLeftSpeed(0);
-      driveSub.setFrontRightSpeed(0);
-      driveSub.setRearLeftSpeed(0);
-      driveSub.setRearRightSpeed(0);
-
-      if (timer.get() > 1)
+      if (timer.get() > 0.1)
         isFinished = true;
     }
     else {
@@ -60,6 +56,11 @@ public class UltraFuseCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    driveSub.setMode("brake");
+    driveSub.setFrontLeftSpeed(0);
+    driveSub.setFrontRightSpeed(0);
+    driveSub.setRearLeftSpeed(0);
+    driveSub.setRearRightSpeed(0);
     driveSub.setMode("coast");
   }
 

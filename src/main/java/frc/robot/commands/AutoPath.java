@@ -20,19 +20,22 @@ public class AutoPath extends SequentialCommandGroup {
   /**
    * Creates a new nlasduh.
    */
-  public AutoPath(double xDis, double yDis, boolean leftTurn, DriveAutoSubsystem driveAuto) {
-    addCommands(
-      new MoveByCommand(xDis, driveAuto),
-      new TurnByCommand(90, driveAuto),
-      new MoveByCommand(yDis, driveAuto)
-    );
+  public AutoPath(double xDis, double yDis, boolean turn1, boolean turn2, DriveAutoSubsystem driveAuto) {
+    if (xDis != 0) {
+      addCommands(new MoveByCommand(xDis, driveAuto));
+    }
 
-    if (leftTurn) {
+    if (turn1) {
       addCommands(new TurnByCommand(90, driveAuto));
     }
-    else {
-      addCommands(new TurnByCommand(-90, driveAuto));
+
+    if (yDis != 0) {
+      addCommands(new MoveByCommand(yDis, driveAuto));
     }
-    
+
+    if (turn2) {
+      addCommands(new TurnByCommand(90, driveAuto));
+    }
+
   }
 }

@@ -81,10 +81,11 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     driveAuto.resetEncoders();
 
-    m_autonomousCommand = new AutoNavCommand(driveAuto, ultrasonic, true);
+    m_autonomousCommand = new AutoNavCommand(driveAuto, ultrasonic);
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
+      CommandScheduler.getInstance().cancelAll();
       m_autonomousCommand.schedule();
     }
   }

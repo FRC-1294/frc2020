@@ -8,7 +8,7 @@ import com.revrobotics.ControlType;
 public class TurnByCommand extends CommandBase {
   DriveAutoSubsystem m_driveAuto;
   int m_amount;
-  double targetPositionRotations = 0.1045;
+  double targetPositionRotations = 0.1016;
   double m_targetLeft;
   double m_targetRight;
   double startingGyro;
