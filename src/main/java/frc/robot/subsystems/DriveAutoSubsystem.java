@@ -49,6 +49,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private double prevTime = 0;
 
   private boolean shouldSwootch = true;
+  private boolean isTurning = false;
 
   AutoNavCommand autLeft;
   AutoNavCommand autRight;
@@ -117,6 +118,10 @@ public class DriveAutoSubsystem extends SubsystemBase {
    // }
   }
 
+  public void setTurning(boolean val) {
+    isTurning = val;
+  }
+
   public void setMode(String type) {
     if (type == "brake") {
       frontLeftSpark.setIdleMode(IdleMode.kBrake);
@@ -182,6 +187,10 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   public double getAmountTraveled(int id) {
     return amountTraveled[id];
+  }
+
+  public boolean getTurning() {
+    return isTurning;
   }
 
   public void setCurrentAngle(int val) {

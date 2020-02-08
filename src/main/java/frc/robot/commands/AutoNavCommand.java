@@ -92,7 +92,7 @@ public class AutoNavCommand extends CommandBase {
       } 
     }
     
-    if (!ultraFuse.isScheduled()) {
+    if (!ultraFuse.isScheduled() && !m_driveAuto.getTurning()) {
       autoPath.cancel();
 
       if (m_ultra.getSensour() <= m_ultra.MIN_DIS) {
@@ -117,10 +117,11 @@ public class AutoNavCommand extends CommandBase {
         " left1: " + left1 + " left2: " + left2 + " targetAngle: " + targetAngle +
         " currentAngle " + m_driveAuto.getCurrentAngle());
 
-        Timer.delay(2);
-        autoPath = new AutoPath(xRem, yRem, left1, left2, m_driveAuto);
+        if (xRem >= delta || yRem >= delta) {
+          autoPath = new AutoPath(xRem, yRem, left1, left2, m_driveAuto);
+          CommandScheduler.getInstance().schedule(autoPath);
+        }
         CommandScheduler.getInstance().schedule(ultraFuse);
-        CommandScheduler.getInstance().schedule(autoPath);
       }
     }
   }
