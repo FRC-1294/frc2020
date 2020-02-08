@@ -9,7 +9,7 @@ package frc.robot.commands;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
-
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class UltraFuseCommand extends CommandBase {
@@ -20,7 +20,7 @@ public class UltraFuseCommand extends CommandBase {
   double speed;
   double motorTurn;
   boolean isFinished;
-
+  Timer timer = new Timer();
   public UltraFuseCommand(DriveAutoSubsystem driver, UltrasonicSubsystem ultra) {
     // Use addRequirements() here to declare subsystem dependencies.
     speed = 0.0;
@@ -34,6 +34,7 @@ public class UltraFuseCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,22 +42,25 @@ public class UltraFuseCommand extends CommandBase {
   public void execute() {
     double currentDistance = ultrasonic.getSensour();
    
-    if (currentDistance < 24){
-      isFinished = true;
+    if (currentDistance <= 40){
+      driveSub.setMode("brake");
+      driveSub.setFrontLeftSpeed(0);
+      driveSub.setFrontRightSpeed(0);
+      driveSub.setRearLeftSpeed(0);
+      driveSub.setRearRightSpeed(0);
+
+      if (timer.get() > 1)
+        isFinished = true;
+    }
+    else {
+      timer.reset();
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    driveSub.setRamp(0.3);
-
-    driveSub.setFrontLeftSpeed(0);
-    driveSub.setFrontRightSpeed(0);
-    driveSub.setRearLeftSpeed(0);
-    driveSub.setRearRightSpeed(0);
-
-    driveSub.setRamp(1);
+    driveSub.setMode("coast");
   }
 
   // Returns true when the command should end.
