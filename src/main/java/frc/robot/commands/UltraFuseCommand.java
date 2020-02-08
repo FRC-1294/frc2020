@@ -42,7 +42,7 @@ public class UltraFuseCommand extends CommandBase {
   public void execute() {
     double currentDistance = ultrasonic.getSensour();
    
-    if (currentDistance <= 40){
+    if (currentDistance <= ultrasonic.MIN_DIS) {
       driveSub.setMode("brake");
       driveSub.setFrontLeftSpeed(0);
       driveSub.setFrontRightSpeed(0);

@@ -21,16 +21,16 @@ public class AutoNavCommand extends CommandBase {
   AutoPath autoPath;
   NavigateObstacle navObs;
   UltraFuseCommand ultraFuse;
-  AutoPath autoLogic;
+  AutoLogic autoLogic;
   boolean isLeft = true;
   int targetAngle;
-
+  boolean loopComplete = false;
   int xTarget = 10*12;
   int yTarget = 4*12;
   final int delta = 2;
+
   boolean hasReached = false;
   boolean hasShot = false;
-  boolean hasCompleted = false;
 
   public AutoNavCommand(DriveAutoSubsystem driveAuto, UltrasonicSubsystem ultra, Boolean left) {
     addRequirements(driveAuto);
@@ -47,8 +47,7 @@ public class AutoNavCommand extends CommandBase {
     autoPath = new AutoPath(xTarget, yTarget, isLeft, m_driveAuto);
     ultraFuse = new UltraFuseCommand(m_driveAuto, m_ultra);
     navObs = new NavigateObstacle(4.5*12, 4*12, m_driveAuto);
-    autoLogic = autoPath;//new AutoLogic(ultraFuse, autoPath);
-
+    autoLogic = new AutoLogic(ultraFuse, autoPath);
     CommandScheduler.getInstance().schedule(autoLogic);
   }
 
@@ -59,49 +58,35 @@ public class AutoNavCommand extends CommandBase {
     double xRem = xTarget - m_driveAuto.getAmountTraveled(0);
     double yRem = yTarget - m_driveAuto.getAmountTraveled(1);
 
-    //if reached target, shoot ball
-    if (Math.abs(xRem) <= delta && Math.abs(yRem) <= delta && m_driveAuto.getCurrentAngle() == targetAngle) {
-      if (hasReached) {
-        hasCompleted = true;
+    if (!autoLogic.isScheduled()) {
+      if (Math.abs(xRem) <= delta && Math.abs(yRem) <= delta) {
+        if (hasReached) {
+          System.out.println("Has reached == true");
+          isFinished = true;
+        }
+        else {
+          hasReached = true;
+          System.out.println("Rescheduling");
+          xTarget = 0;
+          yTarget = 0;
+          autoPath = new AutoPath(xTarget, yTarget, isLeft, m_driveAuto);
+          CommandScheduler.getInstance().schedule(autoLogic);
+        }
       }
       else {
-        hasReached = true;
-        xTarget = 0;
-        yTarget = 0;
-        xRem = xTarget - m_driveAuto.getAmountTraveled(0);
-        yRem = yTarget - m_driveAuto.getAmountTraveled(1);
-
-        //schedule shooting procedure
-        hasShot = true;
+        if (m_ultra.getSensour() <= m_ultra.MIN_DIS) {
+          //follllow5
+          System.out.println("Got in sensor < dis loop");
+        }
+        else {
+          xTarget = (int) xRem;
+          yTarget = (int) yRem;
+          autoPath = new AutoPath(xTarget, yTarget, isLeft, m_driveAuto);
+          CommandScheduler.getInstance().schedule(autoLogic);
+          System.out.println("Else statement for ultra loop");
+        }
       }
     }
-
-    //if reached target, return home
-    if (hasReached && hasShot && !hasCompleted && !autoLogic.isScheduled()) {
-      //targetAngle = 0;
-      autoPath = new AutoPath(xTarget-xRem, yTarget-yRem, true, m_driveAuto);
-      CommandScheduler.getInstance().schedule(autoLogic);
-    }
-
-   // System.out.println(!autoLogic.isScheduled() + " " + hasCompleted + " " + m_ultra.getSensour());
-
-    //if completed, end
-    if (!autoLogic.isScheduled() && hasCompleted) {
-      isFinished = true;
-    }
-
-    //if autoLogic ended, avoid robot or continue path if clear
-    // else if (!autoLogic.isScheduled()) {
-    //   if (m_ultra.getSensour() <= 40) {
-    //     //Follow
-    //     // if follow.finished()
-    //     // run avoid
-    //   }
-    //   else {
-    //     autoPath = new AutoPath(xTarget-xRem, yTarget-yRem, true, m_driveAuto);
-    //     //CommandScheduler.getInstance().schedule(autoPath);
-    //   }
-    // }
   }
 
   // Called once the command ends or is interrupted.
