@@ -6,24 +6,30 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.subsystems;
+
 import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Scanner;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.turnReadColor;
 
 public class ColorSensor extends SubsystemBase {
   /**
    * Creates a new ColorSensor.
    */
-  private ColorSensorV3 colour;
-  private I2C.Port pourt = I2C.Port.kOnboard;
-  private static int red = Integer.parseInt("bf7dec", 16);
-  private static int blue = Integer.parseInt("52739c", 16);
-  private static int yellow = Integer.parseInt("989682", 16);
-  private static int green = Integer.parseInt("638164", 16);
+  private XboxController controller = new XboxController(0);
+  private static ColorSensorV3 colour;
+  private static I2C.Port pourt = I2C.Port.kOnboard;
+  private static final int red = Integer.parseInt("bf7dec", 16);
+  private static final int blue = Integer.parseInt("52739c", 16);
+  private static final int yellow = Integer.parseInt("989682", 16);
+  private static final int green = Integer.parseInt("638164", 16);
+  private static String currentColor; 
+  public CANSparkMax colorMotor = new CANSparkMax(3, MotorType.kbrushless);
 
   public ColorSensor() {
     colour = new ColorSensorV3(pourt);
@@ -45,15 +51,15 @@ public class ColorSensor extends SubsystemBase {
     int colVal = Integer.parseInt(color, 16);
     int range = 500000;
     if(colVal >= red-range && colVal <= red+range){
-      System.out.println("RED \n"); 
+      currentColor = "RED";
     } else if(colVal >= blue-range && colVal <= blue+range){ 
-      System.out.println("BLUE \n"); 
+      currentColor = "BLUE"; 
     } else if(colVal >= yellow-range && colVal <= yellow+range){
-      System.out.println("YELLOW \n"); 
+      currentColor = "YELLOW"; 
     } else if(colVal >= green-range && colVal <= green+range){
-      System.out.println("GREEN \n"); }
-      else { 
-      System.out.println("NOT WORKING"); 
+      currentColor = "GREEN"; 
+    } else { 
+      currentColor = null; 
     }
   }
 
@@ -122,10 +128,9 @@ public class ColorSensor extends SubsystemBase {
    * LiveWindow and SmartDashboard integrated updating.
    */
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
-    CommandScheduler.getInstance().run();
+    if(controller.getYButtonPressed()){
+      CommandScheduler.getInstance().schedule(new turnReadColor(currentColor));
+    }
+    
   }
 }
