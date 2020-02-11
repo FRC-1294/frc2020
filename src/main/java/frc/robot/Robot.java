@@ -24,7 +24,8 @@ import frc.robot.subsystems.*;
  */
 public class Robot extends TimedRobot {
   public static OI m_oi;
-  ShootingBall letsShoot = new ShootingBall();
+  RobotMap map = new RobotMap();
+  ShootingBall letsShoot = new ShootingBall(RobotMap.shooter, RobotMap.indexer, RobotMap.intaker);
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
 

@@ -6,7 +6,9 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
+
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
@@ -24,8 +26,14 @@ public class OI {
   public boolean getAButtonPressed() {
     return (gameShootingArm.getAButtonPressed());
   }
+  public double getTriggerRight() {
+    return gameShootingArm.getTriggerAxis(Hand.kRight);
+  }
   public boolean getXButtonPressed() {
-    return (gameShootingArm. getXButtonPressed());
+    return (gameShootingArm.getXButtonPressed());
+  }
+  public boolean getYButtonPressed() {
+    return (gameShootingArm.getYButtonPressed());
   }
   /*public double LeftTrigger(){
     return driveControl.getTriggerAxis(Hand.kLeft);

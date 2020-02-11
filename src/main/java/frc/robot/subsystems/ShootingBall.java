@@ -7,50 +7,62 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
-import frc.robot.commands.ToShootBall;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class ShootingBall extends SubsystemBase {
-  private CANSparkMax topMotor = new CANSparkMax(1, MotorType.kBrushless);
-  private CANSparkMax bottomMotor = new CANSparkMax(2, MotorType.kBrushless);
-  
-  public ShootingBall() {
-    topMotor.setOpenLoopRampRate(1);
-    bottomMotor.setOpenLoopRampRate(1);
-    topMotor.setClosedLoopRampRate(1);
-    bottomMotor.setClosedLoopRampRate(1);
+  private TalonFX shooter;
+  private TalonSRX indexer;
+  private TalonSRX intaker;
+
+  private boolean toShoot = false;
+  private boolean toIntake = false;
+  public ShootingBall(){
+    this(7, 6, 5);
+  }
+
+  public ShootingBall(int shootPort, int indexPort, int intakePort) {
+    shooter =  new TalonFX(shootPort);
+    indexer =  new TalonSRX(indexPort);
+    intaker =  new TalonSRX(intakePort);
   }
 
   @Override
   public void periodic() {
-    if(Robot.m_oi.getAButtonPressed()){
-      intake();
-    } else if (Robot.m_oi.getXButtonPressed()){
-      shoot();
-    } else {
-      stopMostors();
+    if(Robot.m_oi.getYButtonPressed()){
+      toShoot = (!toShoot);
+      if(toShoot){
+        setShooter(1);
+      } else {
+        setShooter(0);
+      }
+    } 
+    if(Robot.m_oi.getXButtonPressed()){
+      toIntake = (!toIntake);
+      if(toIntake){
+        setIntaker(1);
+      } else {
+        setIntaker(0);
+      }
+    }
+
+    if(Robot.m_oi.getTriggerRight() != 0){
+      setIndexer(Robot.m_oi.getTriggerRight());
     }
   }
 
-  public void intake(){
-    setSpeedBottom(1);
+  private void setShooter(double speed){
+     shooter.set(TalonFXControlMode.PercentOutput, speed);
   }
-  public void shoot(Double speed){
-    setSpeedTop(speed);
-    setSpeedBottom(-1*speed);
+  private void setIntaker(double speed){
+    intaker.set(ControlMode.PercentOutput, speed);
   }
-  public void stopMotors(){
-    setSpeedTop(0);
-    setSpeedBottom(0);
-  }
-  private void setSpeedTop(double speed) {
-      topMotor.set(speed);
-  }
-  private void setSpeedBottom(double speed){
-      bottomMotor.set(speed);
+  private void setIndexer(double speed){
+    indexer.set(ControlMode.PercentOutput, speed);
   }
 }
