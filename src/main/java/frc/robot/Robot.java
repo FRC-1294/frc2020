@@ -8,6 +8,8 @@
 package frc.robot;
 
 import frc.robot.commands.AutoNavCommand;
+import frc.robot.commands.DentMaker;
+import frc.robot.commands.TurnByCommand;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -33,8 +35,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    driveAuto = new DriveAutoSubsystem();
     ultrasonic = new UltrasonicSubsystem();
+    driveAuto = new DriveAutoSubsystem();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -81,7 +83,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     driveAuto.resetEncoders();
 
-    m_autonomousCommand = new AutoNavCommand(driveAuto, ultrasonic);
+    m_autonomousCommand = new TurnByCommand(40, driveAuto);//new DentMaker(40, driveAuto, ultrasonic);//new AutoNavCommand(driveAuto, ultrasonic);
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {

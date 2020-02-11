@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.commands.AutoNavCommand;
+import frc.robot.commands.DentMaker;
 import frc.robot.commands.MoveByCommand;
 import frc.robot.commands.TurnByCommand;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Constants;
 import frc.robot.Gains;
+import frc.robot.Robot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class DriveAutoSubsystem extends SubsystemBase {
@@ -44,12 +46,14 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private final double targetPositionRotations = 0.54;
   private static int currentAngle;
   private static double[] amountTraveled = new double[] {0, 0};
-  private final Gains kGains = new Gains(0.2, 0.00001, 0.5, 0.0, 0.0, -0.5, 0.5);
+  private final Gains kGains = new Gains(0.2, 0.00001, 0.5, 0.0, 0.0, -0.3, 0.3);
   private Timer timer = new Timer();
   private double prevTime = 0;
 
-  private boolean shouldSwootch = true;
-  private boolean isTurning = false;
+  private DentMaker dentMaker;
+
+  private boolean shouldSmootch = true; // why Swootch when you can Smootch
+  private boolean isTurning = false; 
 
   public DriveAutoSubsystem() {
     // frontLeftSpark.restoreFactoryDefaults(true);
@@ -82,6 +86,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
     rearLeftSpark.setInverted(false);
     rearRightSpark.setInverted(false);
 //shakuando was here
+
     timer.start();
   }
 

@@ -14,9 +14,6 @@ public class UltrasonicSubsystem extends SubsystemBase {
 
   private final static AnalogInput m_ultrasonic = new AnalogInput(kUltrasonicPort);
   XboxController stick = new XboxController(0);
-  JoystickButton abutton = new JoystickButton(stick, 1);
-  JoystickButton bButton = new JoystickButton(stick, 2);
-  JoystickButton yButton = new JoystickButton(stick, 3);
 
   public double getSensour() {
     double currentDistance = m_ultrasonic.getValue() * kValueToInches;
