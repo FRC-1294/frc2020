@@ -16,12 +16,14 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class ShootingBall extends SubsystemBase {
+  //creates the private three motors of their type, the shooter, indexer, and intaker
   private TalonFX shooter;
   private TalonSRX indexer;
   private TalonSRX intaker;
-
+  //to conditions to check if it should shoot or intake for those are one button on off systems.
   private boolean toShoot = false;
   private boolean toIntake = false;
+  //creates the shooting ball with their can id's
   public ShootingBall(){
     this(7, 6, 5);
   }
@@ -30,18 +32,27 @@ public class ShootingBall extends SubsystemBase {
     shooter =  new TalonFX(shootPort);
     indexer =  new TalonSRX(indexPort);
     intaker =  new TalonSRX(intakePort);
+    shooter.configOpenloopRamp(5);
+    shooter.configClosedloopRamp(5);
   }
 
+  //every loop it will check if any of the buttons are pressed and will do the coresponding task related with it
   @Override
   public void periodic() {
     if(Robot.m_oi.getYButtonPressed()){
+      //once clicked, it swaps the task, if it was off before, then it is on (true)
+      //if it was on, then it will become off (false)
       toShoot = (!toShoot);
       if(toShoot){
+        //if it just become on, then it will set max speed
         setShooter(1);
       } else {
+        //if it just turned off, then it will set speed to 0
         setShooter(0);
       }
     } 
+
+    //exact same concept with the intake as the shoot, just that it controls intaker motor instead
     if(Robot.m_oi.getXButtonPressed()){
       toIntake = (!toIntake);
       if(toIntake){
@@ -51,11 +62,14 @@ public class ShootingBall extends SubsystemBase {
       }
     }
 
+    //this is the indexer which runs at the speed of how much the trigger is pressed and it is not pressed then is off.
     if(Robot.m_oi.getTriggerRight() != 0){
       setIndexer(Robot.m_oi.getTriggerRight());
     }
   }
 
+
+  //methods to set the speeds and to create simplicity
   private void setShooter(double speed){
      shooter.set(TalonFXControlMode.PercentOutput, speed);
   }
