@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 
@@ -45,10 +46,10 @@ public class ShootingBall extends SubsystemBase {
       toShoot = (!toShoot);
       if(toShoot){
         //if it just become on, then it will set max speed
-        setShooter(1);
+        setFXSpeed(shooter, 1);//SHOULD NOT BE 1, WILL BE CHANGED TO MATCH 5200 RPM REQUIREMENT
       } else {
         //if it just turned off, then it will set speed to 0
-        setShooter(0);
+        setFXSpeed(shooter, 0);
       }
     } 
 
@@ -56,27 +57,38 @@ public class ShootingBall extends SubsystemBase {
     if(Robot.m_oi.getXButtonPressed()){
       toIntake = (!toIntake);
       if(toIntake){
-        setIntaker(1);
+        setSRXSpeed(intaker, 1);
+        //setIntaker(1);
       } else {
-        setIntaker(0);
+        setSRXSpeed(intaker, 0);
+        //setIntaker(0);
       }
     }
 
     //this is the indexer which runs at the speed of how much the trigger is pressed and it is not pressed then is off.
     if(Robot.m_oi.getTriggerRight() != 0){
-      setIndexer(Robot.m_oi.getTriggerRight());
+      setSRXSpeed(indexer, Robot.m_oi.getTriggerRight());
     }
   }
 
 
   //methods to set the speeds and to create simplicity
-  private void setShooter(double speed){
-     shooter.set(TalonFXControlMode.PercentOutput, speed);
+  // private void setShooter(double speed){
+  //   shooter.set(TalonFXControlMode.PercentOutput, speed);
+  // }
+  // private void setIntaker(double speed){
+  //   intaker.set(ControlMode.PercentOutput, speed);
+  // }
+  // private void setIndexer(double speed){
+  //   indexer.set(ControlMode.PercentOutput, speed);
+  // }
+
+  //better methods for increased versatility
+  private void setSRXSpeed(TalonSRX controller, double speed) {
+    controller.set(ControlMode.PercentOutput, speed);
   }
-  private void setIntaker(double speed){
-    intaker.set(ControlMode.PercentOutput, speed);
-  }
-  private void setIndexer(double speed){
-    indexer.set(ControlMode.PercentOutput, speed);
+
+  private void setFXSpeed(TalonFX controller, double speed) {
+    controller.set(TalonFXControlMode.PercentOutput, speed);
   }
 }
