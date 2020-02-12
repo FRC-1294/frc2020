@@ -8,33 +8,29 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.DelayCommand;
 import frc.robot.commands.MoveByCommand;
 import frc.robot.commands.TurnByCommand;
 import frc.robot.subsystems.DriveAutoSubsystem;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
 public class AutoPath extends SequentialCommandGroup {
   /**
    * Creates a new nlasduh.
    */
   public AutoPath(double xDis, double yDis, boolean turn1, boolean turn2, DriveAutoSubsystem driveAuto) {
     if (xDis != 0) {
-      addCommands(new MoveByCommand(xDis, driveAuto));
+      addCommands(new MoveByCommand(xDis, driveAuto, 0));
     }
 
     if (turn1) {
-      addCommands(new TurnByCommand(90, driveAuto));
+      addCommands(new TurnByCommand(90, driveAuto, 0));
     }
 
     if (yDis != 0) {
-      addCommands(new MoveByCommand(yDis, driveAuto));
+      addCommands(new MoveByCommand(yDis, driveAuto, 0));
     }
 
     if (turn2) {
-      addCommands(new TurnByCommand(90, driveAuto));
+      addCommands(new TurnByCommand(90, driveAuto, 0));
     }
 
   }

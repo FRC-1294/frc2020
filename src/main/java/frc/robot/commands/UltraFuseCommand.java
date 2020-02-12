@@ -21,6 +21,7 @@ public class UltraFuseCommand extends CommandBase {
   double motorTurn;
   boolean isFinished;
   Timer timer = new Timer();
+
   public UltraFuseCommand(DriveAutoSubsystem driver, UltrasonicSubsystem ultra) {
     // Use addRequirements() here to declare subsystem dependencies.
     speed = 0.0;

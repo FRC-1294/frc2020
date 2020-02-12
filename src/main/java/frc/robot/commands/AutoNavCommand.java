@@ -7,8 +7,6 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveAutoSubsystem;
@@ -20,7 +18,6 @@ public class AutoNavCommand extends CommandBase {
   DriveAutoSubsystem m_driveAuto;
   UltrasonicSubsystem m_ultra;
   AutoPath autoPath;
-  NavigateObstacle navObs;
   UltraFuseCommand ultraFuse;
   boolean left1 = true;
   boolean left2 = true;
@@ -50,10 +47,11 @@ public class AutoNavCommand extends CommandBase {
     yTarget = 15*12;
     targetAngle = 180;
 
+    //follow
     autoPath = new AutoPath(xTarget, yTarget, left1, left2, m_driveAuto);
     ultraFuse = new UltraFuseCommand(m_driveAuto, m_ultra);
 
-    CommandScheduler.getInstance().schedule(autoPath);
+    CommandScheduler.getInstance().schedule(autoPath);//follow
     CommandScheduler.getInstance().schedule(ultraFuse);
   }
 
@@ -64,9 +62,9 @@ public class AutoNavCommand extends CommandBase {
     double xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0));
     double yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1));
 
-    System.out.println("Xrem: " + xRem + " Yrem: " + yRem +
-    " left1: " + left1 + " left2: " + left2 + " targetAngle: " + targetAngle +
-    " currentAngle " + m_driveAuto.getCurrentAngle());
+    // System.out.println("Xrem: " + xRem + " Yrem: " + yRem +
+    // " left1: " + left1 + " left2: " + left2 + " targetAngle: " + targetAngle +
+    // " currentAngle " + m_driveAuto.getCurrentAngle());
 
     if (!autoPath.isScheduled() && ultraFuse.isScheduled()) {
       if (Math.abs(xRem) <= delta && Math.abs(yRem) <= delta) {

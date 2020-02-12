@@ -13,6 +13,7 @@ public class MoveByCommand extends CommandBase {
   double m_targetLeft;
   double m_targetRight;
   double m_amount;
+  int m_pidType;
   double startingEncoderPos;
 
   final double delta;
@@ -22,9 +23,10 @@ public class MoveByCommand extends CommandBase {
   double leftSpeed;
   double rightSpeed;
 
-  public MoveByCommand(double amount, DriveAutoSubsystem driveAuto) {
+  public MoveByCommand(double amount, DriveAutoSubsystem driveAuto, int pidType) {
     m_driveAuto = driveAuto;
     m_amount = amount;
+    m_pidType = pidType;
 
     targetPositionRotations = m_driveAuto.getMoveByFactor();
     delta = amount*0.1 * targetPositionRotations;
@@ -46,9 +48,9 @@ public class MoveByCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_driveAuto.setFrontLeftPID(m_targetLeft, ControlType.kPosition);
+    m_driveAuto.setFrontLeftPID(m_targetLeft, ControlType.kPosition, 0);
     leftSpeed = m_driveAuto.getFrontLeftSpeed();
-    m_driveAuto.setFrontRightPID(m_targetRight, ControlType.kPosition);
+    m_driveAuto.setFrontRightPID(m_targetRight, ControlType.kPosition, 0);
     rightSpeed = m_driveAuto.getFrontRightSpeed();
   }
 

@@ -8,6 +8,7 @@ import com.revrobotics.ControlType;
 public class TurnByCommand extends CommandBase {
   DriveAutoSubsystem m_driveAuto;
   int m_amount;
+  //CHANGE TO ADJUST DEGREE FACTOR (if overshoots - lower, and vice versa)
   double targetPositionRotations = 0.097;
   double m_targetLeft;
   double m_targetRight;
@@ -15,13 +16,15 @@ public class TurnByCommand extends CommandBase {
   double delta;
   Timer timer;
   double recordedTime = 0;
+  int m_pidType;
 
   double leftSpeed;
   double rightSpeed;
 
-  public TurnByCommand(int amount, DriveAutoSubsystem driveAuto) {
+  public TurnByCommand(int amount, DriveAutoSubsystem driveAuto, int pidType) {
     m_driveAuto = driveAuto;
     m_amount = amount;
+    m_pidType = pidType;
     timer = new Timer();
     delta = amount*0.1 * targetPositionRotations;
   }
@@ -38,16 +41,14 @@ public class TurnByCommand extends CommandBase {
     timer.start();
 
     m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() + m_amount);
-    //System.out.println("New: " + (m_driveAuto.getCurrentAngle() + m_amount));
-    //m_driveAuto.setCurrentAngle(m_driveAuto.getCurrentAngle() % 360);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_driveAuto.setFrontLeftPID(m_targetLeft, ControlType.kPosition);
+    m_driveAuto.setFrontLeftPID(m_targetLeft, ControlType.kPosition, m_pidType);
     leftSpeed = m_driveAuto.getFrontLeftSpeed();
-    m_driveAuto.setFrontRightPID(m_targetRight, ControlType.kPosition);
+    m_driveAuto.setFrontRightPID(m_targetRight, ControlType.kPosition, m_pidType);
     rightSpeed = m_driveAuto.getFrontRightSpeed();
   }
 

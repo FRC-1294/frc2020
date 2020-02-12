@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import frc.robot.commands.AutoNavCommand;
 import frc.robot.commands.DentMaker;
 import frc.robot.commands.MoveByCommand;
 import frc.robot.commands.TurnByCommand;
@@ -11,18 +10,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANSparkMax; //Shacuando was here
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Constants;
 import frc.robot.Gains;
-import frc.robot.Robot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class DriveAutoSubsystem extends SubsystemBase {
@@ -46,13 +42,9 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private final double targetPositionRotations = 0.54;
   private static int currentAngle;
   private static double[] amountTraveled = new double[] {0, 0};
-  private final Gains kGains = new Gains(0.2, 0.00001, 0.5, 0.0, 0.0, -0.3, 0.3);
+  private final Gains defaultPID = new Gains(0.2, 0.00001, 0.5, 0.0, 0.0, -0.5, 0.5, 0);
+  private final Gains lowDisPID = new Gains(0.5, 0.00001, 0.5, 0.0, 0.0, -0.7, 0.7, 1);
   private Timer timer = new Timer();
-  private double prevTime = 0;
-
-  private DentMaker dentMaker;
-
-  private boolean shouldSmootch = true; // why Swootch when you can Smootch
   private boolean isTurning = false; 
 
   public DriveAutoSubsystem() {
@@ -76,45 +68,25 @@ public class DriveAutoSubsystem extends SubsystemBase {
     rearRightSpark.setClosedLoopRampRate(1);
     rearRightSpark.follow(frontRightSpark);
     rearLeftSpark.follow(frontLeftSpark);
-    setPidControllers(frontLeftPID);
-    setPidControllers(frontRightPID);
-    setPidControllers(rearLeftPID);
-    setPidControllers(rearRightPID);
+    setPidControllers(frontLeftPID, defaultPID, 0);
+    setPidControllers(frontRightPID, defaultPID, 0);
+    setPidControllers(rearLeftPID, defaultPID, 0);
+    setPidControllers(rearRightPID, defaultPID, 0);
 
     frontLeftSpark.setInverted(false);
     frontRightSpark.setInverted(false);
     rearLeftSpark.setInverted(false);
     rearRightSpark.setInverted(false);
-//shakuando was here
-
     timer.start();
   }
 
   @Override
   public void periodic() {
-  //  driveJoystick.setRumble(RumbleType.kLeftRumble, 1);
-  //  driveJoystick.setRumble(RumbleType.kRightRumble, 1);
-  //  gameJoystick.setRumble(RumbleType.kLeftRumble, 1);
-  //  gameJoystick .setRumble(RumbleType.kRightRumble, 1);
-
     SmartDashboard.putString("AmountTraveled", amountTraveled[0] + " , " + amountTraveled[1]);
     SmartDashboard.putNumber("currentAngle", currentAngle);
 
     if (driveJoystick.getStartButtonPressed()) {
       CommandScheduler.getInstance().cancelAll();
-    }
-  
-    if (driveJoystick.getXButtonPressed()) {
-      CommandScheduler.getInstance().schedule(new TurnByCommand(-90, this));
-    }
-    else if (driveJoystick.getBButtonPressed()) {
-      CommandScheduler.getInstance().schedule(new TurnByCommand(90, this));
-    }
-    else if (driveJoystick.getYButtonPressed()) {
-      CommandScheduler.getInstance().schedule(new MoveByCommand(3*12, this));
-    }
-    else if (driveJoystick.getAButtonPressed()) {
-      CommandScheduler.getInstance().schedule(new MoveByCommand(-3*12, this));
     }
 
     if (driveJoystick.getBumper(Hand.kRight)) {
@@ -149,13 +121,13 @@ public class DriveAutoSubsystem extends SubsystemBase {
     }
   }
 
-  private void setPidControllers (CANPIDController pidController) {
-    pidController.setP(kGains.kP);
-    pidController.setI(kGains.kI);
-    pidController.setD(kGains.kD);
-    pidController.setIZone(kGains.kIz);
-    pidController.setFF(kGains.kFF);
-    pidController.setOutputRange(kGains.kMinOutput, kGains.kMaxOutput);
+  private void setPidControllers (CANPIDController pidController, Gains pidSet, int slot) {
+    pidController.setP(pidSet.kP, slot);
+    pidController.setI(pidSet.kI, slot);
+    pidController.setD(pidSet.kD, slot);
+    pidController.setIZone(pidSet.kIz, slot);
+    pidController.setFF(pidSet.kFF, slot);
+    pidController.setOutputRange(pidSet.kMinOutput, pidSet.kMaxOutput, slot);
   }
 
   public int getCurrentAngle() {
@@ -226,20 +198,20 @@ public class DriveAutoSubsystem extends SubsystemBase {
     this.rearRightSpark.setOpenLoopRampRate(0.5);
   }
 
-  public void setFrontLeftPID(double val, ControlType controlType) {
-    this.frontLeftPID.setReference(val, controlType);
+  public void setFrontLeftPID(double val, ControlType controlType, int slot) {
+    this.frontLeftPID.setReference(val, controlType, slot);
   }
   
-  public void setFrontRightPID(double val, ControlType controlType) {
-    this.frontRightPID.setReference(val, controlType);
+  public void setFrontRightPID(double val, ControlType controlType, int slot) {
+    this.frontRightPID.setReference(val, controlType, slot);
   }
 
-  public void setRearLeftPID(double val, ControlType controlType) {
-    this.rearLeftPID.setReference(val, controlType);
+  public void setRearLeftPID(double val, ControlType controlType, int slot) {
+    this.rearLeftPID.setReference(val, controlType, slot);
   }
 
-  public void setRearRightPID(double val, ControlType controlType) {
-    this.rearRightPID.setReference(val, controlType);
+  public void setRearRightPID(double val, ControlType controlType, int slot) {
+    this.rearRightPID.setReference(val, controlType, slot);
   }
 
   public void resetEncoders() {
