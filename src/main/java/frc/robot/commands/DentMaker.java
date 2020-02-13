@@ -13,6 +13,7 @@ import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
 
 public class DentMaker extends CommandBase {
+  final int PIDSlot = 1;
   int HAL9000 = 0;
   int amount = 0;
   UltrasonicSubsystem dracula;
@@ -26,12 +27,15 @@ public class DentMaker extends CommandBase {
     isFinished = false;
     dracula = ultraBurst;
     whee = new DriveAutoSubsystem();
-    tokyoDrift = new TurnByCommand(amount, driver, 1);
   }
 
   @Override
   public void initialize() {
+    HAL9000 = 0;
+    threeMusketeers[HAL9000] = dracula.getSensour();
+    tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
     CommandScheduler.getInstance().schedule(tokyoDrift);
+    HAL9000 = 1;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -43,20 +47,19 @@ public class DentMaker extends CommandBase {
     System.out.println();
 
     if(!tokyoDrift.isScheduled()){
-      if(HAL9000 < threeMusketeers.length){
-        System.out.println("WOW HERE " + HAL9000);
+      if(HAL9000 == 1) {
         threeMusketeers[HAL9000] = dracula.getSensour();
-        HAL9000++;
-        tokyoDrift = new TurnByCommand(-amount, whee, 1);
+        tokyoDrift = new TurnByCommand(-amount * 2, whee, PIDSlot);
         CommandScheduler.getInstance().schedule(tokyoDrift);
+        HAL9000 = 2;
       }
-      else if(HAL9000 == threeMusketeers.length){
-        System.out.println("ALMOST DONE");
-        tokyoDrift = new TurnByCommand(amount, whee, 1);
-        HAL9000++;
+      else if(HAL9000 == 2) {
+        threeMusketeers[HAL9000] = dracula.getSensour();
+        tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
         CommandScheduler.getInstance().schedule(tokyoDrift);
+        HAL9000++;
       }
-      else{
+      else {
         System.out.println("ISFINISHED");
         isFinished = true;
       }

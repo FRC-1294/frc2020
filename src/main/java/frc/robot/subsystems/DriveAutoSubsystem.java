@@ -42,8 +42,8 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private final double targetPositionRotations = 0.54;
   private static int currentAngle;
   private static double[] amountTraveled = new double[] {0, 0};
-  private final Gains defaultPID = new Gains(0.2, 0.00001, 0.5, 0.0, 0.0, -0.5, 0.5, 0);
-  private final Gains lowDisPID = new Gains(0.5, 0.00001, 0.5, 0.0, 0.0, -0.7, 0.7, 1);
+  private final Gains defaultPID = new Gains(0.2, 0.00001, 0.6, 0.0, 0.0, -0.5, 0.5, 0);
+  private final Gains lowDisPID = new Gains(0.2, 0.00001, 0.5, 0.0, 0.0, -0.7, 0.7, 1);
   private Timer timer = new Timer();
   private boolean isTurning = false; 
 
@@ -68,10 +68,14 @@ public class DriveAutoSubsystem extends SubsystemBase {
     rearRightSpark.setClosedLoopRampRate(1);
     rearRightSpark.follow(frontRightSpark);
     rearLeftSpark.follow(frontLeftSpark);
-    setPidControllers(frontLeftPID, defaultPID, 0);
-    setPidControllers(frontRightPID, defaultPID, 0);
-    setPidControllers(rearLeftPID, defaultPID, 0);
-    setPidControllers(rearRightPID, defaultPID, 0);
+    setPidControllers(frontLeftPID, defaultPID, defaultPID.kSlot);
+    setPidControllers(frontRightPID, defaultPID, defaultPID.kSlot);
+    setPidControllers(rearLeftPID, defaultPID, defaultPID.kSlot);
+    setPidControllers(rearRightPID, defaultPID, defaultPID.kSlot);
+    setPidControllers(frontLeftPID, lowDisPID, lowDisPID.kSlot);
+    setPidControllers(frontRightPID, lowDisPID, lowDisPID.kSlot);
+    setPidControllers(rearLeftPID, lowDisPID, lowDisPID.kSlot);
+    setPidControllers(rearRightPID, lowDisPID, lowDisPID.kSlot);
 
     frontLeftSpark.setInverted(false);
     frontRightSpark.setInverted(false);
