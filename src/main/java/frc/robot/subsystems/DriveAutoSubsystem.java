@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-import frc.robot.commands.DentMaker;
+import frc.robot.commands.WallChecker;
 import frc.robot.commands.MoveByCommand;
 import frc.robot.commands.TurnByCommand;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;

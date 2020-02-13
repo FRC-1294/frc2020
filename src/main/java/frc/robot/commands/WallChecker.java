@@ -12,21 +12,23 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
 
-public class DentMaker extends CommandBase {
+public class WallChecker extends CommandBase {
   final int PIDSlot = 1;
   int HAL9000 = 0;
   int amount = 0;
   UltrasonicSubsystem dracula;
   DriveAutoSubsystem whee;
+  StalkerRoomba myStalker;
   double[] threeMusketeers = new double[3];
   TurnByCommand tokyoDrift;
   boolean isFinished;
 
-  public DentMaker(int amount, DriveAutoSubsystem driver, UltrasonicSubsystem ultraBurst) {
+  public WallChecker(int amount, DriveAutoSubsystem driver, UltrasonicSubsystem ultraBurst, StalkerRoomba stalker) {
     this.amount = amount;
     isFinished = false;
     dracula = ultraBurst;
     whee = new DriveAutoSubsystem();
+    myStalker = stalker;
   }
 
   @Override
@@ -60,7 +62,18 @@ public class DentMaker extends CommandBase {
         HAL9000++;
       }
       else {
-        System.out.println("ISFINISHED");
+        double baseVal = threeMusketeers[0];
+
+        if (threeMusketeers[1] * Math.cos(amount) > baseVal) {
+          myStalker.isWall = true;
+        }
+        else if (threeMusketeers[1] * Math.cos(amount) > baseVal) {
+          myStalker.isWall = true;
+        }
+        else {
+          myStalker.isWall = false;
+        }
+
         isFinished = true;
       }
     }

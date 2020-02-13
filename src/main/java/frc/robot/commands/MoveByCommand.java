@@ -1,10 +1,7 @@
 package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Robot;
 import com.revrobotics.ControlType;
-
-import frc.robot.commands.AutoPath;
 import frc.robot.subsystems.DriveAutoSubsystem;
 
 public class MoveByCommand extends CommandBase {

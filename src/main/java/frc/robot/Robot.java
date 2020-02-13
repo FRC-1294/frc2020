@@ -8,14 +8,11 @@
 package frc.robot;
 
 import frc.robot.commands.AutoNavCommand;
-import frc.robot.commands.DentMaker;
-import frc.robot.commands.TurnByCommand;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -83,7 +80,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     driveAuto.resetEncoders();
 
-    m_autonomousCommand = new DentMaker(40, driveAuto, ultrasonic);//new AutoNavCommand(driveAuto, ultrasonic);
+    m_autonomousCommand = new AutoNavCommand(driveAuto, ultrasonic);
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
