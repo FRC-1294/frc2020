@@ -8,8 +8,14 @@
 package frc.robot;
 
 import frc.robot.commands.AutoNavCommand;
+import frc.robot.commands.StalkerRoomba;
+import frc.robot.commands.TurnByCommand;
+import frc.robot.commands.WallChecker;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
+
+import java.sql.Driver;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -21,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+  public static Command m_autonomousCommand;
   public static DriveAutoSubsystem driveAuto;
   public static UltrasonicSubsystem ultrasonic;
   private RobotContainer m_robotContainer;
@@ -54,7 +60,7 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-  }
+  }//shacuando was here
 
   /**
    * This function is called once each time the robot enters Disabled mode.
@@ -80,7 +86,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     driveAuto.resetEncoders();
 
-    m_autonomousCommand = new AutoNavCommand(driveAuto, ultrasonic);
+    m_autonomousCommand = new StalkerRoomba(40, driveAuto, ultrasonic);//new AutoNavCommand(driveAuto, ultrasonic);
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {

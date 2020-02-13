@@ -33,7 +33,7 @@ public class MoveByCommand extends CommandBase {
   @Override
   public void initialize() {
     m_targetLeft = (m_amount)*targetPositionRotations + m_driveAuto.getFrontLeftPosition();
-    m_targetRight = -(m_amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
+    m_targetRight = (m_amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
 
     startingEncoderPos = m_driveAuto.getFrontLeftPosition();
 

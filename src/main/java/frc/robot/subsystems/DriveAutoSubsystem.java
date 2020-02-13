@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import frc.robot.commands.WallChecker;
 import frc.robot.commands.MoveByCommand;
 import frc.robot.commands.TurnByCommand;
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,9 +17,11 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Constants;
 import frc.robot.Gains;
+import frc.robot.Robot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class DriveAutoSubsystem extends SubsystemBase {
@@ -37,7 +40,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   //private final WPI_TalonSRX intakeTalon = new WPI_TalonSRX(Constants.intakeTalon);
 
   private XboxController driveJoystick = new XboxController(Constants.driveJoystick);
- // private final XboxController gameJoystick = new XboxController(1);
+  private final XboxController gameJoystick = new XboxController(1);
 
   private final double targetPositionRotations = 0.54;
   private static int currentAngle;
@@ -48,6 +51,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private boolean isTurning = false; 
 
   public DriveAutoSubsystem() {
+    UsbCamera usbCam = new UsbCamera("Cam-eron", 0);
     // frontLeftSpark.restoreFactoryDefaults(true);
     // frontRightSpark.restoreFactoryDefaults(true);
     // rearLeftSpark.restoreFactoryDefaults(true);
@@ -78,7 +82,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
     setPidControllers(rearRightPID, lowDisPID, lowDisPID.kSlot);
 
     frontLeftSpark.setInverted(false);
-    frontRightSpark.setInverted(false);
+    frontRightSpark.setInverted(true);
     rearLeftSpark.setInverted(false);
     rearRightSpark.setInverted(false);
     timer.start();
@@ -88,6 +92,12 @@ public class DriveAutoSubsystem extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putString("AmountTraveled", amountTraveled[0] + " , " + amountTraveled[1]);
     SmartDashboard.putNumber("currentAngle", currentAngle);
+
+    double axis = gameJoystick.getTriggerAxis(Hand.kRight);
+    if (axis <= 1) {
+      gameJoystick.setRumble(RumbleType.kRightRumble, axis * 20);
+      gameJoystick.setRumble(RumbleType.kLeftRumble, axis * 20);
+    }
 
     if (driveJoystick.getStartButtonPressed()) {
       CommandScheduler.getInstance().cancelAll();
@@ -100,11 +110,13 @@ public class DriveAutoSubsystem extends SubsystemBase {
       setMode("coast");
     }
 
-    arcadeDrive(driveJoystick.getY(Hand.kLeft), driveJoystick.getX(Hand.kRight));
+ //   if (!Robot.m_autonomousCommand.isScheduled()) {
+      arcadeDrive(driveJoystick.getY(Hand.kLeft), driveJoystick.getX(Hand.kRight));
+ //   }
   }
 
   public void arcadeDrive(double forward, double turn) {
-    sparkDrive.arcadeDrive(-forward, turn*0.5);
+    sparkDrive.arcadeDrive(turn*0.5, -forward);
   }
 
   public void setTurning(boolean val) {

@@ -19,7 +19,7 @@ public class StalkerRoomba extends CommandBase {
   WallChecker wallChecker;
   TurnByCommand turner;
   double speed;
-  boolean shouldCheckWall, hasTurned, isFinished;
+  boolean shouldCheckWall, hasChecked, hasTurned, isFinished;
   Timer timer;
   double currentDistance = 0.0;
   double newDistance = 0.0;
@@ -61,14 +61,17 @@ public class StalkerRoomba extends CommandBase {
       //if should continue moving
       if (!isWall) {
         //if outside range
-        if(currentDistance > targetDis + margin + offSet){
-          speed += 0.075;
-          shouldCheckWall = false;
-        }
-        else {
+        if(currentDistance < targetDis + margin + offSet){
+          System.out.println("IN RANGE");
           speed = 0;
           shouldCheckWall = true;
         }
+        else {
+          System.out.println("OUT OF RANGE");
+          speed += 0.075;
+          shouldCheckWall = false;
+          hasChecked = false;
+        } 
 
         //speed limiters
         if (speed > 0.5) {
@@ -78,30 +81,45 @@ public class StalkerRoomba extends CommandBase {
           speed = -0.5;
         }
 
+        System.out.println("SPEED " + speed);
         //setting speed
         m_robotDrive.setFrontLeftSpeed(speed);
         m_robotDrive.setFrontRightSpeed(speed);
       }
       //if at a wall
       else {
-        //first time, rotate left
-        if (!turner.isScheduled() && !hasTurned) {
-          m_robotDrive.setFrontLeftSpeed(0);
-          m_robotDrive.setFrontRightSpeed(0);
-          CommandScheduler.getInstance().schedule(turner);
-          hasTurned = true;
-        }
-        //once rotated, end command
-        else if (turner.isFinished() && hasTurned) {
-          isFinished = true;
+        if (!turner.isScheduled()) {
+          //first time, rotate left
+          if (!hasTurned) {
+            System.out.println("Turner Scheduled");
+            // m_robotDrive.setFrontLeftSpeed(0);
+            // m_robotDrive.setFrontRightSpeed(0);
+            //CommandScheduler.getInstance().schedule(turner);
+            hasTurned = true;
+          }
+
+          //once rotated, end command
+          else if (hasTurned) {
+            System.out.println("Command Finished");
+            isFinished = true;
+          }
         }
       }
 
       //if needs to check if at wall
-      if (shouldCheckWall) {
-        CommandScheduler.getInstance().schedule(wallChecker);
+      if (shouldCheckWall && !hasChecked) {
+        System.out.println("Wall Checker Scheduled");
+        // m_robotDrive.setFrontLeftSpeed(0);
+        // m_robotDrive.setFrontRightSpeed(0);
+        //CommandScheduler.getInstance().schedule(wallChecker);
+        hasChecked = true;
       }
     }
+    else {
+      System.out.println("Out of IF Statement");
+    }
+
+    System.out.print("Ultra: " + m_ultra.getSensour() + " ");
   }
 
   // Called once the command ends or is interrupted.

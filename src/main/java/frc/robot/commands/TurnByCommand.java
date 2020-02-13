@@ -33,7 +33,7 @@ public class TurnByCommand extends CommandBase {
   @Override
   public void initialize() {
     m_targetLeft = -(m_amount)*targetPositionRotations + m_driveAuto.getFrontLeftPosition();
-    m_targetRight = -(m_amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
+    m_targetRight = (m_amount)*targetPositionRotations + m_driveAuto.getFrontRightPosition();
 
     m_driveAuto.setRamp(0.5);
     m_driveAuto.setTurning(true);
