@@ -20,9 +20,10 @@ public class RobotMap {
     public static final int rearRightSpark = 12;
     public static final int rearLeftSpark = 13;   
     
-    public static final int intakeTalon = 20;
-    public static final int indexerTalon = 25;
-    public static final int shooterFalcon = 30;
+    public static final int intakeTalon = 21;
+    public static final int indexerTalon = 23;
+    public static final int shooterFalcon = 25;
+    public static final int colorTalon = 27;
   
      public static int rightFrontTalon = 1;
      public static int rightRearTalon = 3;

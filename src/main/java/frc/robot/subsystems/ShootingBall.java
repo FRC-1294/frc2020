@@ -21,18 +21,22 @@ public class ShootingBall extends SubsystemBase {
   private TalonFX shooter;
   private TalonSRX indexer;
   private TalonSRX intaker;
+  private TalonSRX colorWheel;
+
   //to conditions to check if it should shoot or intake for those are one button on off systems.
   private boolean toShoot = false;
   private boolean toIntake = false;
+  private boolean toColor = false;
   //creates the shooting ball with their can id's
   public ShootingBall(){
-    this(7, 6, 5);
+    this(7, 6, 5, 4);
   }
 
-  public ShootingBall(int shootPort, int indexPort, int intakePort) {
+  public ShootingBall(int shootPort, int indexPort, int intakePort, int colorPort) {
     shooter =  new TalonFX(shootPort);
     indexer =  new TalonSRX(indexPort);
     intaker =  new TalonSRX(intakePort);
+    colorWheel = new TalonSRX(colorPort);
     shooter.configOpenloopRamp(5);
     shooter.configClosedloopRamp(5);
   }
@@ -68,6 +72,15 @@ public class ShootingBall extends SubsystemBase {
     //this is the indexer which runs at the speed of how much the trigger is pressed and it is not pressed then is off.
     if(Robot.m_oi.getTriggerRight() != 0){
       setSRXSpeed(indexer, Robot.m_oi.getTriggerRight());
+    }
+
+    if(Robot.m_oi.getAButtonPressed()) {
+      toColor = (!toColor);
+      if(toColor){
+        setSRXSpeed(colorWheel, 1);
+      } else {
+        setSRXSpeed(colorWheel, 0);
+      }
     }
   }
 

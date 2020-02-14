@@ -23,7 +23,7 @@ import frc.robot.subsystems.*;
 public class Robot extends TimedRobot {
   public static OI m_oi;
   RobotMap map = new RobotMap();
-  ShootingBall letsShoot = new ShootingBall(RobotMap.shooterFalcon, RobotMap.indexerTalon, RobotMap.intakeTalon);
+  ShootingBall letsShoot = new ShootingBall(RobotMap.shooterFalcon, RobotMap.indexerTalon, RobotMap.intakeTalon, RobotMap.colorTalon);
 
   /**
    * This function is run when the robot is first started up and should be
