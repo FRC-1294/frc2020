@@ -24,11 +24,11 @@ public class RobotMap {
     public static final int indexerTalon = 25;
     public static final int shooterFalcon = 30;
   
-    // public static int rightFrontTalon = 1;
-    // public static int rightRearTalon = 3;
+     public static int rightFrontTalon = 1;
+     public static int rightRearTalon = 3;
 
-    // public static int leftFrontTalon = 2;
-    // public static int leftRearTalon = 4;
+     public static int leftFrontTalon = 2;
+     public static int leftRearTalon = 4;
 
 
   // For example to map the left and right motors, you could define the

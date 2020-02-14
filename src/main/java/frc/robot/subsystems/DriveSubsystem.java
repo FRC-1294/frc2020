@@ -9,7 +9,6 @@ package frc.robot.subsystems;
 
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.robot.commands.DriveCommand;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.XboxController;
@@ -74,6 +73,6 @@ public class DriveSubsystem extends Subsystem {
   }
 
   public void initDefaultCommand() {
-    setDefaultCommand(new DriveCommand());
+   // setDefaultCommand(new DriveCommand());
   }
 }
