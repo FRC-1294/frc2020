@@ -26,7 +26,7 @@ public class StalkerRoomba extends CommandBase {
   double targetDis;
   final double margin = 3;
   final double ultraMargin = 0.2;
-  final double offSet = 36 * 0.5;
+  final double offSet = 24;
 
   public boolean isWall;
 
@@ -48,12 +48,14 @@ public class StalkerRoomba extends CommandBase {
     isFinished = false;
     wallChecker = new WallChecker(40, m_robotDrive, m_ultra, this);
     turner = new TurnByCommand(90, m_robotDrive, 0);
+    timer.reset();
     timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    boolean isStopped = m_robotDrive.getFrontLeftSpeed() == 0 && m_robotDrive.getFrontRightSpeed() == 0;
     currentDistance = m_ultra.getSensour();
 
     //if not checking if a wall
@@ -64,13 +66,17 @@ public class StalkerRoomba extends CommandBase {
         if(currentDistance < targetDis + margin + offSet){
           System.out.println("IN RANGE");
           speed = 0;
-          shouldCheckWall = true;
+
+          if (timer.get() >= 0.5) {
+            shouldCheckWall = true;
+          }
         }
         else {
           System.out.println("OUT OF RANGE");
-          speed += 0.075;
-          shouldCheckWall = false;
+          speed += 0.05;
           hasChecked = false;
+          shouldCheckWall = false;
+          timer.reset();
         } 
 
         //speed limiters
@@ -81,19 +87,18 @@ public class StalkerRoomba extends CommandBase {
           speed = -0.5;
         }
 
-        System.out.println("SPEED " + speed);
+        System.out.print("SPEED " + speed + " ");
         //setting speed
         m_robotDrive.setFrontLeftSpeed(speed);
         m_robotDrive.setFrontRightSpeed(speed);
       }
       //if at a wall
       else {
-        if (!turner.isScheduled()) {
+        if (!turner.isScheduled() && isStopped) {
           //first time, rotate left
           if (!hasTurned) {
             System.out.println("Turner Scheduled");
-            // m_robotDrive.setFrontLeftSpeed(0);
-            // m_robotDrive.setFrontRightSpeed(0);
+            Timer.delay(5);
             //CommandScheduler.getInstance().schedule(turner);
             hasTurned = true;
           }
@@ -107,19 +112,15 @@ public class StalkerRoomba extends CommandBase {
       }
 
       //if needs to check if at wall
-      if (shouldCheckWall && !hasChecked) {
+      if (shouldCheckWall && !hasChecked && isStopped) {
         System.out.println("Wall Checker Scheduled");
-        // m_robotDrive.setFrontLeftSpeed(0);
-        // m_robotDrive.setFrontRightSpeed(0);
-        //CommandScheduler.getInstance().schedule(wallChecker);
+        Timer.delay(5);
         hasChecked = true;
+        CommandScheduler.getInstance().schedule(wallChecker);
       }
     }
     else {
       System.out.println("Out of IF Statement");
-
-      m_robotDrive.setFrontLeftSpeed(0);
-      m_robotDrive.setFrontRightSpeed(0);
     }
 
     System.out.print("Ultra: " + m_ultra.getSensour() + " ");

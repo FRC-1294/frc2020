@@ -81,6 +81,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
     setPidControllers(frontRightPID, lowDisPID, lowDisPID.kSlot);
     setPidControllers(rearLeftPID, lowDisPID, lowDisPID.kSlot);
     setPidControllers(rearRightPID, lowDisPID, lowDisPID.kSlot);
+    setMode("coast");
 
     frontLeftSpark.setInverted(false);
     frontRightSpark.setInverted(true);
