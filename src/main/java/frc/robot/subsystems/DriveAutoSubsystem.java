@@ -4,6 +4,7 @@ import frc.robot.commands.WallChecker;
 import frc.robot.commands.MoveByCommand;
 import frc.robot.commands.TurnByCommand;
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -51,7 +52,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private boolean isTurning = false; 
 
   public DriveAutoSubsystem() {
-    UsbCamera usbCam = new UsbCamera("Cam-eron", 0);
+    UsbCamera usbCam = CameraServer.getInstance().startAutomaticCapture(0);
     // frontLeftSpark.restoreFactoryDefaults(true);
     // frontRightSpark.restoreFactoryDefaults(true);
     // rearLeftSpark.restoreFactoryDefaults(true);

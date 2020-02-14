@@ -117,6 +117,9 @@ public class StalkerRoomba extends CommandBase {
     }
     else {
       System.out.println("Out of IF Statement");
+
+      m_robotDrive.setFrontLeftSpeed(0);
+      m_robotDrive.setFrontRightSpeed(0);
     }
 
     System.out.print("Ultra: " + m_ultra.getSensour() + " ");

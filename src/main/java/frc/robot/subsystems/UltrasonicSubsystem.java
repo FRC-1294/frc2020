@@ -10,7 +10,7 @@ public class UltrasonicSubsystem extends SubsystemBase {
   // factor to convert sensor values to a distance in inches
   public static final int MIN_DIS = 32;
   private static final double kValueToInches = 0.0528;
-  private static final int kUltrasonicPort = 1;
+  private static final int kUltrasonicPort = 0;
 
   private final static AnalogInput m_ultrasonic = new AnalogInput(kUltrasonicPort);
   XboxController stick = new XboxController(0);
@@ -21,6 +21,6 @@ public class UltrasonicSubsystem extends SubsystemBase {
   }
 
   public void periodic() {
-    //System.out.println(getSensour());
+    System.out.println(getSensour());
   }
 }
