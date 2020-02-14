@@ -7,6 +7,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveAutoSubsystem;
@@ -20,6 +21,7 @@ public class WallChecker extends CommandBase {
   DriveAutoSubsystem whee;
   StalkerRoomba myStalker;
   double[] threeMusketeers = new double[3];
+  double margin = 6;
   TurnByCommand tokyoDrift;
   boolean isFinished;
 
@@ -34,6 +36,7 @@ public class WallChecker extends CommandBase {
   @Override
   public void initialize() {
     HAL9000 = 0;
+    isFinished = false;
     threeMusketeers[HAL9000] = dracula.getSensour();
     tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
     CommandScheduler.getInstance().schedule(tokyoDrift);
@@ -43,13 +46,9 @@ public class WallChecker extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    for(double i : threeMusketeers){
-      System.out.print(i + " ");
-    }
-    System.out.println();
-
     if(!tokyoDrift.isScheduled()){
       if(HAL9000 == 1) {
+        System.out.println();
         threeMusketeers[HAL9000] = dracula.getSensour();
         tokyoDrift = new TurnByCommand(-amount * 2, whee, PIDSlot);
         CommandScheduler.getInstance().schedule(tokyoDrift);
@@ -59,19 +58,19 @@ public class WallChecker extends CommandBase {
         threeMusketeers[HAL9000] = dracula.getSensour();
         tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
         CommandScheduler.getInstance().schedule(tokyoDrift);
-        HAL9000++;
+        HAL9000 = 3;
       }
       else {
         double baseVal = threeMusketeers[0];
 
-        if (threeMusketeers[1] * Math.cos(amount) > baseVal) {
-          myStalker.isWall = true;
+        if (threeMusketeers[1] * Math.abs(Math.cos(amount)) > baseVal + margin) {
+          myStalker.isWall = false;
         }
-        else if (threeMusketeers[1] * Math.cos(amount) > baseVal) {
-          myStalker.isWall = true;
+        else if (threeMusketeers[2] * Math.abs(Math.cos(amount)) > baseVal + margin) {
+          myStalker.isWall = false;
         }
         else {
-          myStalker.isWall = false;
+          myStalker.isWall = true;
         }
 
         isFinished = true;
@@ -82,6 +81,16 @@ public class WallChecker extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    whee.setFrontRightSpeed(0);
+    whee.setFrontLeftSpeed(0);
+
+    System.out.println("\n\n\\n\n");
+    System.out.println(threeMusketeers[0]);
+    System.out.println(threeMusketeers[1] * Math.abs(Math.cos(amount)));
+    System.out.println(threeMusketeers[2] * Math.abs(Math.cos(amount)));
+
+    System.out.println(myStalker.isWall + " ENDED");
+    System.out.println("\n\n\\n\n");
   }
 
   // Returns true when the command should end.

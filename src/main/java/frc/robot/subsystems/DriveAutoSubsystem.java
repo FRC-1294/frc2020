@@ -40,19 +40,19 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private DifferentialDrive sparkDrive = new DifferentialDrive(sparkDriveLeft,sparkDriveRight);
   //private final WPI_TalonSRX intakeTalon = new WPI_TalonSRX(Constants.intakeTalon);
 
-  private XboxController driveJoystick = new XboxController(Constants.driveJoystick);
-  private final XboxController gameJoystick = new XboxController(1);
+  public final XboxController driveJoystick = new XboxController(Constants.driveJoystick);
+  public final XboxController gameJoystick = new XboxController(1);
 
   private final double targetPositionRotations = 0.54;
   private static int currentAngle;
   private static double[] amountTraveled = new double[] {0, 0};
   private final Gains defaultPID = new Gains(0.2, 0.00001, 0.6, 0.0, 0.0, -0.5, 0.5, 0);
-  private final Gains lowDisPID = new Gains(0.2, 0.00001, 0.5, 0.0, 0.0, -0.7, 0.7, 1);
+  private final Gains lowDisPID = new Gains(0.2, 0.00001, 0.4, 0.0, 0.0, -0.7, 0.7, 1);
   private Timer timer = new Timer();
   private boolean isTurning = false; 
 
   public DriveAutoSubsystem() {
-    UsbCamera usbCam = CameraServer.getInstance().startAutomaticCapture(0);
+    //UsbCamera usbCam = CameraServer.getInstance().startAutomaticCapture(0);
     // frontLeftSpark.restoreFactoryDefaults(true);
     // frontRightSpark.restoreFactoryDefaults(true);
     // rearLeftSpark.restoreFactoryDefaults(true);

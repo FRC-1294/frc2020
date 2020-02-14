@@ -31,9 +31,6 @@ public class AutoNavCommand extends CommandBase {
   int step = 0;
 
   public AutoNavCommand(DriveAutoSubsystem driveAuto, UltrasonicSubsystem ultra) {
-    addRequirements(driveAuto);
-    addRequirements(ultra);
-
     m_driveAuto = driveAuto;
     m_ultra = ultra;
   }
@@ -41,7 +38,10 @@ public class AutoNavCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    left1 = true;
+    addRequirements(m_driveAuto);
+    addRequirements(m_ultra);
+
+    left1 = false;
     left2 = true;
     xTarget = 3*12;
     yTarget = 0;//15*12;
@@ -50,6 +50,7 @@ public class AutoNavCommand extends CommandBase {
     //go past the init line
     autoPath = new AutoPath(xTarget, yTarget, left1, left2, m_driveAuto);
     ultraFuse = new UltraFuseCommand(m_driveAuto, m_ultra);
+    moveUntilWall = new StalkerRoomba(5*12, m_driveAuto, m_ultra);
 
     CommandScheduler.getInstance().schedule(autoPath);
     CommandScheduler.getInstance().schedule(ultraFuse);

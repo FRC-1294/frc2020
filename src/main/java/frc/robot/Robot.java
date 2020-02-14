@@ -17,6 +17,7 @@ import frc.robot.subsystems.UltrasonicSubsystem;
 import java.sql.Driver;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -75,8 +76,6 @@ public class Robot extends TimedRobot {
     driveAuto.setFrontRightSpeed(0);
     driveAuto.setRearLeftSpeed(0);
     driveAuto.setRearRightSpeed(0);
-
-    CommandScheduler.getInstance().cancelAll();
   }
 
   /**
@@ -86,11 +85,13 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     driveAuto.resetEncoders();
 
-    m_autonomousCommand = new StalkerRoomba(40, driveAuto, ultrasonic);//new AutoNavCommand(driveAuto, ultrasonic);
+    // m_autonomousCommand = new WallChecker(40, driveAuto, ultrasonic,  new StalkerRoomba(40, driveAuto, ultrasonic));////new AutoNavCommand(driveAuto, ultrasonic);
+    m_autonomousCommand =  new AutoNavCommand(driveAuto, ultrasonic);
 
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      CommandScheduler.getInstance().cancelAll();
+    if (!m_autonomousCommand.isScheduled()) {
+      m_autonomousCommand.cancel();
+      m_autonomousCommand =  new AutoNavCommand(driveAuto, ultrasonic);
       m_autonomousCommand.schedule();
     }
   }
@@ -100,6 +101,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    System.out.println(m_autonomousCommand.isScheduled());
   }
 
   @Override
