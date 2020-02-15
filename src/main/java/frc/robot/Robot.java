@@ -10,8 +10,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.*;
-
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.DrivingSubsystem;
+import frc.robot.subsystems.ShootingBall;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -23,33 +24,38 @@ import frc.robot.subsystems.*;
 public class Robot extends TimedRobot {
   public static OI m_oi;
   RobotMap map = new RobotMap();
-  ShootingBall letsShoot = new ShootingBall(RobotMap.shooterFalcon, RobotMap.indexerTalon, RobotMap.intakeTalon, RobotMap.colorTalon);
+  ShootingBall letsShoot;
+  DrivingSubsystem driver;
 
-  /**
-   * This function is run when the robot is first started up and should be
+  /** This
+   * function is run when the robot is first started up and should be
    * used for any initialization code.
    */
   @Override
   public void robotInit() {
     m_oi = new OI();
+        
+    letsShoot = new ShootingBall();
+    driver = new DrivingSubsystem();
     //SmartDashboard.putData();
   }
 
-  /**
-   * This function is called every robot packet, no matter the mode. Use
-   * this for items like diagnostics that you want ran during disabled,
+  /** This fun
+   * tion is called every robot packet, no matter the mode. Us this for it
+   * ms like diagnostics that you want ran during disabled,
    * autonomous, teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before
+   *  <p>This runs after the mode specific periodic functions, but before
    * LiveWindow and SmartDashboard integrated updating.
    */
   @Override
   public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
   }
 
-  /**
-   * This function is called once each time the robot enters Disabled mode.
-   * You can use it to reset any subsystem information you want to clear when
+  /** Thi
+   *  function is called once each time the robot enters Disabled mode. You
+   * can use it to reset any subsystem information you want to clear when
    * the robot is disabled.
    */
   @Override
@@ -58,26 +64,28 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
+    letsShoot.setZero();
   }
 
   /**
-   * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes using the dashboard. The sendable
-   * chooser code works with the Java SmartDashboard. If you prefer the
-   * LabVIEW Dashboard, remove all of the chooser code and uncomment the
+   * This autonomous (along with the chooser code above) shows how to sel between
+   * different autonomous modes using the dashboard. The sendab chooser code works
+   * with the Java SmartDashboard. If you prefer the LabVIEW Dashboard, remove
+   * all of the chooser code and uncomment the
    * getString code to get the auto name from the text box below the Gyro
    *
-   * <p>You can add additional auto modes by adding additional commands to the
-   * chooser code above (like the commented example) or additional comparisons
+   * 
+   * <p>You can add additional auto modes by adding additional commands to the ch
+   * oser code above (like the commented example) or additional comparisons
    * to the switch structure below with additional strings & commands.
    */
   @Override
   public void autonomousInit() {
 
-    /*
-     * String autoSelected = SmartDashboard.getString("Auto Selector",
-     * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-     * = new MyAutoCommand(); break; case "Default Auto": default:
+    /* String auto
+     * elected = SmartDashboard.getString("Auto Selector", "Defa
+     * lt"); switch(autoSelected) { case "My Auto": autonomo = new MyAutoCommand(); 
+     * reak; case "Default Auto": default:
      * autonomousCommand = new ExampleCommand(); break; }
      */
 
@@ -104,6 +112,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    CommandScheduler.getInstance().run();
     //testSubsystem.sparkDrive.feedWatchdog();
   }
 

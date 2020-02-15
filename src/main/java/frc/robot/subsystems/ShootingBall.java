@@ -7,9 +7,11 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import frc.robot.RobotMap;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
@@ -18,73 +20,63 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class ShootingBall extends SubsystemBase {
   //creates the private three motors of their type, the shooter, indexer, and intaker
-  private TalonFX shooter;
-  private TalonSRX indexer;
-  private TalonSRX intaker;
-  private TalonSRX colorWheel;
+  private TalonFX shooter = new TalonFX(RobotMap.shooterFalcon);
+  private TalonSRX indexer = new TalonSRX(RobotMap.indexerTalon);
+  private TalonSRX intaker =  new TalonSRX(RobotMap.intakeTalon);
+  private TalonSRX colorWheel = new TalonSRX(RobotMap.colorTalon);
 
   //to conditions to check if it should shoot or intake for those are one button on off systems.
   private boolean toIndex = false;
   private boolean toIntake = false;
   private boolean toColor = false;
-  //creates the shooting ball with their can id's
-  public ShootingBall(){
-    this(7, 6, 5, 4);
-  }
 
-  public ShootingBall(int shootPort, int indexPort, int intakePort, int colorPort) {
-    shooter =  new TalonFX(shootPort);
-    indexer =  new TalonSRX(indexPort);
-    intaker =  new TalonSRX(intakePort);
-    colorWheel = new TalonSRX(colorPort);
+  private double ticksPerRev = 1;
+
+  public ShootingBall() {
     shooter.configOpenloopRamp(5);
     shooter.configClosedloopRamp(5);
+    shooter.config_kP(0,1);
+    shooter.config_kI(0,0);
+    shooter.config_kD(0,1);
+
+    shooter.configNominalOutputForward(0);
+    shooter.configNominalOutputReverse(0);
+    shooter.configPeakOutputForward(1);
+    shooter.configPeakOutputReverse(-1);
   }
 
   //every loop it will check if any of the buttons are pressed and will do the coresponding task related with it
   @Override
   public void periodic() {
-        //exact same concept with the intake as the shoot, just that it controls intaker motor instead
-    if(Robot.m_oi.getXButtonPressed()){
-      toIntake = (!toIntake);
-      if(toIntake){
-        setSRXSpeed(intaker, 1);
-        //setIntaker(1);
-      } else {
-        setSRXSpeed(intaker, 0);
-        //setIntaker(0);
-      }
+    double shooterSpeed = shooter.getSelectedSensorVelocity()*ticksPerRev;
+    SmartDashboard.putNumber("Shooter RPM", shooterSpeed);
+
+    if(Robot.m_oi.getAButtonPressed()){
+      setSRXSpeed(indexer, 1);
+    }
+    else {
+      setSRXSpeed(indexer, 0);
     }
 
-    if(Robot.m_oi.getYButtonPressed()){
-      //once clicked, it swaps the task, if it was off before, then it is on (true)
-      //if it was on, then it will become off (false)
-      toIndex = (!toIndex);
-      if(toIndex){
-        //if it just become on, then it will set max speed
-        setSRXSpeed(indexer, 1.0);//SHOULD NOT BE 1, WILL BE CHANGED TO MATCH 5200 RPM REQUIREMENT
-      } else {
-        //if it just turned off, then it will set speed to 0
-        setSRXSpeed(indexer, 0.0);
-      }
-    } 
-
-    //this is the shooter which runs at the speed of how much the trigger is pressed and it is not pressed then is off.
-    if(Robot.m_oi.getTriggerRight() != 0){
-      setFXSpeed(shooter, Robot.m_oi.getTriggerRight());
+    if(Robot.m_oi.triggerDrive() != 0){
+      setSRXSpeed(intaker, -Robot.m_oi.triggerDrive());
+    }
+    else {
+      setSRXSpeed(intaker, 0);
     }
 
-    if(Robot.m_oi.getTriggerLeft() != 0) {
-      setFXSpeed(shooter, (0-1) * Robot.m_oi.getTriggerLeft());
+    if(Robot.m_oi.gameShootingArm.getY(Hand.kLeft) != 0){
+      setFXSpeed(shooter, -Robot.m_oi.gameShootingArm.getY(Hand.kLeft));
+    }
+    else {
+      setFXSpeed(shooter, 0);
     }
 
-    if(Robot.m_oi.getAButtonPressed()) {
-      toColor = (!toColor);
-      if(toColor){
-        setSRXSpeed(colorWheel, 1);
-      } else {
-        setSRXSpeed(colorWheel, 0);
-      }
+    if(Robot.m_oi.gameShootingArm.getX(Hand.kRight) != 0){
+      setSRXSpeed(colorWheel, -Robot.m_oi.gameShootingArm.getX(Hand.kRight));
+    }
+    else {
+      setSRXSpeed(colorWheel, 0);
     }
   }
 
@@ -101,11 +93,18 @@ public class ShootingBall extends SubsystemBase {
   // }
 
   //better methods for increased versatility
-  private void setSRXSpeed(TalonSRX controller, double speed) {
+  public void setSRXSpeed(TalonSRX controller, double speed) {
     controller.set(ControlMode.PercentOutput, speed);
   }
 
-  private void setFXSpeed(TalonFX controller, double speed) {
+  public void setFXSpeed(TalonFX controller, double speed) {
     controller.set(TalonFXControlMode.PercentOutput, speed);
+  }
+
+  public void setZero() {
+    setSRXSpeed(intaker, 0);
+    setSRXSpeed(indexer, 0);
+    setSRXSpeed(colorWheel, 0);
+    setFXSpeed(shooter, 0);
   }
 }

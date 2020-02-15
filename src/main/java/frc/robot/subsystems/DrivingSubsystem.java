@@ -8,10 +8,12 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
@@ -20,48 +22,54 @@ public class DrivingSubsystem extends SubsystemBase {
   /**
    * Creates a new DrivingSubsystem.
    */
-  private CANSparkMax rightFrontTalon = new CANSparkMax(RobotMap.rightFrontTalon, MotorType.kBrushless);
-  private CANSparkMax rightRearTalon = new CANSparkMax(RobotMap.rightRearTalon, MotorType.kBrushless);
-  private CANSparkMax leftFrontTalon = new CANSparkMax(RobotMap.leftFrontTalon, MotorType.kBrushless);
-  private CANSparkMax leftRearTalon = new CANSparkMax(RobotMap.leftRearTalon, MotorType.kBrushless);
-  private SpeedControllerGroup sparkDriveLeft = new SpeedControllerGroup(leftFrontTalon,leftRearTalon);
-  private SpeedControllerGroup sparkDriveRight = new SpeedControllerGroup(rightFrontTalon,rightRearTalon);
+  private CANSparkMax frontRightSpark = new CANSparkMax(RobotMap.frontRightSpark, MotorType.kBrushless);
+  private CANSparkMax rearRightSpark = new CANSparkMax(RobotMap.rearRightSpark, MotorType.kBrushless);
+  private CANSparkMax frontLeftSpark = new CANSparkMax(RobotMap.frontLeftSpark, MotorType.kBrushless);
+  private CANSparkMax rearLeftSpark = new CANSparkMax(RobotMap.rearLeftSpark, MotorType.kBrushless);
+  private SpeedControllerGroup sparkDriveLeft = new SpeedControllerGroup(frontLeftSpark,rearLeftSpark);
+  private SpeedControllerGroup sparkDriveRight = new SpeedControllerGroup(frontRightSpark,rearRightSpark);
   private DifferentialDrive sparkDrive = new DifferentialDrive(sparkDriveLeft,sparkDriveRight);
-
+  private XboxController driveJoystick = new XboxController(0);
 
   public DrivingSubsystem() {
-rightFrontTalon.restoreFactoryDefaults();
-    leftFrontTalon.restoreFactoryDefaults();
-    rightRearTalon.restoreFactoryDefaults();
-    leftRearTalon.restoreFactoryDefaults();
+    frontRightSpark.setSmartCurrentLimit(60);
+    rearRightSpark.setSmartCurrentLimit(60);
+    frontLeftSpark.setSmartCurrentLimit(60);
+    rearLeftSpark.setSmartCurrentLimit(60);
 
-    rightFrontTalon.setSmartCurrentLimit(60);
-    rightRearTalon.setSmartCurrentLimit(60);
-    leftFrontTalon.setSmartCurrentLimit(60);
-    leftRearTalon.setSmartCurrentLimit(60);
+    frontRightSpark.setClosedLoopRampRate(1);
+    rearRightSpark.setClosedLoopRampRate(1);
+    frontLeftSpark.setClosedLoopRampRate(1);
+    rearLeftSpark.setClosedLoopRampRate(1);
+    frontRightSpark.setOpenLoopRampRate(1);
+    rearRightSpark.setOpenLoopRampRate(1);
+    frontLeftSpark.setOpenLoopRampRate(1);
+    rearLeftSpark.setOpenLoopRampRate(1);
 
-    rightFrontTalon.setClosedLoopRampRate(5);
-    rightRearTalon.setClosedLoopRampRate(5);
-    leftFrontTalon.setClosedLoopRampRate(5);
-    leftRearTalon.setClosedLoopRampRate(5);
-    leftFrontTalon.setInverted(false);
-    rightFrontTalon.setInverted(false);
-    leftRearTalon.setInverted(false);
-    rightRearTalon.setInverted(false);
+    frontLeftSpark.setInverted(false);
+    frontRightSpark.setInverted(true);
+    rearLeftSpark.setInverted(false);
+    rearRightSpark.setInverted(false);
+    frontRightSpark.setIdleMode(IdleMode.kCoast);
+    rearRightSpark.setIdleMode(IdleMode.kCoast);
+    frontLeftSpark.setIdleMode(IdleMode.kCoast);
+    rearLeftSpark.setIdleMode(IdleMode.kCoast);
 
-    rightRearTalon.follow(rightFrontTalon);
-    leftRearTalon.follow(leftFrontTalon);
+    rearRightSpark.follow(frontRightSpark);
+    rearLeftSpark.follow(frontLeftSpark);
   }
 
   @Override
   public void periodic() {
+    frontRightSpark.set(0.3);
+    rearRightSpark.set(0.3);
+    frontLeftSpark.set(0.3);
+    rearLeftSpark.set(0.3);
     // This method will be called once per scheduler run
+    // /arcadeDrive(driveJoystick.getY(Hand.kLeft), driveJoystick.getX(Hand.kRight));
   }
 
   public void arcadeDrive(double forward, double turn) {
-    forward*=0.8;
-    turn*=0.8;
-    
-    sparkDrive.arcadeDrive(forward, turn);
+    sparkDrive.arcadeDrive(forward, turn*0.5);
   }
 }

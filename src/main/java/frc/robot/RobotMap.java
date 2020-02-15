@@ -14,22 +14,15 @@ package frc.robot;
  * floating around.
  */
 public class RobotMap {
-
-  public static final int frontRightSpark = 10;
-    public static final int frontLeftSpark = 11;
-    public static final int rearRightSpark = 12;
-    public static final int rearLeftSpark = 13;   
-    
-    public static final int intakeTalon = 21;
-    public static final int indexerTalon = 23;
-    public static final int shooterFalcon = 25;
-    public static final int colorTalon = 27;
+  public static final int frontRightSpark = 11;
+  public static final int frontLeftSpark = 12;
+  public static final int rearRightSpark = 13;
+  public static final int rearLeftSpark = 10;   
   
-     public static int rightFrontTalon = 1;
-     public static int rightRearTalon = 3;
-
-     public static int leftFrontTalon = 2;
-     public static int leftRearTalon = 4;
+  public static final int intakeTalon = 21;
+  public static final int indexerTalon = 23;
+  public static final int shooterFalcon = 25;
+  public static final int colorTalon = 27;
 
 
   // For example to map the left and right motors, you could define the

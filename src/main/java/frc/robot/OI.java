@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
-  XboxController gameShootingArm = new XboxController(0);
+  public XboxController gameShootingArm = new XboxController(1);
 
   public OI (){
   // driveAButton.whenPressed(new DriveByAmount(5));
@@ -28,6 +28,9 @@ public class OI {
   }
   public double getTriggerRight() {
     return gameShootingArm.getTriggerAxis(Hand.kRight);
+  }
+  public double triggerDrive() {
+    return gameShootingArm.getTriggerAxis(Hand.kRight) - gameShootingArm.getTriggerAxis(Hand.kLeft);
   }
   public boolean getXButtonPressed() {
     return (gameShootingArm.getXButtonPressed());
