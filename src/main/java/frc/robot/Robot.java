@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.ExampleCommand;
 
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.LIDAR;
 
 
 /**
@@ -28,6 +29,7 @@ public class Robot extends TimedRobot {
 
   public static OI m_oi;
 
+  public static LIDAR lighty;
   
   public static RobotContainer m_robotContainer = new RobotContainer();
 
@@ -38,6 +40,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_oi = new OI();
+    lighty = new LIDAR();
     //m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
   }
@@ -52,6 +55,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
   }
     
   /**

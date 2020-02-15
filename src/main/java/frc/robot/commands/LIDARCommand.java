@@ -8,8 +8,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Robot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LIDARCommand extends CommandBase {
@@ -25,7 +26,7 @@ public class LIDARCommand extends CommandBase {
 
   double wavestart = 0;
 
-  public DigitalOutput DOI;
+  public DigitalInput DOI;
 
   public float Timer;
   
@@ -35,11 +36,9 @@ public class LIDARCommand extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    timer = new Timer();
-    timer.reset();
-    timer.start();
-    timer.get();
+  public void initialize(){ 
+
+    
     //Set DOI to be the one on the roborio, DONE
     /*
     set value of the LidAR to 0 (false)
@@ -47,17 +46,55 @@ public class LIDARCommand extends CommandBase {
 
     */
 
-    DOI = new DigitalOutput(0);
-    DOI.set(false);
-    Timer = 0;
+    DOI = new DigitalInput(0);
+    //DOI.set(false);
+    //Timer = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Timer += 1;
 
-    if(DOI.isPulsing()){
+
+    if(DOI.get()){
+      distanceCm += 1;
+    }
+    else{
+
+      distanceCm *= 2.85714;
+      if(distanceCm != 0){
+        SmartDashboard.putBoolean("Value", DOI.get());
+        SmartDashboard.putNumber("distanceCM", distanceCm);
+        System.out.print(distanceCm);
+      }
+      
+      distanceCm = 0;
+      
+    }
+    
+    
+    
+
+  }
+
+  
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
+
+}
+
+/*
+Timer += 1;
+
+    if(DOI.get()){
       
       if(wavestart == 0){
         wavestart = timer.get();
@@ -76,20 +113,7 @@ public class LIDARCommand extends CommandBase {
 
     }
 
-  }
-
-  
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
-
-}
-
-
+    SmartDashboard.putBoolean("Value", DOI.get());
+    SmartDashboard.putNumber("distanceCM", distanceCm);
+    SmartDashboard.putNumber("distanceIn", distanceIn);
+    */

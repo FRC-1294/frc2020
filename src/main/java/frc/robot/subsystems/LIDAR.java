@@ -15,15 +15,22 @@ public class LIDAR extends SubsystemBase {
   /**
    * Creates a new LIDAR.
    */
+
+  LIDARCommand workPlz = new LIDARCommand();
+  
   public LIDAR() {
+  } 
 
-    LIDARCommand l = new LIDARCommand();
-
-    CommandScheduler.getInstance().schedule(l);
-  }  
+  protected void initDefaultCommand() {
+  }
 
   @Override
   public void periodic() {
+    System.out.println("HERE");
+    if (!workPlz.isScheduled()) {
+      System.out.println("SCHEDULING");
+      workPlz.schedule();
+    }
     // This method will be called once per scheduler run
   }
 
