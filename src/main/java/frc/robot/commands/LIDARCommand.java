@@ -29,6 +29,7 @@ public class LIDARCommand extends CommandBase {
   public DigitalInput DOI;
 
   public float Timer;
+  public boolean previousState;
   
   public LIDARCommand() {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -56,22 +57,27 @@ public class LIDARCommand extends CommandBase {
   public void execute() {
 
 
-    if(DOI.get()){
-      distanceCm += 1;
-    }
-    else{
+    // if(DOI.get()){
+    //   distanceCm += 1;
+    // }
+    // else{
 
-      distanceCm *= 2.85714;
-      if(distanceCm != 0){
-        SmartDashboard.putBoolean("Value", DOI.get());
-        SmartDashboard.putNumber("distanceCM", distanceCm);
-        System.out.print(distanceCm);
-      }
+    //   distanceCm *= 2.85714;
+    //   if(distanceCm != 0){
+    //     SmartDashboard.putBoolean("Value", DOI.get());
+    //     SmartDashboard.putNumber("distanceCM", distanceCm);
+    //     System.out.print(distanceCm);
+    //   }
       
-      distanceCm = 0;
+    //   distanceCm = 0;
       
+    // }
+    if(DOI.get()&&!previousState){
+      timer.start();
+    }else if(!DOI.get()&&previousState){
+      SmartDashboard.putNumber("Time", timer.get());
+      timer.reset();
     }
-    
     
     
 
