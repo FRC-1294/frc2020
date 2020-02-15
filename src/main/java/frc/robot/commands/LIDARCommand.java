@@ -57,7 +57,7 @@ public class LIDARCommand extends CommandBase {
   public void execute() {
 
 
-    // if(DOI.get()){
+    // if(DOI.get()){ blake's code
     //   distanceCm += 1;
     // }
     // else{
