@@ -41,13 +41,12 @@ public class AutoNavCommand extends CommandBase {
     addRequirements(m_driveAuto);
     addRequirements(m_ultra);
 
+    //go past the init line
     left1 = false;
     left2 = true;
-    xTarget = 3*12;
-    yTarget = 0;//15*12;
-    targetAngle = 180;
-
-    //go past the init line
+    xTarget = 3*12; //SHOULD BE 10 FT
+    yTarget = 0;
+    targetAngle = 90;
     autoPath = new AutoPath(xTarget, yTarget, left1, left2, m_driveAuto);
     ultraFuse = new UltraFuseCommand(m_driveAuto, m_ultra);
     moveUntilWall = new StalkerRoomba(5*12, m_driveAuto, m_ultra);
@@ -63,18 +62,16 @@ public class AutoNavCommand extends CommandBase {
     double xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0));
     double yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1));
 
-    if ((!autoPath.isScheduled() && !moveUntilWall.isScheduled()) && ultraFuse.isScheduled()) {
+    //if current leg of path finished, schedule next in sequence
+    if (!autoPath.isScheduled() && !moveUntilWall.isScheduled() && ultraFuse.isScheduled()) {
       if (Math.abs(xRem) <= delta && Math.abs(yRem) <= delta) {
         step++;
 
         //goto the far wall
         if (step == 1) {
           yTarget = 0;
-          left1 = false;
-          left2 = true;
-          targetAngle = 90;
+          targetAngle = 180;
           yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1));
-          moveUntilWall = new StalkerRoomba(5*12, m_driveAuto, m_ultra);
           CommandScheduler.getInstance().schedule(moveUntilWall);
         }
         //align with hoop and shoot
@@ -90,11 +87,8 @@ public class AutoNavCommand extends CommandBase {
         //return to startPoint
         else if (step == 3) {
           yTarget = 0;
-          left1 = false;
-          left2 = true;
           targetAngle = 0;
           yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1));
-          moveUntilWall = new StalkerRoomba(4*12, m_driveAuto, m_ultra);
           CommandScheduler.getInstance().schedule(moveUntilWall);
         }
         //end command
@@ -104,33 +98,39 @@ public class AutoNavCommand extends CommandBase {
       } 
     }
     
-    //if obstacle detected
-    if (!ultraFuse.isScheduled() && !m_driveAuto.getTurning() && !moveUntilWall.isScheduled()) {
-      autoPath.cancel();
 
-      if (m_ultra.getSensour() <= m_ultra.MIN_DIS) {
-        //follllow
-      }
-      else {
-        if (targetAngle - m_driveAuto.getCurrentAngle() == 0) {
-          left1 = false;
-          left2 = false;
-        } 
-        else if (targetAngle - m_driveAuto.getCurrentAngle() == 90) {
-          left1 = false;
-          left2 = true;
-        } 
-        else if (targetAngle - m_driveAuto.getCurrentAngle() == 180) {
-          left1 = true;
-          left2 = true;
-        }
+    //if obstacle detected during PID
+    if (!ultraFuse.isScheduled()) {
+      //if stopping necessary
+      if ((!m_driveAuto.getTurning() && !moveUntilWall.isScheduled())) {
+        autoPath.cancel();
 
-        if (xRem >= delta || yRem >= delta) {
-          autoPath = new AutoPath(xRem, yRem, left1, left2, m_driveAuto);
-          CommandScheduler.getInstance().schedule(autoPath);
+        if (m_ultra.getSensour() <= m_ultra.MIN_DIS) {
+          //avoid?
         }
-        CommandScheduler.getInstance().schedule(ultraFuse);
+        else {
+          if (targetAngle - m_driveAuto.getCurrentAngle() == 0) {
+            left1 = false;
+            left2 = false;
+          } 
+          else if (targetAngle - m_driveAuto.getCurrentAngle() == 90) {
+            left1 = false;
+            left2 = true;
+          } 
+          else if (targetAngle - m_driveAuto.getCurrentAngle() == 180) {
+            left1 = true;
+            left2 = true;
+          }
+
+          //resechedule path if obstacle avoided
+          if (xRem >= delta || yRem >= delta) {
+            autoPath = new AutoPath(xRem, yRem, left1, left2, m_driveAuto);
+            CommandScheduler.getInstance().schedule(autoPath);
+          }
+        }
       }
+      //keep ultraFuse running to check if obstacle moves
+      CommandScheduler.getInstance().schedule(ultraFuse);
     }
   }
 

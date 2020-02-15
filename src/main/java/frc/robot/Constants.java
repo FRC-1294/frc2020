@@ -20,7 +20,6 @@ public final class Constants {
     public static final int frontRightSpark = 13;
     public static final int rearLeftSpark = 10;
     public static final int rearRightSpark = 11;
-    public static final int intakeTalon = 5;
 
     public static final int driveJoystick = 0;
 }

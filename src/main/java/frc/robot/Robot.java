@@ -8,16 +8,10 @@
 package frc.robot;
 
 import frc.robot.commands.AutoNavCommand;
-import frc.robot.commands.StalkerRoomba;
-import frc.robot.commands.TurnByCommand;
-import frc.robot.commands.WallChecker;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
 
-import java.sql.Driver;
-
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -90,7 +84,6 @@ public class Robot extends TimedRobot {
 
     // schedule the autonomous command (example)
     if (!m_autonomousCommand.isScheduled()) {
-      m_autonomousCommand.cancel();
       m_autonomousCommand =  new AutoNavCommand(driveAuto, ultrasonic);
       m_autonomousCommand.schedule();
     }
@@ -101,7 +94,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    System.out.println(m_autonomousCommand.isScheduled());
+    // if (!m_autonomousCommand.isFinished() && !m_autonomousCommand.isScheduled()) {
+    //   m_autonomousCommand =  new AutoNavCommand(driveAuto, ultrasonic);
+    //   m_autonomousCommand.schedule();
+    // }
   }
 
   @Override
