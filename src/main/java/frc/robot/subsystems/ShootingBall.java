@@ -24,7 +24,7 @@ public class ShootingBall extends SubsystemBase {
   private TalonSRX colorWheel;
 
   //to conditions to check if it should shoot or intake for those are one button on off systems.
-  private boolean toShoot = false;
+  private boolean toIndex = false;
   private boolean toIntake = false;
   private boolean toColor = false;
   //creates the shooting ball with their can id's
@@ -44,20 +44,7 @@ public class ShootingBall extends SubsystemBase {
   //every loop it will check if any of the buttons are pressed and will do the coresponding task related with it
   @Override
   public void periodic() {
-    if(Robot.m_oi.getYButtonPressed()){
-      //once clicked, it swaps the task, if it was off before, then it is on (true)
-      //if it was on, then it will become off (false)
-      toShoot = (!toShoot);
-      if(toShoot){
-        //if it just become on, then it will set max speed
-        setFXSpeed(shooter, 1);//SHOULD NOT BE 1, WILL BE CHANGED TO MATCH 5200 RPM REQUIREMENT
-      } else {
-        //if it just turned off, then it will set speed to 0
-        setFXSpeed(shooter, 0);
-      }
-    } 
-
-    //exact same concept with the intake as the shoot, just that it controls intaker motor instead
+        //exact same concept with the intake as the shoot, just that it controls intaker motor instead
     if(Robot.m_oi.getXButtonPressed()){
       toIntake = (!toIntake);
       if(toIntake){
@@ -69,9 +56,26 @@ public class ShootingBall extends SubsystemBase {
       }
     }
 
-    //this is the indexer which runs at the speed of how much the trigger is pressed and it is not pressed then is off.
+    if(Robot.m_oi.getYButtonPressed()){
+      //once clicked, it swaps the task, if it was off before, then it is on (true)
+      //if it was on, then it will become off (false)
+      toIndex = (!toIndex);
+      if(toIndex){
+        //if it just become on, then it will set max speed
+        setSRXSpeed(indexer, 1.0);//SHOULD NOT BE 1, WILL BE CHANGED TO MATCH 5200 RPM REQUIREMENT
+      } else {
+        //if it just turned off, then it will set speed to 0
+        setSRXSpeed(indexer, 0.0);
+      }
+    } 
+
+    //this is the shooter which runs at the speed of how much the trigger is pressed and it is not pressed then is off.
     if(Robot.m_oi.getTriggerRight() != 0){
-      setSRXSpeed(indexer, Robot.m_oi.getTriggerRight());
+      setFXSpeed(shooter, Robot.m_oi.getTriggerRight());
+    }
+
+    if(Robot.m_oi.getTriggerLeft() != 0) {
+      setFXSpeed(shooter, (0-1) * Robot.m_oi.getTriggerLeft());
     }
 
     if(Robot.m_oi.getAButtonPressed()) {
