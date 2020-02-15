@@ -29,7 +29,7 @@ public class LIDARCommand extends CommandBase {
   public DigitalInput DOI;
 
   public float Timer;
-  public boolean previousState;
+  public boolean previousState=false;
   
   public LIDARCommand() {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -38,7 +38,7 @@ public class LIDARCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize(){ 
-
+    timer=new Timer();
     
     //Set DOI to be the one on the roborio, DONE
     /*
@@ -74,9 +74,13 @@ public class LIDARCommand extends CommandBase {
     // }
     if(DOI.get()&&!previousState){
       timer.start();
+      previousState=DOI.get(); 
     }else if(!DOI.get()&&previousState){
+      distanceCm = timer.get()*100000;
       SmartDashboard.putNumber("Time", timer.get());
+      SmartDashboard.putNumber("distanceCM", distanceCm);
       timer.reset();
+      previousState=DOI.get();
     }
     
     

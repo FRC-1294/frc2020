@@ -26,9 +26,7 @@ public class LIDAR extends SubsystemBase {
 
   @Override
   public void periodic() {
-    System.out.println("HERE");
     if (!workPlz.isScheduled()) {
-      System.out.println("SCHEDULING");
       workPlz.schedule();
     }
     // This method will be called once per scheduler run
