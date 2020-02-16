@@ -1,13 +1,7 @@
 package frc.robot.subsystems;
 
-import frc.robot.commands.WallChecker;
-import frc.robot.commands.MoveByCommand;
-import frc.robot.commands.TurnByCommand;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANSparkMax; //Shacuando was here
 import com.revrobotics.ControlType;
@@ -17,13 +11,9 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Constants;
 import frc.robot.Gains;
-import frc.robot.Robot;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class DriveAutoSubsystem extends SubsystemBase {
   private CANSparkMax frontLeftSpark = new CANSparkMax(Constants.frontLeftSpark, MotorType.kBrushless);
@@ -38,7 +28,6 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private SpeedControllerGroup sparkDriveLeft = new SpeedControllerGroup(frontLeftSpark, rearLeftSpark);
   private SpeedControllerGroup sparkDriveRight = new SpeedControllerGroup(frontRightSpark, rearRightSpark);
   private DifferentialDrive sparkDrive = new DifferentialDrive(sparkDriveLeft,sparkDriveRight);
-  //private final WPI_TalonSRX intakeTalon = new WPI_TalonSRX(Constants.intakeTalon);
 
   public final XboxController driveJoystick = new XboxController(Constants.driveJoystick);
   public final XboxController gameJoystick = new XboxController(1);
@@ -52,16 +41,15 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private boolean isTurning = false; 
 
   public DriveAutoSubsystem() {
-    //UsbCamera usbCam = CameraServer.getInstance().startAutomaticCapture(0);
-    // frontLeftSpark.restoreFactoryDefaults(true);
-    // frontRightSpark.restoreFactoryDefaults(true);
-    // rearLeftSpark.restoreFactoryDefaults(true);
-    // rearRightSpark.restoreFactoryDefaults(true);
- 
     frontLeftSpark.setMotorType(MotorType.kBrushless);
     frontRightSpark.setMotorType(MotorType.kBrushless);
     rearLeftSpark.setMotorType(MotorType.kBrushless);
     rearRightSpark.setMotorType(MotorType.kBrushless);
+
+    frontLeftSpark.setSmartCurrentLimit(60);
+    frontRightSpark.setSmartCurrentLimit(60);
+    rearLeftSpark.setSmartCurrentLimit(60);
+    rearRightSpark.setSmartCurrentLimit(60);
 
     frontLeftSpark.setOpenLoopRampRate(1);
     frontRightSpark.setOpenLoopRampRate(1);
@@ -92,29 +80,6 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putString("AmountTraveled", amountTraveled[0] + " , " + amountTraveled[1]);
-    SmartDashboard.putNumber("currentAngle", currentAngle);
-
-    double axis = gameJoystick.getTriggerAxis(Hand.kRight);
-    if (axis <= 1) {
-      gameJoystick.setRumble(RumbleType.kRightRumble, axis * 20);
-      gameJoystick.setRumble(RumbleType.kLeftRumble, axis * 20);
-    }
-
-    if (driveJoystick.getStartButtonPressed()) {
-      CommandScheduler.getInstance().cancelAll();
-    }
-
-    if (driveJoystick.getBumper(Hand.kRight)) {
-      setMode("brake");
-    }
-    else {
-      setMode("coast");
-    }
-
- //   if (!Robot.m_autonomousCommand.isScheduled()) {
-      arcadeDrive(driveJoystick.getY(Hand.kLeft), driveJoystick.getX(Hand.kRight));
- //   }
   }
 
   public void arcadeDrive(double forward, double turn) {

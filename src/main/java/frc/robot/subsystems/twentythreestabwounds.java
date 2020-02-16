@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveAutoSubsystem;
 
 
-public class twentythreestabwounds extends SubsystemBase {
+public class TwentyThreeStabWounds extends SubsystemBase {
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   NetworkTableEntry tx = table.getEntry("tx");
   NetworkTableEntry tv = table.getEntry("tv");
@@ -27,7 +27,7 @@ public class twentythreestabwounds extends SubsystemBase {
 
   public double distanceFromTarget;
 
-  public twentythreestabwounds() {    
+  public TwentyThreeStabWounds() {    
     
   }
 

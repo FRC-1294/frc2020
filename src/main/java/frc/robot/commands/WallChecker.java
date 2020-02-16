@@ -9,7 +9,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
 
@@ -39,7 +38,7 @@ public class WallChecker extends CommandBase {
     isFinished = false;
     threeMusketeers[HAL9000] = dracula.getSensour();
     tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
-    CommandScheduler.getInstance().schedule(tokyoDrift);
+    tokyoDrift.schedule();
     HAL9000 = 1;
   }
 
@@ -51,13 +50,13 @@ public class WallChecker extends CommandBase {
         System.out.println();
         threeMusketeers[HAL9000] = dracula.getSensour();
         tokyoDrift = new TurnByCommand(-amount * 2, whee, PIDSlot);
-        CommandScheduler.getInstance().schedule(tokyoDrift);
+        tokyoDrift.schedule();
         HAL9000 = 2;
       }
       else if(HAL9000 == 2) {
         threeMusketeers[HAL9000] = dracula.getSensour();
         tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
-        CommandScheduler.getInstance().schedule(tokyoDrift);
+        tokyoDrift.schedule();
         HAL9000 = 3;
       }
       else {

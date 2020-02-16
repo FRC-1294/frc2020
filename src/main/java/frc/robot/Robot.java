@@ -2,15 +2,10 @@ package frc.robot;
 
 import frc.robot.commands.AutoNavCommand;
 import frc.robot.commands.DictatorLocator;
-import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
-import frc.robot.subsystems.twentythreestabwounds;
+import frc.robot.subsystems.TwentyThreeStabWounds;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DrivingSubsystem;
 import frc.robot.subsystems.ShootingBall;
@@ -23,15 +18,10 @@ import frc.robot.subsystems.ShootingBall;
  */
 public class Robot extends TimedRobot {
   public static Command m_autonomousCommand;
-  public static DriveAutoSubsystem driveAuto;
   public static UltrasonicSubsystem ultrasonic;
-  public static twentythreestabwounds cassius;
-  private RobotContainer m_robotContainer;
-  
-  public static OI m_oi;
-  RobotMap map = new RobotMap();
-  ShootingBall letsShoot;
-  DrivingSubsystem driver;
+  public static TwentyThreeStabWounds cassius;
+  public static ShootingBall letsShoot;
+  public static DrivingSubsystem driver;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -39,21 +29,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_oi = new OI();
     letsShoot = new ShootingBall();
     driver = new DrivingSubsystem();
     ultrasonic = new UltrasonicSubsystem();
-    driveAuto = new DriveAutoSubsystem();
-    cassius = new twentythreestabwounds();
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
-    System.out.println("start");
+    cassius = new TwentyThreeStabWounds();
   }
   
   @Override
   public void robotPeriodic() {
-    CommandScheduler.getInstance().run();
+    //CommandScheduler.getInstance().run();
   }
   
   @Override
@@ -62,10 +46,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    driveAuto.setFrontLeftSpeed(0);
-    driveAuto.setFrontRightSpeed(0);
-    driveAuto.setRearLeftSpeed(0);
-    driveAuto.setRearRightSpeed(0);
+    driver.m_driveAuto.setFrontLeftSpeed(0);
+    driver.m_driveAuto.setFrontRightSpeed(0);
+    driver.m_driveAuto.setRearLeftSpeed(0);
+    driver.m_driveAuto.setRearRightSpeed(0);
     letsShoot.setZero();
   }
 
@@ -74,15 +58,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    driveAuto.resetEncoders();
+    driver.m_driveAuto.resetEncoders();
 
-    // m_autonomousCommand = new WallChecker(40, driveAuto, ultrasonic,  new StalkerRoomba(40, driveAuto, ultrasonic));////new AutoNavCommand(driveAuto, ultrasonic);
-    m_autonomousCommand = new AutoNavCommand(driveAuto, ultrasonic, cassius);
-    //new DictatorLocator(cassius, driveAuto);
+    m_autonomousCommand = new AutoNavCommand(driver.m_driveAuto, ultrasonic, letsShoot, cassius);//new DictatorLocator(cassius, driveAuto);
 
     // schedule the autonomous command (example)
     if (!m_autonomousCommand.isScheduled()) {
-      m_autonomousCommand = new DictatorLocator(cassius, driveAuto);
+      m_autonomousCommand = new DictatorLocator(cassius, driver.m_driveAuto);
       m_autonomousCommand.schedule();
     }
   }

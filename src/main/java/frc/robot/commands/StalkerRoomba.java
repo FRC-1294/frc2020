@@ -9,7 +9,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
 
@@ -63,7 +62,7 @@ public class StalkerRoomba extends CommandBase {
         // m_robotDrive.setFrontLeftSpeed(0);
         // m_robotDrive.setFrontRightSpeed(0);
         hasChecked = true;
-        CommandScheduler.getInstance().schedule(wallChecker);
+        wallChecker.schedule();
       }
       else if (!isWall)  {//if should continue moving
         if(currentDistance < targetDis + offSet){ //if outside range
@@ -94,7 +93,7 @@ public class StalkerRoomba extends CommandBase {
           //first time, rotate left
           if (!hasTurned) {
             System.out.println("Turner Scheduled");
-            CommandScheduler.getInstance().schedule(turner);
+            turner.schedule();
             hasTurned = true;
           }
 
