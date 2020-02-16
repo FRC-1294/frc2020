@@ -7,7 +7,7 @@ import frc.robot.subsystems.TwentyThreeStabWounds;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.DrivingSubsystem;
+import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.ShootingBall;
 
 /**
@@ -21,7 +21,8 @@ public class Robot extends TimedRobot {
   public static UltrasonicSubsystem ultrasonic;
   public static TwentyThreeStabWounds cassius;
   public static ShootingBall letsShoot;
-  public static DrivingSubsystem driver;
+  //public static DrivingSubsystem driver;
+  public static DriveAutoSubsystem m_driveAuto;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -30,14 +31,15 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     letsShoot = new ShootingBall();
-    driver = new DrivingSubsystem();
+    m_driveAuto = new DriveAutoSubsystem();
+    //driver = new DrivingSubsystem(m_driveAuto);
     ultrasonic = new UltrasonicSubsystem();
     cassius = new TwentyThreeStabWounds();
   }
   
   @Override
   public void robotPeriodic() {
-    //CommandScheduler.getInstance().run();
+    CommandScheduler.getInstance().run();
   }
   
   @Override
@@ -46,10 +48,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    driver.m_driveAuto.setFrontLeftSpeed(0);
-    driver.m_driveAuto.setFrontRightSpeed(0);
-    driver.m_driveAuto.setRearLeftSpeed(0);
-    driver.m_driveAuto.setRearRightSpeed(0);
+    m_driveAuto.setFrontLeftSpeed(0);
+    m_driveAuto.setFrontRightSpeed(0);
+    m_driveAuto.setRearLeftSpeed(0);
+    m_driveAuto.setRearRightSpeed(0);
     letsShoot.setZero();
   }
 
@@ -58,13 +60,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    driver.m_driveAuto.resetEncoders();
+    m_driveAuto.resetEncoders();
 
-    m_autonomousCommand = new AutoNavCommand(driver.m_driveAuto, ultrasonic, letsShoot, cassius);//new DictatorLocator(cassius, driveAuto);
+    m_autonomousCommand = new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);//new DictatorLocator(cassius, driveAuto);
 
     // schedule the autonomous command (example)
     if (!m_autonomousCommand.isScheduled()) {
-      m_autonomousCommand = new DictatorLocator(cassius, driver.m_driveAuto);
+      m_autonomousCommand = new DictatorLocator(cassius, m_driveAuto);
       m_autonomousCommand.schedule();
     }
   }

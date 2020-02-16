@@ -21,10 +21,10 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class ShootingBall extends SubsystemBase {
-  private TalonFX shooter = new TalonFX(Constants.shooterFalcon);
-  private TalonSRX indexer = new TalonSRX(Constants.indexerTalon);
+  //private TalonFX shooter = new TalonFX(Constants.shooterFalcon);
+ // private TalonSRX indexer = new TalonSRX(Constants.indexerTalon);
   private TalonSRX intaker =  new TalonSRX(Constants.intakeTalon);
-  private TalonSRX colorWheel = new TalonSRX(Constants.colorTalon);
+  //private TalonSRX colorWheel = new TalonSRX(Constants.colorTalon);
   private boolean toIndex = false;
   private boolean toIntake = false;
   private boolean toColor = false;
@@ -32,36 +32,36 @@ public class ShootingBall extends SubsystemBase {
   private XboxController gameJoystick = new XboxController(Constants.gameJoystick);
   
   public ShootingBall() {
-    shooter.configOpenloopRamp(5);
-    shooter.configClosedloopRamp(5);
-    shooter.config_kP(0, 1);//TO BE TWEAKED
-    shooter.config_kI(0, 0);
-    shooter.config_kD(0, 1);//TO BE TWEAKED
+    // shooter.configOpenloopRamp(5);
+    // shooter.configClosedloopRamp(5);
+    // shooter.config_kP(0, 1);//TO BE TWEAKED
+    // shooter.config_kI(0, 0);
+    // shooter.config_kD(0, 1);//TO BE TWEAKED
 
-    shooter.setNeutralMode(NeutralMode.Coast);
-    shooter.configNominalOutputForward(0);
-    shooter.configNominalOutputReverse(0);
-    shooter.configPeakOutputForward(1);
-    shooter.configPeakOutputReverse(-1);
+    // shooter.setNeutralMode(NeutralMode.Coast);
+    // shooter.configNominalOutputForward(0);
+    // shooter.configNominalOutputReverse(0);
+    // shooter.configPeakOutputForward(1);
+    // shooter.configPeakOutputReverse(-1);
   }
 
   //every loop it will check if any of the buttons are pressed and will do the coresponding task related with it
   @Override
   public void periodic() {
-    double shooterSpeed = shooter.getSelectedSensorVelocity()/ticksPerRev;
-    SmartDashboard.putNumber("Shooter RPM", shooterSpeed);
+   // double shooterSpeed = shooter.getSelectedSensorVelocity()/ticksPerRev;
+   // SmartDashboard.putNumber("Shooter RPM", shooterSpeed);
 
     //indexer
-    if(gameJoystick.getAButtonPressed()){
-      toIndex = !toIndex;
+    // if(gameJoystick.getAButtonPressed()){
+    //   toIndex = !toIndex;
 
-      if (toIndex) {
-        setIndexer(1);
-      }
-      else {
-        setIndexer(0);
-      }
-    }
+    //   if (toIndex) {
+    //     setIndexer(1);
+    //   }
+    //   else {
+    //     setIndexer(0);
+    //   }
+    // }
 
     //intaker
     if(triggerDrive() != 0){
@@ -71,21 +71,21 @@ public class ShootingBall extends SubsystemBase {
       setSRXSpeed(intaker, 0);
     }
 
-    //shooter
-    if(gameJoystick.getY(Hand.kLeft) != 0){
-      setFXSpeed(shooter, -gameJoystick.getY(Hand.kLeft));
-    }
-    else {
-      setFXSpeed(shooter, 0);
-    }
+    // //shooter
+    // if(gameJoystick.getY(Hand.kLeft) != 0){
+    //   setFXSpeed(shooter, -gameJoystick.getY(Hand.kLeft));
+    // }
+    // else {
+    //   setFXSpeed(shooter, 0);
+    // }
 
-    //colorer
-    if(gameJoystick.getX(Hand.kRight) != 0){
-      setSRXSpeed(colorWheel, -gameJoystick.getX(Hand.kRight));
-    }
-    else {
-      setSRXSpeed(colorWheel, 0);
-    }
+    // //colorer
+    // if(gameJoystick.getX(Hand.kRight) != 0){
+    //   setSRXSpeed(colorWheel, -gameJoystick.getX(Hand.kRight));
+    // }
+    // else {
+    //   setSRXSpeed(colorWheel, 0);
+    // }
   }
 
   public double triggerDrive() {
@@ -101,26 +101,26 @@ public class ShootingBall extends SubsystemBase {
     controller.set(TalonFXControlMode.PercentOutput, speed);
   }
 
-  public void setIndexer(double speed) {
-    indexer.set(ControlMode.PercentOutput, speed);
-  }
+  // public void setIndexer(double speed) {
+  //   indexer.set(ControlMode.PercentOutput, speed);
+  // }
 
-  public void setShooterPID(double velocity) {
-    shooter.set(TalonFXControlMode.Velocity, velocity);
-  }
+  // public void setShooterPID(double velocity) {
+  //   shooter.set(TalonFXControlMode.Velocity, velocity);
+  // }
 
-  public void setShooter(double speed) {
-    shooter.set(TalonFXControlMode.PercentOutput, speed);
-  }
+  // public void setShooter(double speed) {
+  //   shooter.set(TalonFXControlMode.PercentOutput, speed);
+  // }
 
-  public int getShooterVelocity() {
-    return shooter.getSelectedSensorVelocity();
-  }
+  // public int getShooterVelocity() {
+  //   return shooter.getSelectedSensorVelocity();
+  // }
 
   public void setZero() {
-    setSRXSpeed(intaker, 0);
-    setSRXSpeed(indexer, 0);
-    setSRXSpeed(colorWheel, 0);
-    setFXSpeed(shooter, 0);
+  //  setSRXSpeed(intaker, 0);
+   // setSRXSpeed(indexer, 0);
+    // setSRXSpeed(colorWheel, 0);
+    // setFXSpeed(shooter, 0);
   }
 }

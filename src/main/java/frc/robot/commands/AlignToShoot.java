@@ -160,38 +160,38 @@ public class AlignToShoot extends CommandBase {
     return isFinished;
   }
 
-  public void checkShooter() {
-    if (shooter) {
-      shooterSpeed = m_shooter.getShooterVelocity();
-      m_shooter.setShooterPID(shootRPM);
+  // public void checkShooter() {
+  //   if (shooter) {
+  //     shooterSpeed = m_shooter.getShooterVelocity();
+  //     m_shooter.setShooterPID(shootRPM);
 
-      boolean atSpeed = false;
-      boolean timeHold = false;
+  //     boolean atSpeed = false;
+  //     boolean timeHold = false;
 
-      if (Math.abs(shooterSpeed) <= shootRPM+shootMargin && Math.abs(shooterSpeed) >= shootRPM+shootMargin) {
-        atSpeed = true;
-      }
+  //     if (Math.abs(shooterSpeed) <= shootRPM+shootMargin && Math.abs(shooterSpeed) >= shootRPM+shootMargin) {
+  //       atSpeed = true;
+  //     }
 
-      if (atSpeed) {
-        if(timer.get() >= 1){
-          timeHold = true;
-        }
-      }
-      else {
-        timer.reset();
-      }
+  //     if (atSpeed) {
+  //       if(timer.get() >= 1){
+  //         timeHold = true;
+  //       }
+  //     }
+  //     else {
+  //       timer.reset();
+  //     }
 
-      if(atSpeed && timeHold) {
-        shooterReady = true;
-      }
-      else {
-        shooterReady = false;
-      }
-    }
-    else {
-      m_shooter.setShooter(0);
-    }
-  }
+  //     if(atSpeed && timeHold) {
+  //       shooterReady = true;
+  //     }
+  //     else {
+  //       shooterReady = false;
+  //     }
+  //   }
+  //   else {
+  //     m_shooter.setShooter(0);
+  //   }
+  // }
 
   public void resetVars() {
     isFinished = false;

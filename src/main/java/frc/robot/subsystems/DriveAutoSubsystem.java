@@ -9,11 +9,16 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Gains;
+import frc.robot.Robot;
+import frc.robot.commands.DictatorLocator;
 
 public class DriveAutoSubsystem extends SubsystemBase {
   private CANSparkMax frontLeftSpark = new CANSparkMax(Constants.frontLeftSpark, MotorType.kBrushless);
@@ -30,7 +35,6 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private DifferentialDrive sparkDrive = new DifferentialDrive(sparkDriveLeft,sparkDriveRight);
 
   public final XboxController driveJoystick = new XboxController(Constants.driveJoystick);
-  public final XboxController gameJoystick = new XboxController(1);
 
   private final double targetPositionRotations = 0.54;
   private static int currentAngle;
@@ -38,7 +42,9 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private final Gains defaultPID = new Gains(0.2, 0.00001, 0.6, 0.0, 0.0, -0.5, 0.5, 0);
   private final Gains lowDisPID = new Gains(0.2, 0.00001, 0.4, 0.0, 0.0, -0.7, 0.7, 1);
   private Timer timer = new Timer();
-  private boolean isTurning = false; 
+  private boolean isTurning = false;
+
+  private DictatorLocator visionMove = new DictatorLocator(Robot.cassius, this);
 
   public DriveAutoSubsystem() {
     frontLeftSpark.setMotorType(MotorType.kBrushless);
@@ -46,10 +52,10 @@ public class DriveAutoSubsystem extends SubsystemBase {
     rearLeftSpark.setMotorType(MotorType.kBrushless);
     rearRightSpark.setMotorType(MotorType.kBrushless);
 
-    frontLeftSpark.getEncoder();
-    frontRightSpark.getEncoder();
-    rearLeftSpark.getEncoder();
-    rearRightSpark.getEncoder();
+    // frontLeftSpark.getEncoder();
+    // frontRightSpark.getEncoder();
+    // rearLeftSpark.getEncoder();
+    // rearRightSpark.getEncoder();
 
     frontLeftSpark.setSmartCurrentLimit(60);
     frontRightSpark.setSmartCurrentLimit(60);
@@ -64,8 +70,6 @@ public class DriveAutoSubsystem extends SubsystemBase {
     rearRightSpark.setClosedLoopRampRate(1);
     rearLeftSpark.setClosedLoopRampRate(1);
     rearRightSpark.setClosedLoopRampRate(1);
-    rearRightSpark.follow(frontRightSpark);
-    rearLeftSpark.follow(frontLeftSpark);
     setPidControllers(frontLeftPID, defaultPID, defaultPID.kSlot);
     setPidControllers(frontRightPID, defaultPID, defaultPID.kSlot);
     setPidControllers(rearLeftPID, defaultPID, defaultPID.kSlot);
@@ -80,11 +84,33 @@ public class DriveAutoSubsystem extends SubsystemBase {
     frontRightSpark.setInverted(true);
     rearLeftSpark.setInverted(false);
     rearRightSpark.setInverted(false);
+
+    rearRightSpark.follow(frontRightSpark);
+    rearLeftSpark.follow(frontLeftSpark);
     timer.start();
   }
 
   @Override
   public void periodic() {
+    SmartDashboard.putString("AmountTraveled", getAmountTraveled(0) + " , " + getAmountTraveled(1));
+    SmartDashboard.putNumber("currentAngle", getCurrentAngle());
+
+    if (driveJoystick.getStartButtonPressed()) {
+      CommandScheduler.getInstance().cancelAll();
+    }
+
+    if (driveJoystick.getBumper(Hand.kRight)) {
+      setMode("brake");
+    }
+    else {
+      setMode("coast");
+    }
+
+    if (driveJoystick.getAButtonPressed() && !visionMove.isScheduled()) {
+      visionMove.schedule();
+    }
+
+    arcadeDrive(driveJoystick.getY(Hand.kLeft), driveJoystick.getX(Hand.kRight));
   }
 
   public void arcadeDrive(double forward, double turn) {

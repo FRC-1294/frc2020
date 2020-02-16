@@ -17,14 +17,13 @@ package frc.robot;
  */
 public final class Constants {
     public static final int frontRightSpark = 11;
-    public static final int frontLeftSpark = 12;
+    public static final int rearLeftSpark = 12;
     public static final int rearRightSpark = 13;
-    public static final int rearLeftSpark = 10;
+    public static final int frontLeftSpark = 10;
     
     public static final int intakeTalon = 21;
-    public static final int indexerTalon = 23;
-    public static final int shooterFalcon = 25;
-    public static final int colorTalon = 27;
+   // public static final int indexerTalon = 23;   // public static final int shooterFalcon = 25;
+   // public static final int colorTalon = 27;
 
     public static final int driveJoystick = 0;
     public static final int gameJoystick = 1;
