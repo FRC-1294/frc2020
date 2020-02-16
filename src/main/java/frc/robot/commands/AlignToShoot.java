@@ -14,14 +14,13 @@ import frc.robot.subsystems.ShootingBall;
 import frc.robot.subsystems.UltrasonicSubsystem;
 import frc.robot.subsystems.TwentyThreeStabWounds;
 
-public class AutoNavCommand extends CommandBase {
+public class AlignToShoot extends CommandBase {
   DriveAutoSubsystem m_driveAuto;
   UltrasonicSubsystem m_ultra;
   ShootingBall m_shooter;
   TwentyThreeStabWounds m_vision;
 
   AutoPath autoPath;
-  StalkerRoomba moveUntilWall;
   DictatorLocator alignToTarget;
   ShooterCommand shooterCommand;
   UltraFuseCommand ultraFuse;
@@ -34,25 +33,29 @@ public class AutoNavCommand extends CommandBase {
   boolean shooter;
   boolean shooterReady;
   boolean loopComplete;
+  int iterations;
   int targetAngle;
   int xTarget;
   int yTarget;
   int shooterSpeed;
+  int shootDis;
+  double[] startAmount;
 
   final int autoPathMargin = 2;
   final int robotFollowDis = 5*12;
-  final int shootDis = 11*12;
   final int shootRPM = 4200;
   final int shootMargin = 50;
   final double shootTime = 5.0;
 
   int step = 0;
 
-  public AutoNavCommand(DriveAutoSubsystem driveAuto, UltrasonicSubsystem ultra, ShootingBall shooter, TwentyThreeStabWounds vision) {
+  public AlignToShoot(DriveAutoSubsystem driveAuto, UltrasonicSubsystem ultra, ShootingBall shooter, TwentyThreeStabWounds vision, int targetDis) {
     m_driveAuto = driveAuto;
     m_ultra = ultra;
     m_shooter = shooter;
     m_vision = vision;
+
+    shootDis = targetDis;
   }
 
   // Called when the command is initially scheduled.
@@ -63,11 +66,13 @@ public class AutoNavCommand extends CommandBase {
 
     timer.start();
     timer.reset();
-
     resetVars();
 
+    startAmount = new double[] {m_driveAuto.getAmountTraveled(0), m_driveAuto.getAmountTraveled(1)};
+    left1 = false;
+    left2 = false;
+    autoPath = new AutoPath(xTarget, yTarget, left1, left2, m_driveAuto);
     ultraFuse = new UltraFuseCommand(m_driveAuto, m_ultra);
-    moveUntilWall = new StalkerRoomba(robotFollowDis, m_driveAuto, m_ultra);
     shooterCommand = new ShooterCommand(m_shooter, shootTime);
     alignToTarget = new DictatorLocator(m_vision, m_driveAuto);
 
@@ -78,40 +83,22 @@ public class AutoNavCommand extends CommandBase {
   @Override
   public void execute() {
     //distance left to travel
-    double xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0));
-    double yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1));
+    double xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0) + startAmount[0]);
+    double yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1) + startAmount[1]);
 
-    checkShooter();
+    //checkShooter();
 
     //if current leg of path finished, schedule next in sequence
-    if (!autoPath.isScheduled() && !moveUntilWall.isScheduled() && !alignToTarget.isScheduled() && !shooterCommand.isScheduled() && ultraFuse.isScheduled()) {
+    if (!autoPath.isScheduled() && !alignToTarget.isScheduled() && !shooterCommand.isScheduled() && ultraFuse.isScheduled()) {
       if (Math.abs(xRem) <= autoPathMargin && Math.abs(yRem) <= autoPathMargin) {
-        //go past the init line
-        if (step == 0) {
-          xTarget = 3*12; //SHOULD BE 10 FT
-          left1 = false;
-          left2 = true;
-          targetAngle = 90;
-          xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0));
-          autoPath = new AutoPath(xRem, 0, left1, left2, m_driveAuto);
-          autoPath.schedule();
-          step++;
-        }
-
-        //goto the far wall
-        if (step == 1) {
-          moveUntilWall = new StalkerRoomba(robotFollowDis, m_driveAuto, m_ultra);
-          moveUntilWall.schedule();
-          step++;
-        }
         //align with hoop and shoot && get shooter ready
-        else if (step == 2) {
+        if (step == 0) {
           alignToTarget.schedule();
           shooter = true;
           step++;
         }
         //move until shooting distance
-        else if (step == 3) {
+        else if (step == 1) {
           xTarget = shootDis;
           left1 = false;
           left2 = false;
@@ -122,7 +109,7 @@ public class AutoNavCommand extends CommandBase {
           step++;
         }
         //SHOOT
-        else if (step == 4) {
+        else if (step == 2) {
           if (shooterReady) {
             shooterCommand = new ShooterCommand(m_shooter, shootTime);
             shooterCommand.schedule();
@@ -130,14 +117,8 @@ public class AutoNavCommand extends CommandBase {
             step++;
           }
         }
-        //return to startPoint
-        else if (step == 5) {
-          moveUntilWall = new StalkerRoomba(robotFollowDis, m_driveAuto, m_ultra);
-          moveUntilWall.schedule();
-          step++;
-        }
         //end command
-        else if (step == 6) {
+        else if (step == 3) {
           isFinished = true;
         }
       } 
@@ -147,26 +128,13 @@ public class AutoNavCommand extends CommandBase {
     //if obstacle detected during PID
     if (!ultraFuse.isScheduled()) {
       //if stopping necessary
-      if ((!m_driveAuto.getTurning() && !moveUntilWall.isScheduled() && !alignToTarget.isScheduled())) {
+      if ((!m_driveAuto.getTurning() && !alignToTarget.isScheduled())) {
         autoPath.cancel();
 
         if (m_ultra.getSensour() <= m_ultra.MIN_DIS) {
           //avoid?
         }
         else {
-          if (targetAngle - m_driveAuto.getCurrentAngle() == 0) {
-            left1 = false;
-            left2 = false;
-          } 
-          else if (targetAngle - m_driveAuto.getCurrentAngle() == 90) {
-            left1 = false;
-            left2 = true;
-          } 
-          else if (targetAngle - m_driveAuto.getCurrentAngle() == 180) {
-            left1 = true;
-            left2 = true;
-          }
-
           //resechedule path if obstacle avoided
           if (xRem >= autoPathMargin || yRem >= autoPathMargin) {
             autoPath = new AutoPath(xRem, yRem, left1, left2, m_driveAuto);
@@ -232,10 +200,5 @@ public class AutoNavCommand extends CommandBase {
     shooter = false;
     shooterReady = false;
     loopComplete = false;
-
-    targetAngle = 0;
-    xTarget = 0;
-    yTarget = 0;
-    shooterSpeed = 0;
   }
 }
