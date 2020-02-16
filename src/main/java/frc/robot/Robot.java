@@ -1,12 +1,13 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot;
 
+import frc.robot.commands.AutoNavCommand;
+import frc.robot.commands.DictatorLocator;
+import frc.robot.subsystems.DriveAutoSubsystem;
+import frc.robot.subsystems.UltrasonicSubsystem;
+import frc.robot.subsystems.twentythreestabwounds;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,96 +16,93 @@ import frc.robot.subsystems.DrivingSubsystem;
 import frc.robot.subsystems.ShootingBall;
 
 /**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the TimedRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the name of this class or
+ * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
 public class Robot extends TimedRobot {
+  public static Command m_autonomousCommand;
+  public static DriveAutoSubsystem driveAuto;
+  public static UltrasonicSubsystem ultrasonic;
+  public static twentythreestabwounds cassius;
+  private RobotContainer m_robotContainer;
+  
   public static OI m_oi;
   RobotMap map = new RobotMap();
   ShootingBall letsShoot;
   DrivingSubsystem driver;
 
-  /** This
-   * function is run when the robot is first started up and should be
-   * used for any initialization code.
+  /**
+   * This function is run when the robot is first started up and should be used for any
+   * initialization code.
    */
   @Override
   public void robotInit() {
     m_oi = new OI();
-        
     letsShoot = new ShootingBall();
     driver = new DrivingSubsystem();
-    //SmartDashboard.putData();
+    ultrasonic = new UltrasonicSubsystem();
+    driveAuto = new DriveAutoSubsystem();
+    cassius = new twentythreestabwounds();
+    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    // autonomous chooser on the dashboard.
+    m_robotContainer = new RobotContainer();
+    System.out.println("start");
   }
-
-  /** This fun
-   * tion is called every robot packet, no matter the mode. Us this for it
-   * ms like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
-   *
-   *  <p>This runs after the mode specific periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
-   */
+  
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
   }
-
-  /** Thi
-   *  function is called once each time the robot enters Disabled mode. You
-   * can use it to reset any subsystem information you want to clear when
-   * the robot is disabled.
-   */
+  
   @Override
   public void disabledInit() {
   }
 
   @Override
   public void disabledPeriodic() {
+    driveAuto.setFrontLeftSpeed(0);
+    driveAuto.setFrontRightSpeed(0);
+    driveAuto.setRearLeftSpeed(0);
+    driveAuto.setRearRightSpeed(0);
     letsShoot.setZero();
   }
 
   /**
-   * This autonomous (along with the chooser code above) shows how to sel between
-   * different autonomous modes using the dashboard. The sendab chooser code works
-   * with the Java SmartDashboard. If you prefer the LabVIEW Dashboard, remove
-   * all of the chooser code and uncomment the
-   * getString code to get the auto name from the text box below the Gyro
-   *
-   * 
-   * <p>You can add additional auto modes by adding additional commands to the ch
-   * oser code above (like the commented example) or additional comparisons
-   * to the switch structure below with additional strings & commands.
+   * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
    */
   @Override
   public void autonomousInit() {
+    driveAuto.resetEncoders();
 
-    /* String auto
-     * elected = SmartDashboard.getString("Auto Selector", "Defa
-     * lt"); switch(autoSelected) { case "My Auto": autonomo = new MyAutoCommand(); 
-     * reak; case "Default Auto": default:
-     * autonomousCommand = new ExampleCommand(); break; }
-     */
+    // m_autonomousCommand = new WallChecker(40, driveAuto, ultrasonic,  new StalkerRoomba(40, driveAuto, ultrasonic));////new AutoNavCommand(driveAuto, ultrasonic);
+    m_autonomousCommand = new AutoNavCommand(driveAuto, ultrasonic, cassius);
+    //new DictatorLocator(cassius, driveAuto);
 
     // schedule the autonomous command (example)
+    if (!m_autonomousCommand.isScheduled()) {
+      m_autonomousCommand = new DictatorLocator(cassius, driveAuto);
+      m_autonomousCommand.schedule();
+    }
   }
 
   /**
-   * This function is called periodically during autonomous.
+   * This function is called periodically during autonomo us.
    */
   @Override
   public void autonomousPeriodic() {
+    // if (!m_autonomousCommand.isFinished() && !m_autonomousCommand.isScheduled()) {
+    //   m_autonomousCommand =  new AutoNavCommand(driveAuto, ultrasonic);
+    //   m_autonomousCommand.schedule();
+    // }
   }
 
   @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
+    }
   }
 
   /**
@@ -113,7 +111,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     CommandScheduler.getInstance().run();
-    //testSubsystem.sparkDrive.feedWatchdog();
+  }
+
+  @Override
+  public void testInit() {
+    // Cancels all running commands at the start of test mode.
+    CommandScheduler.getInstance().cancelAll();
   }
 
   /**

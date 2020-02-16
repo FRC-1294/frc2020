@@ -1,0 +1,20 @@
+[
+  {
+    "name": "frc2020 (in project frc2020)",
+    "file": "C:\\Users\\topgu\\Documents\\GitHub\\frc2020\\build\\libs\\frc2020.jar",
+    "extensions": [
+      "C:\\Users\\topgu\\Documents\\GitHub\\frc2020\\build\\tmp\\expandedArchives\\halsim_gui-2020.1.2-windowsx86-64.zip_0ded91afab576f356c80ba4c4e7b8310\\windows\\x86-64\\shared\\halsim_gui.dll"
+    ],
+    "librarydir": "C:\\Users\\topgu\\Documents\\GitHub\\frc2020\\build\\tmp\\jniExtractDir",
+    "mainclass": "frc.robot.Main"
+  },
+  {
+    "name": "PIDTest (in project PIDTest)",
+    "file": "C:\\Users\\topgu\\Desktop\\1294 Code\\PIDTest\\build\\libs\\PIDTest.jar",
+    "extensions": [
+      "C:\\Users\\topgu\\Desktop\\1294 Code\\PIDTest\\build\\tmp\\expandedArchives\\halsim_gui-2020.1.2-windowsx86-64.zip_0ded91afab576f356c80ba4c4e7b8310\\windows\\x86-64\\shared\\halsim_gui.dll"
+    ],
+    "librarydir": "C:\\Users\\topgu\\Desktop\\1294 Code\\PIDTest\\build\\tmp\\jniExtractDir",
+    "mainclass": "frc.robot.Main"
+  }
+]
