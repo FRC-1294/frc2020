@@ -1,3 +1,13 @@
+/*
+Through some testing, I have determined that using Digital I/O
+for this LIDAR is hopeless. The I/O speed on the RoboRIO is
+too slow for the LIDAR's output. May we have better luck with
+using I2C.
+
+  -Kevin
+
+*/
+
 /*----------------------------------------------------------------------------*/
 /* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
@@ -19,6 +29,10 @@ public class LIDARCommand extends CommandBase {
    */
     
   public Timer timer;
+  private Timer timer2 = new Timer();
+  private double timee = 0;
+  private int[] output = new int[100];
+  int index=0;
   public double signal;
 
   public double distanceIn;
@@ -30,6 +44,8 @@ public class LIDARCommand extends CommandBase {
 
   public float Timer;
   public boolean previousState=false;
+  private boolean risingEdgeDetect=false;
+  private boolean fallingEdgeDetect=false;
   
   public LIDARCommand() {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -72,18 +88,56 @@ public class LIDARCommand extends CommandBase {
     //   distanceCm = 0;
       
     // }
-    if(DOI.get()&&!previousState){
+
+    // if(DOI.get()&&!previousState){ //Kevin's attempt (failed)
+    //   timer.start();
+    //   previousState=DOI.get(); 
+    // }else if(!DOI.get()&&previousState){
+    //   distanceCm = timer.get()*100000;
+    //   SmartDashboard.putNumber("Time", timer.get());
+    //   SmartDashboard.putNumber("distanceCM", distanceCm);
+    //   timer.reset();
+    //   previousState=DOI.get();
+    // }
+    
+
+    /*
+    if(!DOI.get()&&!fallingEdgeDetect){
+      risingEdgeDetect=true;
+      output[index]=1;
+    }
+    if(DOI.get()&&risingEdgeDetect){
       timer.start();
-      previousState=DOI.get(); 
-    }else if(!DOI.get()&&previousState){
-      distanceCm = timer.get()*100000;
+      fallingEdgeDetect=true;
+      risingEdgeDetect=false;
+      // System.out.println(2);
+    }
+    if(DOI.get()&&fallingEdgeDetect){
+      output[index]=2;
+    }
+    if(!DOI.get()&&fallingEdgeDetect){
       SmartDashboard.putNumber("Time", timer.get());
+      distanceCm = timer.get()*100000;
       SmartDashboard.putNumber("distanceCM", distanceCm);
       timer.reset();
-      previousState=DOI.get();
+      fallingEdgeDetect=false;
+      risingEdgeDetect=true;
+      output[index]=3;
     }
-    
-    
+    index++;
+    if(index==100){
+      for(int i=0;i<100;i++){
+        try{
+          System.out.println(output[index]+" ");
+        }catch(IndexOutOfBoundsException e){
+
+        }
+      }
+      System.out.println("");
+      index=0;
+    }
+    */
+    System.out.println(DOI.get());
 
   }
 
