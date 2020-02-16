@@ -46,6 +46,11 @@ public class DriveAutoSubsystem extends SubsystemBase {
     rearLeftSpark.setMotorType(MotorType.kBrushless);
     rearRightSpark.setMotorType(MotorType.kBrushless);
 
+    frontLeftSpark.getEncoder();
+    frontRightSpark.getEncoder();
+    rearLeftSpark.getEncoder();
+    rearRightSpark.getEncoder();
+
     frontLeftSpark.setSmartCurrentLimit(60);
     frontRightSpark.setSmartCurrentLimit(60);
     rearLeftSpark.setSmartCurrentLimit(60);
