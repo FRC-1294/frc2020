@@ -43,9 +43,9 @@ public class UltraFuseCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double currentDistance = ultrasonic.getSensour();
+    double[] currentDistance = new double[] {ultrasonic.getSensourLeft(), ultrasonic.getSensourRight()};
    
-    if (currentDistance <= ultrasonic.MIN_DIS) {
+    if (currentDistance[0] <= ultrasonic.MIN_DIS || currentDistance[1] <= ultrasonic.MIN_DIS) {
       if (timer.get() > 0.1)
         isFinished = true;
     }

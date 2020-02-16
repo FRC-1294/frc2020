@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -28,7 +30,7 @@ public class ShootingBall extends SubsystemBase {
   private boolean toColor = false;
   private double ticksPerRev = -2.59;
   private XboxController gameJoystick = new XboxController(Constants.gameJoystick);
-
+  
   public ShootingBall() {
     shooter.configOpenloopRamp(5);
     shooter.configClosedloopRamp(5);
@@ -36,6 +38,7 @@ public class ShootingBall extends SubsystemBase {
     shooter.config_kI(0, 0);
     shooter.config_kD(0, 1);//TO BE TWEAKED
 
+    shooter.setNeutralMode(NeutralMode.Coast);
     shooter.configNominalOutputForward(0);
     shooter.configNominalOutputReverse(0);
     shooter.configPeakOutputForward(1);

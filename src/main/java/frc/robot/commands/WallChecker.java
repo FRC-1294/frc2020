@@ -19,7 +19,7 @@ public class WallChecker extends CommandBase {
   UltrasonicSubsystem dracula;
   DriveAutoSubsystem whee;
   StalkerRoomba myStalker;
-  double[] threeMusketeers = new double[3];
+  double[] threeMusketeers = new double[4];
   double margin = 6;
   TurnByCommand tokyoDrift;
   boolean isFinished;
@@ -34,42 +34,51 @@ public class WallChecker extends CommandBase {
 
   @Override
   public void initialize() {
-    HAL9000 = 0;
+    HAL9000 = 2;
     isFinished = false;
-    threeMusketeers[HAL9000] = dracula.getSensour();
+    threeMusketeers[0] = dracula.getSensourLeft();
+    threeMusketeers[1] = dracula.getSensourRight();
     tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
     tokyoDrift.schedule();
-    HAL9000 = 1;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     if(!tokyoDrift.isScheduled()){
-      if(HAL9000 == 1) {
+      if(HAL9000 == 2) {
         System.out.println();
-        threeMusketeers[HAL9000] = dracula.getSensour();
+        threeMusketeers[HAL9000] = dracula.getSensourRight();
         tokyoDrift = new TurnByCommand(-amount * 2, whee, PIDSlot);
-        tokyoDrift.schedule();
-        HAL9000 = 2;
-      }
-      else if(HAL9000 == 2) {
-        threeMusketeers[HAL9000] = dracula.getSensour();
-        tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
         tokyoDrift.schedule();
         HAL9000 = 3;
       }
+      else if(HAL9000 == 3) {
+        threeMusketeers[HAL9000] = dracula.getSensourLeft();
+        tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
+        tokyoDrift.schedule();
+        HAL9000 = 4;
+      }
       else {
-        double baseVal = threeMusketeers[0];
+        double baseValLeft = threeMusketeers[0];
+        double baseValRight = threeMusketeers[1];
+        double baseVal = 0.0;
 
-        if (threeMusketeers[1] * Math.abs(Math.cos(amount)) > baseVal + margin) {
-          myStalker.isWall = false;
-        }
-        else if (threeMusketeers[2] * Math.abs(Math.cos(amount)) > baseVal + margin) {
-          myStalker.isWall = false;
+        if (baseValLeft <= baseValRight + margin && baseValLeft >= baseValRight-margin) {
+          baseVal = (baseValLeft+baseValRight)/2;
+
+          if (threeMusketeers[1] * Math.abs(Math.cos(amount)) > baseVal + margin) {
+            myStalker.isWall = false;
+          }
+          else if (threeMusketeers[2] * Math.abs(Math.cos(amount)) > baseVal + margin) {
+            myStalker.isWall = false;
+          }
+          else {
+            myStalker.isWall = true;
+          }
         }
         else {
-          myStalker.isWall = true;
+          myStalker.isWall = false;
         }
 
         isFinished = true;

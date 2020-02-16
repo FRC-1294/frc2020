@@ -20,7 +20,7 @@ public class StalkerRoomba extends CommandBase {
   double speed;
   boolean shouldCheckWall, hasChecked, hasTurned, isFinished;
   Timer timer;
-  double currentDistance = 0.0;
+  double[] currentDistance = new double[2];
   double targetDis;
   final double ultraMargin = 0.2;
   final double offSet = 24;
@@ -52,7 +52,8 @@ public class StalkerRoomba extends CommandBase {
   @Override
   public void execute() {
     //boolean isStopped = m_robotDrive.getFrontLeftSpeed() == 0 && m_robotDrive.getFrontRightSpeed() == 0;
-    currentDistance = m_ultra.getSensour();
+    currentDistance[0] = m_ultra.getSensourLeft();
+    currentDistance[1] = m_ultra.getSensourRight();
 
     //if not checking if a wall
     if (!wallChecker.isScheduled()) {
@@ -65,7 +66,8 @@ public class StalkerRoomba extends CommandBase {
         wallChecker.schedule();
       }
       else if (!isWall)  {//if should continue moving
-        if(currentDistance < targetDis + offSet){ //if outside range
+        if(currentDistance[0] < targetDis + offSet ||
+          currentDistance[1] < targetDis + offSet){ //if outside range
           System.out.println("IN RANGE");
 
           if (timer.get() >= 1) {
@@ -127,7 +129,8 @@ public class StalkerRoomba extends CommandBase {
     hasTurned = false;
     isFinished = false;
     timer.reset();
-    currentDistance = 0.0;
+    currentDistance[0] = 0.0;
+    currentDistance[1] = 0.0;
 
     isWall = false;
   }

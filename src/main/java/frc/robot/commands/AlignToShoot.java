@@ -131,7 +131,7 @@ public class AlignToShoot extends CommandBase {
       if ((!m_driveAuto.getTurning() && !alignToTarget.isScheduled())) {
         autoPath.cancel();
 
-        if (m_ultra.getSensour() <= m_ultra.MIN_DIS) {
+        if (m_ultra.getSensourLeft() <= m_ultra.MIN_DIS || m_ultra.getSensourRight() <= m_ultra.MIN_DIS) {
           //avoid?
         }
         else {
