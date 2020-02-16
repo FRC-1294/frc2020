@@ -2,6 +2,8 @@ package frc.robot;
 
 import frc.robot.commands.AutoNavCommand;
 import frc.robot.commands.DictatorLocator;
+import frc.robot.commands.StalkerRoomba;
+import frc.robot.commands.TurnByCommand;
 import frc.robot.subsystems.UltrasonicSubsystem;
 import frc.robot.subsystems.TwentyThreeStabWounds;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -21,18 +23,17 @@ public class Robot extends TimedRobot {
   public static UltrasonicSubsystem ultrasonic;
   public static TwentyThreeStabWounds cassius;
   public static ShootingBall letsShoot;
-  //public static DrivingSubsystem driver;
   public static DriveAutoSubsystem m_driveAuto;
-
+ 
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
+
   @Override
   public void robotInit() {
     letsShoot = new ShootingBall();
     m_driveAuto = new DriveAutoSubsystem();
-    //driver = new DrivingSubsystem(m_driveAuto);
     ultrasonic = new UltrasonicSubsystem();
     cassius = new TwentyThreeStabWounds();
   }
@@ -60,13 +61,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_driveAuto.resetEncoders();
-
-    m_autonomousCommand = new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);//new DictatorLocator(cassius, driveAuto);
+    m_autonomousCommand = new StalkerRoomba(5*12, m_driveAuto, ultrasonic);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);//new DictatorLocator(cassius, driveAuto);
 
     // schedule the autonomous command (example)
     if (!m_autonomousCommand.isScheduled()) {
-      m_autonomousCommand = new DictatorLocator(cassius, m_driveAuto);
+      //m_autonomousCommand = new DictatorLocator(cassius, m_driveAuto);
       m_autonomousCommand.schedule();
     }
   }

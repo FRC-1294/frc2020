@@ -39,6 +39,8 @@ public class StalkerRoomba extends CommandBase {
   public void initialize() {
     m_robotDrive.setFrontLeftSpeed(0);
     m_robotDrive.setFrontRightSpeed(0);
+    m_robotDrive.setRearLeftSpeed(0);
+    m_robotDrive.setRearRightSpeed(0);
 
     resetVars();
 
@@ -60,8 +62,6 @@ public class StalkerRoomba extends CommandBase {
       //if needs to check if at wall
       if (shouldCheckWall && !hasChecked) {
         System.out.println("Wall Checker Scheduled");
-        // m_robotDrive.setFrontLeftSpeed(0);
-        // m_robotDrive.setFrontRightSpeed(0);
         hasChecked = true;
         wallChecker.schedule();
       }
@@ -74,9 +74,11 @@ public class StalkerRoomba extends CommandBase {
             shouldCheckWall = true;
           }
 
-           //setting speed
-           m_robotDrive.setFrontLeftSpeed(0);
-           m_robotDrive.setFrontRightSpeed(0);
+          //setting speed
+          m_robotDrive.setFrontLeftSpeed(0);
+          m_robotDrive.setFrontRightSpeed(0);
+          m_robotDrive.setRearLeftSpeed(0);
+          m_robotDrive.setRearRightSpeed(0);
         }
         else {
           System.out.println("OUT OF RANGE");
@@ -87,6 +89,8 @@ public class StalkerRoomba extends CommandBase {
           //setting speed
           m_robotDrive.setFrontLeftSpeed(0.3);
           m_robotDrive.setFrontRightSpeed(0.3);
+          m_robotDrive.setRearLeftSpeed(0.3);
+          m_robotDrive.setRearRightSpeed(0.3);
         }
       }
       //if at a wall
@@ -114,6 +118,8 @@ public class StalkerRoomba extends CommandBase {
   public void end(final boolean interrupted) {
     m_robotDrive.setFrontLeftSpeed(0);
     m_robotDrive.setFrontRightSpeed(0);
+    m_robotDrive.setRearLeftSpeed(0);
+    m_robotDrive.setRearRightSpeed(0);
   }
 
   // Returns true when the command should end.

@@ -66,6 +66,7 @@ public class AutoNavCommand extends CommandBase {
 
     resetVars();
 
+    autoPath = new AutoPath(0, 0, left1, left2, m_driveAuto);
     ultraFuse = new UltraFuseCommand(m_driveAuto, m_ultra);
     moveUntilWall = new StalkerRoomba(robotFollowDis, m_driveAuto, m_ultra);
     shooterCommand = new ShooterCommand(m_shooter, shootTime);
@@ -184,6 +185,8 @@ public class AutoNavCommand extends CommandBase {
   public void end(boolean interrupted) {
     m_driveAuto.setFrontLeftSpeed(0);
     m_driveAuto.setFrontRightSpeed(0);
+    m_driveAuto.setRearLeftSpeed(0);
+    m_driveAuto.setRearRightSpeed(0);
   }
 
   // Returns true when the command should end.

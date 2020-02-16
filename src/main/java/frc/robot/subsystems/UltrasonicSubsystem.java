@@ -24,6 +24,6 @@ public class UltrasonicSubsystem extends SubsystemBase {
   }
 
   public void periodic() {
-    //System.out.println(getSensour());
+    //System.out.println(getSensourLeft() + " , " + getSensourRight());
   }
 }

@@ -152,6 +152,8 @@ public class AlignToShoot extends CommandBase {
   public void end(boolean interrupted) {
     m_driveAuto.setFrontLeftSpeed(0);
     m_driveAuto.setFrontRightSpeed(0);
+    m_driveAuto.setRearLeftSpeed(0);
+    m_driveAuto.setRearRightSpeed(0);
   }
 
   // Returns true when the command should end.

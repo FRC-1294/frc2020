@@ -62,15 +62,13 @@ public class WallChecker extends CommandBase {
       else {
         double baseValLeft = threeMusketeers[0];
         double baseValRight = threeMusketeers[1];
-        double baseVal = 0.0;
+        double baseVal = (baseValLeft+baseValRight)/2;
 
         if (baseValLeft <= baseValRight + margin && baseValLeft >= baseValRight-margin) {
-          baseVal = (baseValLeft+baseValRight)/2;
-
-          if (threeMusketeers[1] * Math.abs(Math.cos(amount)) > baseVal + margin) {
+          if (threeMusketeers[2] * Math.abs(Math.cos(amount)) > baseVal + margin) {
             myStalker.isWall = false;
           }
-          else if (threeMusketeers[2] * Math.abs(Math.cos(amount)) > baseVal + margin) {
+          else if (threeMusketeers[3] * Math.abs(Math.cos(amount)) > baseVal + margin) {
             myStalker.isWall = false;
           }
           else {
@@ -91,6 +89,8 @@ public class WallChecker extends CommandBase {
   public void end(boolean interrupted) {
     whee.setFrontRightSpeed(0);
     whee.setFrontLeftSpeed(0);
+    whee.setRearRightSpeed(0);
+    whee.setRearLeftSpeed(0);
 
     System.out.println("\n\n\\n\n");
     System.out.println(threeMusketeers[0]);

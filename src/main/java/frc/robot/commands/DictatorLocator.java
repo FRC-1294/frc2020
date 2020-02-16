@@ -27,7 +27,7 @@ public class DictatorLocator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    MarkAntony = new TurnByCommand((int) Brutus.getHorizontalOffSet(), GermanicCalvalry, 1);
+    MarkAntony = new TurnByCommand((int)Brutus.getHorizontalOffSet(), GermanicCalvalry, 1);
   }
 
   @Override

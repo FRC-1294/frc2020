@@ -47,15 +47,20 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private DictatorLocator visionMove = new DictatorLocator(Robot.cassius, this);
 
   public DriveAutoSubsystem() {
+    frontLeftSpark.restoreFactoryDefaults(true);
+    frontRightSpark.restoreFactoryDefaults(true);
+    rearLeftSpark.restoreFactoryDefaults(true);
+    rearRightSpark.restoreFactoryDefaults(true);
+
     frontLeftSpark.setMotorType(MotorType.kBrushless);
     frontRightSpark.setMotorType(MotorType.kBrushless);
     rearLeftSpark.setMotorType(MotorType.kBrushless);
     rearRightSpark.setMotorType(MotorType.kBrushless);
 
-    // frontLeftSpark.getEncoder();
-    // frontRightSpark.getEncoder();
-    // rearLeftSpark.getEncoder();
-    // rearRightSpark.getEncoder();
+    frontLeftSpark.getEncoder();
+    frontRightSpark.getEncoder();
+    rearLeftSpark.getEncoder();
+    rearRightSpark.getEncoder();
 
     frontLeftSpark.setSmartCurrentLimit(60);
     frontRightSpark.setSmartCurrentLimit(60);
@@ -85,15 +90,21 @@ public class DriveAutoSubsystem extends SubsystemBase {
     rearLeftSpark.setInverted(false);
     rearRightSpark.setInverted(false);
 
-    rearRightSpark.follow(frontRightSpark);
     rearLeftSpark.follow(frontLeftSpark);
+    rearRightSpark.follow(frontRightSpark);
+    
     timer.start();
   }
 
   @Override
   public void periodic() {
+    sparkDrive.feed();
+    sparkDrive.feedWatchdog();
+    
     SmartDashboard.putString("AmountTraveled", getAmountTraveled(0) + " , " + getAmountTraveled(1));
     SmartDashboard.putNumber("currentAngle", getCurrentAngle());
+    SmartDashboard.putNumber("LeftUltra", Robot.ultrasonic.getSensourLeft());
+    SmartDashboard.putNumber("RightUltra", Robot.ultrasonic.getSensourRight());
 
     if (driveJoystick.getStartButtonPressed()) {
       CommandScheduler.getInstance().cancelAll();
@@ -110,6 +121,10 @@ public class DriveAutoSubsystem extends SubsystemBase {
       visionMove.schedule();
     }
 
+    //frontLeftSpark.set(0.1);
+    //frontRightSpark.set(0.1);
+    //rearLeftSpark.set(0.1);
+    //rearRightSpark.set(0.1);
     arcadeDrive(driveJoystick.getY(Hand.kLeft), driveJoystick.getX(Hand.kRight));
   }
 

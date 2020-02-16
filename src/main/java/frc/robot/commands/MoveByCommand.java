@@ -56,6 +56,8 @@ public class MoveByCommand extends CommandBase {
   public void end(boolean interrupted) {
     m_driveAuto.setFrontLeftSpeed(0);
     m_driveAuto.setFrontRightSpeed(0);
+    m_driveAuto.setRearLeftSpeed(0);
+    m_driveAuto.setRearRightSpeed(0);
     m_driveAuto.setRamp(1);
 
     double changePos = (m_driveAuto.getFrontLeftPosition() - startingEncoderPos) / targetPositionRotations;
