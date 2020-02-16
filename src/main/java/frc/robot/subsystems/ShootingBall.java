@@ -26,7 +26,7 @@ public class ShootingBall extends SubsystemBase {
   private boolean toIndex = false;
   private boolean toIntake = false;
   private boolean toColor = false;
-  private double ticksPerRev = -1;
+  private double ticksPerRev = -2.59;
   private XboxController gameJoystick = new XboxController(Constants.gameJoystick);
 
   public ShootingBall() {
