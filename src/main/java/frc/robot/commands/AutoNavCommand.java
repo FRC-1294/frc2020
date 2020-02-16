@@ -11,28 +11,37 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
+import frc.robot.subsystems.twentythreestabwounds;
 
 public class AutoNavCommand extends CommandBase {
-  int iterations = 0;
-  boolean isFinished = false;
   DriveAutoSubsystem m_driveAuto;
   UltrasonicSubsystem m_ultra;
-  StalkerRoomba moveUntilWall;
+  twentythreestabwounds m_vision;
+
   AutoPath autoPath;
+  StalkerRoomba moveUntilWall;
+  DictatorLocator alignToTarget;
   UltraFuseCommand ultraFuse;
+
+  int iterations = 0;
+  boolean isFinished = false;
   boolean left1 = true;
   boolean left2 = true;
   int targetAngle;
   boolean loopComplete = false;
   int xTarget;
   int yTarget;
-  final int delta = 2;
+
+  final int autoPathMargin = 2;
+  final int robotFollowDis = 5*12;
+  final int shootDis = 11*12;
 
   int step = 0;
 
-  public AutoNavCommand(DriveAutoSubsystem driveAuto, UltrasonicSubsystem ultra) {
+  public AutoNavCommand(DriveAutoSubsystem driveAuto, UltrasonicSubsystem ultra, twentythreestabwounds vision) {
     m_driveAuto = driveAuto;
     m_ultra = ultra;
+    m_vision = vision;
   }
 
   // Called when the command is initially scheduled.
@@ -49,50 +58,56 @@ public class AutoNavCommand extends CommandBase {
     targetAngle = 90;
     autoPath = new AutoPath(xTarget, yTarget, left1, left2, m_driveAuto);
     ultraFuse = new UltraFuseCommand(m_driveAuto, m_ultra);
-    moveUntilWall = new StalkerRoomba(5*12, m_driveAuto, m_ultra);
+    moveUntilWall = new StalkerRoomba(robotFollowDis, m_driveAuto, m_ultra);
+    alignToTarget = new DictatorLocator(m_vision, m_driveAuto);
 
-    CommandScheduler.getInstance().schedule(autoPath);
-    CommandScheduler.getInstance().schedule(ultraFuse);
+    autoPath.schedule();
+    ultraFuse.schedule();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //distance left to travel
+    // //distance left to travel
     double xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0));
     double yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1));
 
     //if current leg of path finished, schedule next in sequence
-    if (!autoPath.isScheduled() && !moveUntilWall.isScheduled() && ultraFuse.isScheduled()) {
-      if (Math.abs(xRem) <= delta && Math.abs(yRem) <= delta) {
+    if (!autoPath.isScheduled() && !moveUntilWall.isScheduled() && !alignToTarget.isScheduled() && ultraFuse.isScheduled()) {
+      if (Math.abs(xRem) <= autoPathMargin && Math.abs(yRem) <= autoPathMargin) {
         step++;
 
         //goto the far wall
         if (step == 1) {
-          yTarget = 0;
-          targetAngle = 180;
-          yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1));
-          CommandScheduler.getInstance().schedule(moveUntilWall);
+          moveUntilWall = new StalkerRoomba(robotFollowDis, m_driveAuto, m_ultra);
+          moveUntilWall.schedule();
         }
         //align with hoop and shoot
         else if (step == 2) {
-          xTarget = 0;
-          left1 = false;
-          left2 = true;
-          targetAngle = 270;
-          xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0));
-          autoPath = new AutoPath(xRem, 0, left1, left2, m_driveAuto);
-          CommandScheduler.getInstance().schedule(autoPath);
+          alignToTarget.schedule();
+        }
+        //move until shooting distance
+        else if (step == 3) {
+          // xTarget = 0;
+          // left1 = false;
+          // left2 = true;
+          // targetAngle = 270;
+          // xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0));
+          // autoPath = new AutoPath(xRem, 0, left1, left2, m_driveAuto);
+          // autoPath.schedule();
+          moveUntilWall = new StalkerRoomba(shootDis, m_driveAuto, m_ultra);
+          moveUntilWall.schedule();
+        }
+        else if (step == 4) {
+          
         }
         //return to startPoint
-        else if (step == 3) {
-          yTarget = 0;
-          targetAngle = 0;
-          yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1));
-          CommandScheduler.getInstance().schedule(moveUntilWall);
+        else if (step == 5) {
+          moveUntilWall = new StalkerRoomba(robotFollowDis, m_driveAuto, m_ultra);
+          moveUntilWall.schedule();
         }
         //end command
-        else if (step == 4) {
+        else if (step == 6) {
           isFinished = true;
         }
       } 
@@ -102,7 +117,7 @@ public class AutoNavCommand extends CommandBase {
     //if obstacle detected during PID
     if (!ultraFuse.isScheduled()) {
       //if stopping necessary
-      if ((!m_driveAuto.getTurning() && !moveUntilWall.isScheduled())) {
+      if ((!m_driveAuto.getTurning() && !moveUntilWall.isScheduled() && !!alignToTarget.isScheduled())) {
         autoPath.cancel();
 
         if (m_ultra.getSensour() <= m_ultra.MIN_DIS) {
@@ -123,14 +138,14 @@ public class AutoNavCommand extends CommandBase {
           }
 
           //resechedule path if obstacle avoided
-          if (xRem >= delta || yRem >= delta) {
+          if (xRem >= autoPathMargin || yRem >= autoPathMargin) {
             autoPath = new AutoPath(xRem, yRem, left1, left2, m_driveAuto);
-            CommandScheduler.getInstance().schedule(autoPath);
+            autoPath.schedule();
           }
         }
       }
       //keep ultraFuse running to check if obstacle moves
-      CommandScheduler.getInstance().schedule(ultraFuse);
+      ultraFuse.schedule();
     }
   }
 

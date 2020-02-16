@@ -26,8 +26,8 @@ public class Robot extends TimedRobot {
   public static Command m_autonomousCommand;
   public static DriveAutoSubsystem driveAuto;
   public static UltrasonicSubsystem ultrasonic;
+  public static twentythreestabwounds cassius;
   private RobotContainer m_robotContainer;
-  private twentythreestabwounds cassius;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
     driveAuto.resetEncoders();
 
     // m_autonomousCommand = new WallChecker(40, driveAuto, ultrasonic,  new StalkerRoomba(40, driveAuto, ultrasonic));////new AutoNavCommand(driveAuto, ultrasonic);
-    m_autonomousCommand = new AutoNavCommand(driveAuto, ultrasonic);
+    m_autonomousCommand = new AutoNavCommand(driveAuto, ultrasonic, cassius);
     //new DictatorLocator(cassius, driveAuto);
 
     // schedule the autonomous command (example)
