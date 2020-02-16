@@ -8,9 +8,10 @@
 package frc.robot;
 
 import frc.robot.commands.AutoNavCommand;
+import frc.robot.commands.DictatorLocator;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
-
+import frc.robot.subsystems.twentythreestabwounds;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -26,6 +27,7 @@ public class Robot extends TimedRobot {
   public static DriveAutoSubsystem driveAuto;
   public static UltrasonicSubsystem ultrasonic;
   private RobotContainer m_robotContainer;
+  private twentythreestabwounds cassius;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -35,6 +37,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     ultrasonic = new UltrasonicSubsystem();
     driveAuto = new DriveAutoSubsystem();
+    cassius = new twentythreestabwounds();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -80,17 +83,18 @@ public class Robot extends TimedRobot {
     driveAuto.resetEncoders();
 
     // m_autonomousCommand = new WallChecker(40, driveAuto, ultrasonic,  new StalkerRoomba(40, driveAuto, ultrasonic));////new AutoNavCommand(driveAuto, ultrasonic);
-    m_autonomousCommand =  new AutoNavCommand(driveAuto, ultrasonic);
+    m_autonomousCommand = new AutoNavCommand(driveAuto, ultrasonic);
+    //new DictatorLocator(cassius, driveAuto);
 
     // schedule the autonomous command (example)
     if (!m_autonomousCommand.isScheduled()) {
-      m_autonomousCommand =  new AutoNavCommand(driveAuto, ultrasonic);
+      m_autonomousCommand = new DictatorLocator(cassius, driveAuto);
       m_autonomousCommand.schedule();
     }
   }
 
   /**
-   * This function is called periodically during autonomous.
+   * This function is called periodically during autonomo us.
    */
   @Override
   public void autonomousPeriodic() {
