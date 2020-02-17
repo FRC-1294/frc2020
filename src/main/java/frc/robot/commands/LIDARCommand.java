@@ -8,12 +8,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-<<<<<<< Updated upstream
-import frc.robot.Robot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-=======
 //import frc.robot.Robot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.I2C;
@@ -26,31 +20,11 @@ import edu.wpi.first.hal.I2CJNI;
 
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
->>>>>>> Stashed changes
 
 public class LIDARCommand extends CommandBase {
   /**
    * Creates a new LIDARSubsystem.
    */
-<<<<<<< Updated upstream
-    
-  public Timer timer;
-  public double signal;
-
-  public double distanceIn;
-  public double distanceCm;
-
-  double wavestart = 0;
-
-  public DigitalInput DOI;
-
-  public float Timer;
-  
-  public LIDARCommand() {
-    // Use addRequirements() here to declare subsystem dependencies.
-  }
-
-=======
 
 
   private static final byte k_deviceAddress = 0x62;
@@ -115,29 +89,14 @@ public class LIDARCommand extends CommandBase {
 	}
 
 
->>>>>>> Stashed changes
   // Called when the command is initially scheduled.
   @Override
   public void initialize(){ 
 
-<<<<<<< Updated upstream
-    
-    //Set DOI to be the one on the roborio, DONE
-    /*
-    set value of the LidAR to 0 (false)
-    Set it to 1 (true)
-
-    */
-
-    DOI = new DigitalInput(0);
-    //DOI.set(false);
-    //Timer = 0;
-=======
     SmartDashboard.setDefaultNumber("Offset", 0);
     
     startMeasuring(); //Starts Measuring (Maybe, I have no idea)
 
->>>>>>> Stashed changes
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -145,31 +104,9 @@ public class LIDARCommand extends CommandBase {
   public void execute() {
 
 
-<<<<<<< Updated upstream
-    if(DOI.get()){
-      distanceCm += 1;
-    }
-    else{
-
-      distanceCm *= 2.85714;
-      if(distanceCm != 0){
-        SmartDashboard.putBoolean("Value", DOI.get());
-        SmartDashboard.putNumber("distanceCM", distanceCm);
-        System.out.print(distanceCm);
-      }
-      
-      distanceCm = 0;
-      
-    }
-    
-    
-    
-
-=======
     offset = SmartDashboard.getNumber("Offset", 0);
     SmartDashboard.putNumber("Distance", getDistance()/2.54f + offset);
   
->>>>>>> Stashed changes
   }
 
   
@@ -186,32 +123,3 @@ public class LIDARCommand extends CommandBase {
 
 }
 
-<<<<<<< Updated upstream
-/*
-Timer += 1;
-
-    if(DOI.get()){
-      
-      if(wavestart == 0){
-        wavestart = timer.get();
-      }
-      
-    }
-    
-
-    else{
-      signal = (timer.get() - wavestart);
-      timer.reset();
-      wavestart = 0;
-      distanceCm = signal*100000;
-      distanceIn = distanceCm * 0.03937007874016;
-
-
-    }
-
-    SmartDashboard.putBoolean("Value", DOI.get());
-    SmartDashboard.putNumber("distanceCM", distanceCm);
-    SmartDashboard.putNumber("distanceIn", distanceIn);
-    */
-=======
->>>>>>> Stashed changes
