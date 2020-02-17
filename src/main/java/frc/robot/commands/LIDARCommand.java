@@ -104,9 +104,10 @@ public class LIDARCommand extends CommandBase {
   public void execute() {
 
 
-    offset = SmartDashboard.getNumber("Offset", -4);
+	offset = SmartDashboard.getNumber("OffsetIn", -4);
+	
     SmartDashboard.putNumber("Distance", getDistance()/2.54f + offset);
-  
+	SmartDashboard.putNumber("DistanceCm", getDistance() + offset*2.54f);
   }
 
   
