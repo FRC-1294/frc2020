@@ -8,7 +8,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.LIDARCommand;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.I2C.Port;
@@ -21,7 +20,7 @@ public class LIDAR extends SubsystemBase {
    */
   I2C LidarPort;
   private static final byte deviceAddress=0x62;
-  LIDARCommand workPlz = new LIDARCommand();
+  LIDARCommand workPlz = new LIDARCommand(Port.kOnboard);
   
   public LIDAR() {
     LidarPort=new I2C(I2C.Port.kOnboard,deviceAddress);

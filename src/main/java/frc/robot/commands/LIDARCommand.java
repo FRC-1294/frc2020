@@ -19,7 +19,7 @@ import edu.wpi.first.hal.I2CJNI;
 //import edu.wpi.first.wpilibj2.command.PIDCommand;
 
 import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+
 
 public class LIDARCommand extends CommandBase {
   /**
