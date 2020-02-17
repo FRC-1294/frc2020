@@ -11,17 +11,13 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.DriveAutoSubsystem;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;;
 
 public class TwentyThreeStabWounds extends SubsystemBase {
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   NetworkTableEntry tx = table.getEntry("tx");
   NetworkTableEntry tv = table.getEntry("tv");
   
-  DriveAutoSubsystem drive = new DriveAutoSubsystem();
-
   public static boolean targetAquired = false;
   public static double horizontalOffset = 0.0f;
 

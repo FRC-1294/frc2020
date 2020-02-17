@@ -7,7 +7,6 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
@@ -19,7 +18,7 @@ public class WallChecker extends CommandBase {
   UltrasonicSubsystem dracula;
   DriveAutoSubsystem whee;
   StalkerRoomba myStalker;
-  double[] threeMusketeers = new double[4];
+  double[] threeMusketeers = new double[3];
   double margin = 6;
   TurnByCommand tokyoDrift;
   boolean isFinished;
@@ -39,10 +38,9 @@ public class WallChecker extends CommandBase {
     whee.setRearLeftSpeed(0);
     whee.setRearRightSpeed(0);
     
-    HAL9000 = 2;
+    HAL9000 = 1;
     isFinished = false;
     threeMusketeers[0] = dracula.getSensourLeft();
-    threeMusketeers[1] = dracula.getSensourRight();
     tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
     tokyoDrift.schedule();
   }
@@ -51,29 +49,32 @@ public class WallChecker extends CommandBase {
   @Override
   public void execute() {
     if(!tokyoDrift.isScheduled()){
-      if(HAL9000 == 2) {
+      if(HAL9000 == 1) {
         System.out.println();
-        threeMusketeers[HAL9000] = dracula.getSensourRight();
+        threeMusketeers[HAL9000] = dracula.getSensourLeft();
         tokyoDrift = new TurnByCommand(-amount * 2, whee, PIDSlot);
         tokyoDrift.schedule();
-        HAL9000 = 3;
+        HAL9000 = 2;
       }
-      else if(HAL9000 == 3) {
+      else if(HAL9000 == 2) {
         threeMusketeers[HAL9000] = dracula.getSensourLeft();
         tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
         tokyoDrift.schedule();
-        HAL9000 = 4;
+        HAL9000 = 3;
       }
       else {
-        double baseValLeft = threeMusketeers[0];
-        double baseValRight = threeMusketeers[1];
-        double baseVal = (baseValLeft+baseValRight)/2;
+        // double baseValLeft = threeMusketeers[0];
+        // double baseValRight = threeMusketeers[1];
+        // double baseVal = (baseValLeft + baseValRight)/2;
+        double baseVal = threeMusketeers[0];
 
-        if (baseValLeft <= baseValRight + margin && baseValLeft >= baseValRight-margin) {
-          if (threeMusketeers[2] * Math.abs(Math.cos(amount)) > baseVal + margin) {
+        // if (baseValLeft <= baseValRight + margin && baseValLeft >= baseValRight - margin) {
+          
+        if (baseVal <= baseVal + margin && baseVal >= baseVal - margin) {
+          if (threeMusketeers[1] * Math.abs(Math.cos(amount)) > baseVal + margin) {
             myStalker.isWall = false;
           }
-          else if (threeMusketeers[3] * Math.abs(Math.cos(amount)) > baseVal + margin) {
+          else if (threeMusketeers[2] * Math.abs(Math.cos(amount)) > baseVal + margin) {
             myStalker.isWall = false;
           }
           else {

@@ -13,11 +13,13 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Gains;
 import frc.robot.Robot;
+import frc.robot.commands.AlignToShoot;
 import frc.robot.commands.DictatorLocator;
 
 public class DriveAutoSubsystem extends SubsystemBase {
@@ -42,9 +44,10 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private final Gains defaultPID = new Gains(0.2, 0.00001, 0.6, 0.0, 0.0, -0.5, 0.5, 0);
   private final Gains lowDisPID = new Gains(0.2, 0.00001, 0.4, 0.0, 0.0, -0.7, 0.7, 1);
   private Timer timer = new Timer();
+  private Timer rumbleTime = new Timer();
   private boolean isTurning = false;
-
-  private DictatorLocator visionMove;
+  int rumble = 0;
+  private AlignToShoot visionMove;
 
   public DriveAutoSubsystem() {
     frontLeftSpark.restoreFactoryDefaults(true);
@@ -93,16 +96,14 @@ public class DriveAutoSubsystem extends SubsystemBase {
     rearLeftSpark.follow(frontLeftSpark);
     rearRightSpark.follow(frontRightSpark);
 
-    visionMove = new DictatorLocator(Robot.cassius, this);
+    visionMove = new AlignToShoot(this, Robot.ultrasonic, Robot.letsShoot, Robot.cassius, 5*12);
     
     timer.start();
+    rumbleTime.start();
   }
 
   @Override
   public void periodic() {
-    sparkDrive.feed();
-    sparkDrive.feedWatchdog();
-    
     SmartDashboard.putString("AmountTraveled", getAmountTraveled(0) + " , " + getAmountTraveled(1));
     SmartDashboard.putNumber("currentAngle", getCurrentAngle());
     SmartDashboard.putNumber("LeftUltra", Robot.ultrasonic.getSensourLeft());
@@ -119,16 +120,26 @@ public class DriveAutoSubsystem extends SubsystemBase {
       setMode("coast");
     }
 
-    if (driveJoystick.getAButtonPressed() && !visionMove.isScheduled()) {
-      visionMove = new DictatorLocator(Robot.cassius, this);
+    if (driveJoystick.getAButtonPressed() && !visionMove.isScheduled() && Robot.ultrasonic.getSensourLeft() < 190) {
+      rumble = 0;
+      visionMove = new AlignToShoot(this, Robot.ultrasonic, Robot.letsShoot, Robot.cassius, 5*12);
       visionMove.schedule();
     }
+    else {
+      rumble = 8;
+    }
 
-    //frontLeftSpark.set(0.1);
-    //frontRightSpark.set(0.1);
-    //rearLeftSpark.set(0.1);
-    //rearRightSpark.set(0.1);
+    if (rumble != 0) {
+      if (rumbleTime.get() > 1) {
+        rumble = 0;
+      }
+    }
+    else {
+      rumbleTime.reset();
+    }
+
     arcadeDrive(driveJoystick.getY(Hand.kLeft), driveJoystick.getX(Hand.kRight));
+    driveJoystick.setRumble(RumbleType.kLeftRumble, rumble);
   }
 
   public void arcadeDrive(double forward, double turn) {

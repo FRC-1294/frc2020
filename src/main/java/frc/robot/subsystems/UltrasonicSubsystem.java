@@ -17,10 +17,10 @@ public class UltrasonicSubsystem extends SubsystemBase {
     return currentDistance;
   }
 
-  public double getSensourRight() {
-    double currentDistance = m_ultrasonicRight.getValue() * kValueToInches;
-    return getSensourLeft();
-  }
+  // public double getSensourRight() {
+  //   double currentDistance = m_ultrasonicRight.getValue() * kValueToInches;
+  //   return getSensourLeft();
+  // }
 
   public void periodic() {
     //System.out.println(getSensourLeft() + " , " + getSensourRight());

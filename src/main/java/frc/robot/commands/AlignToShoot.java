@@ -48,7 +48,7 @@ public class AlignToShoot extends CommandBase {
   final double shootTime = 5.0;
 
   int step = 0;
-
+//shacuando was here
   public AlignToShoot(DriveAutoSubsystem driveAuto, UltrasonicSubsystem ultra, ShootingBall shooter, TwentyThreeStabWounds vision, int targetDis) {
     m_driveAuto = driveAuto;
     m_ultra = ultra;
@@ -103,6 +103,7 @@ public class AlignToShoot extends CommandBase {
           left1 = false;
           left2 = false;
           targetAngle = 270;
+          System.out.println((int)m_ultra.getSensourLeft() + "," + shootDis);
           autoPath = new AutoPath(xTarget, 0, left1, left2, m_driveAuto);
           autoPath.schedule();
           step++;
@@ -131,7 +132,7 @@ public class AlignToShoot extends CommandBase {
       if ((!m_driveAuto.getTurning() && !alignToTarget.isScheduled())) {
         autoPath.cancel();
 
-        if (m_ultra.getSensourLeft() <= m_ultra.MIN_DIS || m_ultra.getSensourRight() <= m_ultra.MIN_DIS) {
+        if (m_ultra.getSensourLeft() <= m_ultra.MIN_DIS) {
           //avoid?
         }
         else {

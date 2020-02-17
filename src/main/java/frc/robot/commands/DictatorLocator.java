@@ -12,8 +12,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.TwentyThreeStabWounds;
 
-
-
 public class DictatorLocator extends CommandBase {
   boolean isFinished;
   final double lepidus = 1.5;

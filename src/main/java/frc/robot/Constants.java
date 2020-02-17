@@ -21,9 +21,9 @@ public final class Constants {
     public static final int rearRightSpark = 13;
     public static final int frontLeftSpark = 10;
     
-    public static final int intakeTalon = 21;
-   // public static final int indexerTalon = 23;   
-    public static final int shooterFalcon = 25;
+//     public static final int intakeTalon = 21;
+//    // public static final int indexerTalon = 23;   
+//     public static final int shooterFalcon = 25;
    // public static final int colorTalon = 27;
 
     public static final int driveJoystick = 0;
