@@ -93,7 +93,7 @@ public class LIDARCommand extends CommandBase {
   @Override
   public void initialize(){ 
 
-    SmartDashboard.setDefaultNumber("Offset", -4);
+    SmartDashboard.setDefaultNumber("OffsetIn", -4);
     
     startMeasuring(); //Starts Measuring (Maybe, I have no idea)
 
