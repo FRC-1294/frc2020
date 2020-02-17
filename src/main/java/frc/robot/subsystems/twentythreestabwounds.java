@@ -40,7 +40,7 @@ public class TwentyThreeStabWounds extends SubsystemBase {
   }
 
   public double getHorizontalOffSet(){
-    return horizontalOffset;
+    return -horizontalOffset;
   }
 
   public double getHeadingError() {

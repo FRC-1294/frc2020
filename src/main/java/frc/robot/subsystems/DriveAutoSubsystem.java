@@ -44,7 +44,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private Timer timer = new Timer();
   private boolean isTurning = false;
 
-  private DictatorLocator visionMove = new DictatorLocator(Robot.cassius, this);
+  private DictatorLocator visionMove;
 
   public DriveAutoSubsystem() {
     frontLeftSpark.restoreFactoryDefaults(true);
@@ -92,6 +92,8 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
     rearLeftSpark.follow(frontLeftSpark);
     rearRightSpark.follow(frontRightSpark);
+
+    visionMove = new DictatorLocator(Robot.cassius, this);
     
     timer.start();
   }
@@ -118,6 +120,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
     }
 
     if (driveJoystick.getAButtonPressed() && !visionMove.isScheduled()) {
+      visionMove = new DictatorLocator(Robot.cassius, this);
       visionMove.schedule();
     }
 

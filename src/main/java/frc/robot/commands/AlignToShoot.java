@@ -99,7 +99,7 @@ public class AlignToShoot extends CommandBase {
         }
         //move until shooting distance
         else if (step == 1) {
-          xTarget = shootDis;
+          xTarget = (int)m_ultra.getSensourLeft() - shootDis;
           left1 = false;
           left2 = false;
           targetAngle = 270;
