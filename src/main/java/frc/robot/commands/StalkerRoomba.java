@@ -19,7 +19,7 @@ public class StalkerRoomba extends CommandBase {
   TurnByCommand turner;
   double speed;
   boolean shouldCheckWall, hasChecked, hasTurned, isFinished;
-  Timer timer;
+  Timer wallCheckTimer, ultraUpdateTimer;
   double[] currentDistance = new double[2];
   double targetDis;
   final double ultraMargin = 0.2;
@@ -31,7 +31,8 @@ public class StalkerRoomba extends CommandBase {
     targetDis = dis;
     m_robotDrive = robotDrive;
     m_ultra = ultra;
-    timer = new Timer();
+    wallCheckTimer = new Timer();
+    ultraUpdateTimer = new Timer();
   }
 
   // Called when the command is initially scheduled.
@@ -42,20 +43,26 @@ public class StalkerRoomba extends CommandBase {
     m_robotDrive.setRearLeftSpeed(0);
     m_robotDrive.setRearRightSpeed(0);
 
+
     resetVars();
 
     wallChecker = new WallChecker(40, m_robotDrive, m_ultra, this);
     turner = new TurnByCommand(90, m_robotDrive, 0);
-    timer.reset();
-    timer.start();
+    wallCheckTimer.reset();
+    wallCheckTimer.start();
+    ultraUpdateTimer.reset();
+    ultraUpdateTimer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     //boolean isStopped = m_robotDrive.getFrontLeftSpeed() == 0 && m_robotDrive.getFrontRightSpeed() == 0;
-    currentDistance[0] = m_ultra.getSensourLeft();
-    currentDistance[1] = m_ultra.getSensourRight();
+    if (ultraUpdateTimer.get() > 0.3) {
+      currentDistance[0] = m_ultra.getSensourLeft();
+      currentDistance[1] = m_ultra.getSensourRight();
+      ultraUpdateTimer.reset();
+    }
 
     //if not checking if a wall
     if (!wallChecker.isScheduled()) {
@@ -70,7 +77,7 @@ public class StalkerRoomba extends CommandBase {
           currentDistance[1] < targetDis + offSet){ //if outside range
           System.out.println("IN RANGE");
 
-          if (timer.get() >= 1) {
+          if (wallCheckTimer.get() >= 1) {
             shouldCheckWall = true;
           }
 
@@ -82,7 +89,7 @@ public class StalkerRoomba extends CommandBase {
         }
         else {
           System.out.println("OUT OF RANGE");
-          timer.reset();
+          wallCheckTimer.reset();
           hasChecked = false;
           shouldCheckWall = false;
 
@@ -134,7 +141,8 @@ public class StalkerRoomba extends CommandBase {
     hasChecked = false;
     hasTurned = false;
     isFinished = false;
-    timer.reset();
+    wallCheckTimer.reset();
+    ultraUpdateTimer.reset();
     currentDistance[0] = 0.0;
     currentDistance[1] = 0.0;
 

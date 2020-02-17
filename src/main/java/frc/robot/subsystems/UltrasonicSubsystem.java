@@ -2,12 +2,11 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.XboxController;
 
 public class UltrasonicSubsystem extends SubsystemBase {
 
   // factor to convert sensor values to a distance in inches
-  public static final int MIN_DIS = 32;
+  public static final int MIN_DIS = 48;
   private static final double kValueToInches = 0.0528;
 
   private final static AnalogInput m_ultrasonicLeft = new AnalogInput(0);
@@ -20,7 +19,7 @@ public class UltrasonicSubsystem extends SubsystemBase {
 
   public double getSensourRight() {
     double currentDistance = m_ultrasonicRight.getValue() * kValueToInches;
-    return currentDistance;
+    return getSensourLeft();
   }
 
   public void periodic() {

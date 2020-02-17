@@ -103,19 +103,19 @@ public class AlignToShoot extends CommandBase {
           left1 = false;
           left2 = false;
           targetAngle = 270;
-          xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0));
-          autoPath = new AutoPath(xRem, 0, left1, left2, m_driveAuto);
+          autoPath = new AutoPath(xTarget, 0, left1, left2, m_driveAuto);
           autoPath.schedule();
           step++;
         }
         //SHOOT
         else if (step == 2) {
-          if (shooterReady) {
-            shooterCommand = new ShooterCommand(m_shooter, shootTime);
-            shooterCommand.schedule();
-            shooter = false;
-            step++;
-          }
+          // if (shooterReady) {
+          //   shooterCommand = new ShooterCommand(m_shooter, shootTime);
+          //   shooterCommand.schedule();
+          //   shooter = false;
+          //   step++;
+          // }
+          step++;
         }
         //end command
         else if (step == 3) {

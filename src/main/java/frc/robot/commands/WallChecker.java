@@ -34,6 +34,11 @@ public class WallChecker extends CommandBase {
 
   @Override
   public void initialize() {
+    whee.setFrontLeftSpeed(0);
+    whee.setFrontRightSpeed(0);
+    whee.setRearLeftSpeed(0);
+    whee.setRearRightSpeed(0);
+    
     HAL9000 = 2;
     isFinished = false;
     threeMusketeers[0] = dracula.getSensourLeft();

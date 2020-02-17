@@ -4,6 +4,7 @@ import frc.robot.commands.AutoNavCommand;
 import frc.robot.commands.DictatorLocator;
 import frc.robot.commands.StalkerRoomba;
 import frc.robot.commands.TurnByCommand;
+import frc.robot.commands.WallChecker;
 import frc.robot.subsystems.UltrasonicSubsystem;
 import frc.robot.subsystems.TwentyThreeStabWounds;
 import edu.wpi.first.wpilibj.TimedRobot;
