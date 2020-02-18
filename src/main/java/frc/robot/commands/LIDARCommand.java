@@ -21,11 +21,15 @@ import edu.wpi.first.hal.I2CJNI;
 import edu.wpi.first.wpilibj.I2C.Port;
 
 
+
+
 public class LIDARCommand extends CommandBase {
   /**
    * Creates a new LIDARSubsystem.
    */
 
+
+  public double DistanceToTarget;
 
   private static final byte k_deviceAddress = 0x62;
 
@@ -71,6 +75,18 @@ public class LIDARCommand extends CommandBase {
 		return m_buffer.getShort(0);
 	}
 
+
+	public boolean InRange(double InitialVelocity, double AngleDegrees){
+
+		if(InitialVelocity == Math.sqrt((DistanceToTarget-9.8)/Math.sin(AngleDegrees) * Math.cos(AngleDegrees)  )){
+		  return true;
+		}
+		else{
+		  return false;
+		}
+		
+	  }
+
 	// @Override
 	// public void setPIDSourceType(PIDSourceType pidSource) {
 	// 	if (pidSource != PIDSourceType.kDisplacement) {
@@ -103,6 +119,8 @@ public class LIDARCommand extends CommandBase {
   @Override
   public void execute() {
 
+
+	DistanceToTarget = getDistance();
 
 	offset = SmartDashboard.getNumber("OffsetIn", -4);
 	
