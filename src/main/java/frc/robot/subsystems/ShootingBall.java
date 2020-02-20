@@ -48,28 +48,50 @@ public class ShootingBall extends SubsystemBase {
   //every loop it will check if any of the buttons are pressed and will do the coresponding task related with it
   @Override
   public void periodic() {
-   double shooterSpeed = shooter.getSelectedSensorVelocity()/ticksPerRev;
-   SmartDashboard.putNumber("Shooter RPM", shooterSpeed);
+    if(Robot.m_oi.getYButtonPressed()){
+      //once clicked, it swaps the task, if it was off before, then it is on (true)
+      //if it was on, then it will become off (false)
+      toShoot = (!toShoot);
+    } 
 
-    //indexer
-    if(gameJoystick.getAButtonPressed()){
-      toIndex = !toIndex;
+    
 
-      if (toIndex) {
-      setSRXSpeed(indexer, 0.3
-      );
-      }
-      else {
-        setSRXSpeed(indexer, 0);
-      }
+
+
+    //exact same concept with the intake as the shoot, just that it controls intaker motor instead
+    if(Robot.m_oi.getXButtonPressed()){
+      toIntake = (!toIntake);
     }
 
-    //intaker
-    if(triggerDrive() != 0){
-      setSRXSpeed(intaker, -triggerDrive());
-    }
-    else {
+    if(Robot.m_oi.getBButtonHeld()) {
+
+      setSRXSpeed(intaker, -1);
+
+      setFXSpeed(shooter, -.1);
+
+
+
+    } else {
+    if(toIntake){
+      setSRXSpeed(intaker, 1);
+      //setIntaker(1);
+    } else {
       setSRXSpeed(intaker, 0);
+      //setIntaker(0);
+    }
+
+    if(toShoot){
+      //if it just become on, then it will set max speed
+      setFXSpeed(shooter, 1);//SHOULD NOT BE 1, WILL BE CHANGED TO MATCH 5200 RPM REQUIREMENT
+    } else {
+      //if it just turned off, then it will set speed to 0
+      setFXSpeed(shooter, 0);
+    }
+  }
+
+    //this is the indexer which runs at the speed of how much the trigger is pressed and it is not pressed then is off.
+    if(Robot.m_oi.getTriggerRight() != 0){
+      setSRXSpeed(indexer, Robot.m_oi.getTriggerRight());
     }
 
     //shooter
