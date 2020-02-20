@@ -54,10 +54,6 @@ public class ShootingBall extends SubsystemBase {
     //exact same concept with the intake as the shoot, just that it controls intaker motor instead
     if(Robot.m_oi.getXButtonPressed()){
       toIntake = (!toIntake);
-      
-
-
-      
     }
 
     if(Robot.m_oi.getBButtonHeld()) {
