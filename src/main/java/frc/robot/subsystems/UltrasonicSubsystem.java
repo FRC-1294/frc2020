@@ -13,14 +13,13 @@ public class UltrasonicSubsystem extends SubsystemBase {
   public static final int MIN_DIS = 48;
   private static final double kValueToInches = 0.0528;
   private final static AnalogInput m_ultrasonicLeft = new AnalogInput(0);
-  private static final byte k_deviceAddress = 0x62                     ;
-	private final byte m_port                                            ;
-	private final ByteBuffer m_buffer = ByteBuffer.allocateDirect(2)     ;
-  public I2C i2c                                                       ;
-
-  public double offset                                                 ;
-  I2C LidarPort                                                        ;
-  private static final byte deviceAddress = 0x62                       ;
+  private static final byte k_deviceAddress = 0x62;
+	private final byte m_port;
+	private final ByteBuffer m_buffer = ByteBuffer.allocateDirect(2);
+  public I2C i2c;
+  public double offset;
+  I2C LidarPort;
+  private static final byte deviceAddress = 0x62;
   
   public UltrasonicSubsystem() {
     LidarPort = new I2C(I2C.Port.kOnboard,deviceAddress);
@@ -34,7 +33,7 @@ public class UltrasonicSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     offset = SmartDashboard.getNumber("OffsetIn", -4);
-    SmartDashboard.putNumber("Distance", getDistance()/2.54f + offset);
+    SmartDashboard.putNumber("Distance", getSensourLeft());
     SmartDashboard.putNumber("DistanceCm", getDistance() + offset*2.54f);
   }
 
@@ -43,7 +42,10 @@ public class UltrasonicSubsystem extends SubsystemBase {
 	}
 
   public double getSensourLeft() {
-    double currentDistance = getDistance()/2.54f + offset
+    double currentDistance = getDistance()/2.54f + offset;
+    if(currentDistance < 0){
+      currentDistance = 1420.69666616;
+    }
     return currentDistance;
   }
 

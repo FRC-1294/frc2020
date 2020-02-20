@@ -20,7 +20,7 @@ public class StalkerRoomba extends CommandBase {
   double speed;
   boolean shouldCheckWall, hasChecked, hasTurned, isFinished;
   Timer wallCheckTimer, ultraUpdateTimer;
-  double[] currentDistance = new double[2];
+  double currentDistance;
   double targetDis;
   final double ultraMargin = 0.2;
   final double offSet = 24;
@@ -29,6 +29,7 @@ public class StalkerRoomba extends CommandBase {
 
   public StalkerRoomba(final double dis, final DriveAutoSubsystem robotDrive, final UltrasonicSubsystem ultra) {
     targetDis = dis;
+    currentDistance = 0.0;
     m_robotDrive = robotDrive;
     m_ultra = ultra;
     wallCheckTimer = new Timer();
@@ -43,7 +44,6 @@ public class StalkerRoomba extends CommandBase {
     m_robotDrive.setRearLeftSpeed(0);
     m_robotDrive.setRearRightSpeed(0);
 
-
     resetVars();
 
     wallChecker = new WallChecker(40, m_robotDrive, m_ultra, this);
@@ -57,27 +57,19 @@ public class StalkerRoomba extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //boolean isStopped = m_robotDrive.getFrontLeftSpeed() == 0 && m_robotDrive.getFrontRightSpeed() == 0;
-    if (ultraUpdateTimer.get() > 0.3) {
-      currentDistance[0] = m_ultra.getSensourLeft();
-      currentDistance[1] = m_ultra.getSensourRight();
-      ultraUpdateTimer.reset();
-    }
-
-    //if not checking if a wall
-    if (!wallChecker.isScheduled()) {
-      //if needs to check if at wall
-      if (shouldCheckWall && !hasChecked) {
+    currentDistance = m_ultra.getDistance();
+    
+    if (!wallChecker.isScheduled()) { //if code isn't simultaneously (shut up skye) running
+      if (shouldCheckWall && !hasChecked) { //if needs to check
         System.out.println("Wall Checker Scheduled");
         hasChecked = true;
-        wallChecker.schedule();
+        //wallChecker.schedule();
       }
-      else if (!isWall)  {//if should continue moving
-        if(currentDistance[0] < targetDis + offSet ||
-          currentDistance[1] < targetDis + offSet){ //if outside range
+      else if (!isWall)  {//if should continue moving because is not wall
+        if(currentDistance < targetDis + offSet){
           System.out.println("IN RANGE");
 
-          if (wallCheckTimer.get() >= 1) {
+          if (wallCheckTimer.get() >= 1) { // if it's been a second since last checking wall
             shouldCheckWall = true;
           }
 
@@ -89,6 +81,7 @@ public class StalkerRoomba extends CommandBase {
         }
         else {
           System.out.println("OUT OF RANGE");
+          wallChecker.cancel();
           wallCheckTimer.reset();
           hasChecked = false;
           shouldCheckWall = false;
@@ -102,13 +95,16 @@ public class StalkerRoomba extends CommandBase {
       }
       //if at a wall
       else if (isWall) {
-        if (!turner.isScheduled() ) {
+        if (!turner.isScheduled() ) { //if turner isn't alreado scheduled
           //first time, rotate left
           if (!hasTurned) {
             System.out.println("Turner Scheduled");
-            turner.schedule();
+            //turner.schedule();
             hasTurned = true;
           }
+
+          // phillip stop doing whateve ryou're doing 
+          // izzy shut up/skye shut up TM
 
           //once rotated, end command
           else if (hasTurned) {
@@ -143,8 +139,7 @@ public class StalkerRoomba extends CommandBase {
     isFinished = false;
     wallCheckTimer.reset();
     ultraUpdateTimer.reset();
-    currentDistance[0] = 0.0;
-    currentDistance[1] = 0.0;
+    currentDistance = 0.0;
 
     isWall = false;
   }

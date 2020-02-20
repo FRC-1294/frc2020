@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -48,8 +50,9 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private boolean isTurning = false;
   int rumble = 0;
   private AlignToShoot visionMove;
-
+  
   public DriveAutoSubsystem() {
+    UsbCamera usbcamera = CameraServer.getInstance().startAutomaticCapture(0);
     frontLeftSpark.restoreFactoryDefaults(true);
     frontRightSpark.restoreFactoryDefaults(true);
     rearLeftSpark.restoreFactoryDefaults(true);
@@ -106,8 +109,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putString("AmountTraveled", getAmountTraveled(0) + " , " + getAmountTraveled(1));
     SmartDashboard.putNumber("currentAngle", getCurrentAngle());
-    SmartDashboard.putNumber("LeftUltra", Robot.ultrasonic.getSensourLeft());
-    SmartDashboard.putNumber("RightUltra", Robot.ultrasonic.getSensourRight());
+    SmartDashboard.putNumber("Ultrasonic Value", Robot.ultrasonic.getSensourLeft());
 
     if (driveJoystick.getStartButtonPressed()) {
       CommandScheduler.getInstance().cancelAll();
