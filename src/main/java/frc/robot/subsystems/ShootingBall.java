@@ -44,7 +44,6 @@ public class ShootingBall extends SubsystemBase {
       //once clicked, it swaps the task, if it was off before, then it is on (true)
       //if it was on, then it will become off (false)
       toShoot = (!toShoot);
-      
     } 
 
     
