@@ -73,10 +73,6 @@ public class LIDARCommand extends CommandBase {
   public void execute() {
 
 
-
-    
-
-
     //All code below is from earlier attempts at using the digital port to read the PWM signal
     // if(DOI.get()){ blake's code
     //   distanceCm += 1;
