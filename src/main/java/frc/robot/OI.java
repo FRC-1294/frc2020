@@ -35,6 +35,9 @@ public class OI {
   public boolean getYButtonPressed() {
     return (gameShootingArm.getYButtonPressed());
   }
+  public boolean getBButtonHeld() {
+    return gameShootingArm.getBButton();
+  }
   /*public double LeftTrigger(){
     return driveControl.getTriggerAxis(Hand.kLeft);
   }

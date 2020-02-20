@@ -44,26 +44,47 @@ public class ShootingBall extends SubsystemBase {
       //once clicked, it swaps the task, if it was off before, then it is on (true)
       //if it was on, then it will become off (false)
       toShoot = (!toShoot);
-      if(toShoot){
-        //if it just become on, then it will set max speed
-        setFXSpeed(shooter, 1);//SHOULD NOT BE 1, WILL BE CHANGED TO MATCH 5200 RPM REQUIREMENT
-      } else {
-        //if it just turned off, then it will set speed to 0
-        setFXSpeed(shooter, 0);
-      }
+      
     } 
+
+    
+
+
 
     //exact same concept with the intake as the shoot, just that it controls intaker motor instead
     if(Robot.m_oi.getXButtonPressed()){
       toIntake = (!toIntake);
-      if(toIntake){
-        setSRXSpeed(intaker, 1);
-        //setIntaker(1);
-      } else {
-        setSRXSpeed(intaker, 0);
-        //setIntaker(0);
-      }
+      
+
+
+      
     }
+
+    if(Robot.m_oi.getBButtonHeld()) {
+
+      setSRXSpeed(intaker, -1);
+
+      setFXSpeed(shooter, -.1);
+
+
+
+    } else {
+    if(toIntake){
+      setSRXSpeed(intaker, 1);
+      //setIntaker(1);
+    } else {
+      setSRXSpeed(intaker, 0);
+      //setIntaker(0);
+    }
+
+    if(toShoot){
+      //if it just become on, then it will set max speed
+      setFXSpeed(shooter, 1);//SHOULD NOT BE 1, WILL BE CHANGED TO MATCH 5200 RPM REQUIREMENT
+    } else {
+      //if it just turned off, then it will set speed to 0
+      setFXSpeed(shooter, 0);
+    }
+  }
 
     //this is the indexer which runs at the speed of how much the trigger is pressed and it is not pressed then is off.
     if(Robot.m_oi.getTriggerRight() != 0){
