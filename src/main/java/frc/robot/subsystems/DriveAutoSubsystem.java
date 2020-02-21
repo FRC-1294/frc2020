@@ -99,7 +99,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
     rearLeftSpark.follow(frontLeftSpark);
     rearRightSpark.follow(frontRightSpark);
 
-    visionMove = new AlignToShoot(this, Robot.ultrasonic, Robot.letsShoot, Robot.cassius, 5*12);
+    visionMove = new AlignToShoot(this, Robot.ultrasonic, Robot.letsShoot, Robot.cassius, 5*12, false);
     
     timer.start();
     rumbleTime.start();
@@ -124,7 +124,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
     if (driveJoystick.getAButtonPressed() && !visionMove.isScheduled() && Robot.ultrasonic.getSensourLeft() < 190) {
       rumble = 0;
-      visionMove = new AlignToShoot(this, Robot.ultrasonic, Robot.letsShoot, Robot.cassius, 5*12);
+      visionMove = new AlignToShoot(this, Robot.ultrasonic, Robot.letsShoot, Robot.cassius, 5*12, false);
       visionMove.schedule();
     }
     else {

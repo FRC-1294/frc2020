@@ -22,8 +22,10 @@ public class AutoNavCommand extends CommandBase {
 
   AutoPath autoPath;
   StalkerRoomba moveUntilWall;
-  DictatorLocator alignToTarget;
-  ShooterCommand shooterCommand;
+  VisionFinder finder;
+  AlignToShoot alignToTarget;
+  TurnByCommand turner;
+  MoveByCommand mover;
   UltraFuseCommand ultraFuse;
 
   Timer timer = new Timer();
@@ -37,10 +39,12 @@ public class AutoNavCommand extends CommandBase {
   int targetAngle;
   int xTarget;
   int yTarget;
+  int moveAmount;
   int shooterSpeed;
 
   final int autoPathMargin = 2;
   final int robotFollowDis = 5*12;
+  final int amountPastAutoLine = 5*12;
   final int shootDis = 11*12;
   final int shootRPM = 4200;
   final int shootMargin = 50;
@@ -68,9 +72,10 @@ public class AutoNavCommand extends CommandBase {
 
     autoPath = new AutoPath(0, 0, left1, left2, m_driveAuto);
     ultraFuse = new UltraFuseCommand(m_driveAuto, m_ultra);
-    moveUntilWall = new StalkerRoomba(robotFollowDis, m_driveAuto, m_ultra);
-    shooterCommand = new ShooterCommand(m_shooter, shootTime);
-    alignToTarget = new DictatorLocator(m_vision, m_driveAuto);
+    finder = new VisionFinder(m_driveAuto, m_vision);
+    turner = new TurnByCommand(180, m_driveAuto, 0);
+    mover = new MoveByCommand(5*12, m_driveAuto, 0);
+    alignToTarget = new AlignToShoot(m_driveAuto, m_ultra, m_shooter, m_vision, shootDis, true);
 
     ultraFuse.schedule();
   }
@@ -82,74 +87,70 @@ public class AutoNavCommand extends CommandBase {
     double xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0));
     double yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1));
 
-    //checkShooter();
-
     //if current leg of path finished, schedule next in sequence
-    if (!autoPath.isScheduled() && !moveUntilWall.isScheduled() && !alignToTarget.isScheduled() && !shooterCommand.isScheduled() && ultraFuse.isScheduled()) {
-      if (Math.abs(xRem) <= autoPathMargin && Math.abs(yRem) <= autoPathMargin) {
-        //go past the init line
+    if (!finder.isScheduled() && !turner.isScheduled() && !mover.isScheduled() && !alignToTarget.isScheduled() && ultraFuse.isScheduled()) {
+        //find edge of vision target
         if (step == 0) {
-          xTarget = 3*12; //SHOULD BE 10 FT
-          left1 = false;
-          left2 = true;
-          targetAngle = 90;
-          xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0));
-          autoPath = new AutoPath(xRem, 0, left1, left2, m_driveAuto);
-          autoPath.schedule();
+          finder = new VisionFinder(m_driveAuto, m_vision);
+          finder.schedule();
           step++;
         }
 
-        //goto the far wall
+        //align and shoot
         if (step == 1) {
-          moveUntilWall = new StalkerRoomba(robotFollowDis, m_driveAuto, m_ultra);
-          moveUntilWall.schedule();
-          step++;
-        }
-        //align with hoop and shoot && get shooter ready
-        else if (step == 2) {
+          alignToTarget = new AlignToShoot(m_driveAuto, m_ultra, m_shooter, m_vision, shootDis, true);
           alignToTarget.schedule();
-          shooter = true;
           step++;
         }
-        //move until shooting distance
-        else if (step == 3) {
-          xTarget = shootDis;
-          left1 = false;
-          left2 = false;
-          targetAngle = 270;
-          xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0));
-          autoPath = new AutoPath(xRem, 0, left1, left2, m_driveAuto);
-          autoPath.schedule();
+
+        //turn around
+        else if (step == 2) {
+          turner = new TurnByCommand(180, m_driveAuto, 0);
+          turner.schedule();
           step++;
         }
-        //SHOOT
-        else if (step == 4) {
-          if (shooterReady) {
-            shooterCommand = new ShooterCommand(m_shooter, shootTime);
-            shooterCommand.schedule();
-            shooter = false;
-            step++;
-          }
-        }
+
         //return to startPoint
-        else if (step == 5) {
-          moveUntilWall = new StalkerRoomba(robotFollowDis, m_driveAuto, m_ultra);
-          moveUntilWall.schedule();
+        else if (step == 3) {
+          xTarget = 0;
+          yTarget = 0;
+          moveAmount = (int) Math.sqrt(Math.pow(m_driveAuto.getAmountTraveled(0), 2) + Math.pow(m_driveAuto.getAmountTraveled(1), 2));
+          mover = new MoveByCommand(moveAmount, m_driveAuto, 0);
+          mover.schedule();
           step++;
         }
+
+        //turn to the dark (our) side
+        else if (step == 4) {
+          moveAmount = 0;
+          turner = new TurnByCommand(0-m_driveAuto.getCurrentAngle(), m_driveAuto, 0);
+          turner.schedule();
+          step++;
+        }
+
+        //move past auto line
+        else if (step == 5) {
+          xTarget = 0;
+          yTarget = 0;
+          moveAmount = amountPastAutoLine;
+          mover = new MoveByCommand(moveAmount, m_driveAuto, 0);
+          mover.schedule();
+          step++;
+        }
+
         //end command
         else if (step == 6) {
           isFinished = true;
         }
-      } 
     }
     
 
     //if obstacle detected during PID
-    if (!ultraFuse.isScheduled()) {
+    if (!ultraFuse.isScheduled() && !turner.isScheduled()) {
       //if stopping necessary
       if ((!m_driveAuto.getTurning() && !moveUntilWall.isScheduled() && !alignToTarget.isScheduled())) {
         autoPath.cancel();
+        mover.cancel();
 
         if (m_ultra.getSensourLeft() <= m_ultra.MIN_DIS) {
           //avoid?
@@ -168,13 +169,23 @@ public class AutoNavCommand extends CommandBase {
             left2 = true;
           }
 
-          //resechedule path if obstacle avoided
-          if (xRem >= autoPathMargin || yRem >= autoPathMargin) {
-            autoPath = new AutoPath(xRem, yRem, left1, left2, m_driveAuto);
-            autoPath.schedule();
+          if (xTarget == 0 && yTarget == 0) {
+            moveAmount = (int) Math.sqrt(Math.pow(m_driveAuto.getAmountTraveled(0), 2) + Math.pow(m_driveAuto.getAmountTraveled(1), 2));
+            if (moveAmount >= autoPathMargin) {
+              mover = new MoveByCommand(moveAmount, m_driveAuto, 0);
+              mover.schedule();
+            }
+          }
+          else {
+            //resechedule path if obstacle avoided
+            if (xRem >= autoPathMargin || yRem >= autoPathMargin) {
+              autoPath = new AutoPath(xRem, yRem, left1, left2, m_driveAuto);
+              autoPath.schedule();
+            }
           }
         }
       }
+      
       //keep ultraFuse running to check if obstacle moves
       ultraFuse.schedule();
     }
@@ -195,39 +206,6 @@ public class AutoNavCommand extends CommandBase {
     return isFinished;
   }
 
-  // public void checkShooter() {
-  //   if (shooter) {
-  //     shooterSpeed = m_shooter.getShooterVelocity();
-  //     m_shooter.setShooterPID(shootRPM);
-
-  //     boolean atSpeed = false;
-  //     boolean timeHold = false;
-
-  //     if (Math.abs(shooterSpeed) <= shootRPM+shootMargin && Math.abs(shooterSpeed) >= shootRPM+shootMargin) {
-  //       atSpeed = true;
-  //     }
-
-  //     if (atSpeed) {
-  //       if(timer.get() >= 1){
-  //         timeHold = true;
-  //       }
-  //     }
-  //     else {
-  //       timer.reset();
-  //     }
-
-  //     if(atSpeed && timeHold) {
-  //       shooterReady = true;
-  //     }
-  //     else {
-  //       shooterReady = false;
-  //     }
-  //   }
-  //   else {
-  //     m_shooter.setShooter(0);
-  //   }
-  // }
-
   public void resetVars() {
     isFinished = false;
     left1 = false;
@@ -240,5 +218,6 @@ public class AutoNavCommand extends CommandBase {
     xTarget = 0;
     yTarget = 0;
     shooterSpeed = 0;
+    moveAmount = 0;
   }
 }

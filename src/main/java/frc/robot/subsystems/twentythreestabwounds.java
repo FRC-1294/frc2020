@@ -43,6 +43,10 @@ public class TwentyThreeStabWounds extends SubsystemBase {
     return tx.getDouble(0.0) * -1;
   }
 
+  public boolean isDetected() {
+    return targetAquired;
+  }
+
   public static void getInRange()  {
     // float kpDistance = -0.1f;
     // float currentDistance = Estimate_Distance();

@@ -13,6 +13,7 @@ import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.ShootingBall;
 import frc.robot.subsystems.UltrasonicSubsystem;
 import frc.robot.subsystems.TwentyThreeStabWounds;
+import frc.robot.commands.FeedShooterCommand;
 
 public class AlignToShoot extends CommandBase {
   DriveAutoSubsystem m_driveAuto;
@@ -22,7 +23,7 @@ public class AlignToShoot extends CommandBase {
 
   AutoPath autoPath;
   DictatorLocator alignToTarget;
-  ShooterCommand shooterCommand;
+  FeedShooterCommand feedShooterCommand;
   UltraFuseCommand ultraFuse;
 
   Timer timer = new Timer();
@@ -30,6 +31,7 @@ public class AlignToShoot extends CommandBase {
   boolean isFinished;
   boolean left1;
   boolean left2;
+  boolean shouldShoot;
   boolean shooter;
   boolean shooterReady;
   boolean loopComplete;
@@ -48,14 +50,15 @@ public class AlignToShoot extends CommandBase {
   final double shootTime = 5.0;
 
   int step = 0;
-//shacuando was here
-  public AlignToShoot(DriveAutoSubsystem driveAuto, UltrasonicSubsystem ultra, ShootingBall shooter, TwentyThreeStabWounds vision, int targetDis) {
+
+  public AlignToShoot(DriveAutoSubsystem driveAuto, UltrasonicSubsystem ultra, ShootingBall shooter, TwentyThreeStabWounds vision, int targetDis, boolean shoot) {
     m_driveAuto = driveAuto;
     m_ultra = ultra;
     m_shooter = shooter;
     m_vision = vision;
 
     shootDis = targetDis;
+    shouldShoot = shoot;
   }
 
   // Called when the command is initially scheduled.
@@ -73,7 +76,7 @@ public class AlignToShoot extends CommandBase {
     left2 = false;
     autoPath = new AutoPath(xTarget, yTarget, left1, left2, m_driveAuto);
     ultraFuse = new UltraFuseCommand(m_driveAuto, m_ultra);
-    shooterCommand = new ShooterCommand(m_shooter, shootTime);
+    feedShooterCommand = new FeedShooterCommand(m_shooter, shootTime);
     alignToTarget = new DictatorLocator(m_vision, m_driveAuto);
 
     ultraFuse.schedule();
@@ -86,10 +89,10 @@ public class AlignToShoot extends CommandBase {
     double xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0) + startAmount[0]);
     double yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1) + startAmount[1]);
 
-    //checkShooter();
+    if (shouldShoot) checkShooter();
 
     //if current leg of path finished, schedule next in sequence
-    if (!autoPath.isScheduled() && !alignToTarget.isScheduled() && !shooterCommand.isScheduled() && ultraFuse.isScheduled()) {
+    if (!autoPath.isScheduled() && !alignToTarget.isScheduled() && !feedShooterCommand.isScheduled() && ultraFuse.isScheduled()) {
       if (Math.abs(xRem) <= autoPathMargin && Math.abs(yRem) <= autoPathMargin) {
         //align with hoop and shoot && get shooter ready
         if (step == 0) {
@@ -110,24 +113,24 @@ public class AlignToShoot extends CommandBase {
         }
         //SHOOT
         else if (step == 2) {
-          // if (shooterReady) {
-          //   shooterCommand = new ShooterCommand(m_shooter, shootTime);
-          //   shooterCommand.schedule();
-          //   shooter = false;
-          //   step++;
-          // }
+          if (shooterReady) {
+            feedShooterCommand = new FeedShooterCommand(m_shooter, shootTime);
+            feedShooterCommand.schedule();
+            step++;
+          }
           step++;
         }
         //end command
         else if (step == 3) {
+          shooter = false;
           isFinished = true;
         }
       } 
     }
     
 
-    //if obstacle detected during PID
-    if (!ultraFuse.isScheduled()) {
+    //if obstacle detected during PID ONLY
+    if (!ultraFuse.isScheduled() && !alignToTarget.isScheduled() && !feedShooterCommand.isScheduled()) {
       //if stopping necessary
       if ((!m_driveAuto.getTurning() && !alignToTarget.isScheduled())) {
         autoPath.cancel();
@@ -155,6 +158,7 @@ public class AlignToShoot extends CommandBase {
     m_driveAuto.setFrontRightSpeed(0);
     m_driveAuto.setRearLeftSpeed(0);
     m_driveAuto.setRearRightSpeed(0);
+    m_shooter.setShooter(0);
   }
 
   // Returns true when the command should end.
@@ -163,38 +167,38 @@ public class AlignToShoot extends CommandBase {
     return isFinished;
   }
 
-  // public void checkShooter() {
-  //   if (shooter) {
-  //     shooterSpeed = m_shooter.getShooterVelocity();
-  //     m_shooter.setShooterPID(shootRPM);
+  public void checkShooter() {
+    if (shooter) {
+      shooterSpeed = m_shooter.getShooterVelocity();
+      m_shooter.setShooterPID(shootRPM);
 
-  //     boolean atSpeed = false;
-  //     boolean timeHold = false;
+      boolean atSpeed = false;
+      boolean timeHold = false;
 
-  //     if (Math.abs(shooterSpeed) <= shootRPM+shootMargin && Math.abs(shooterSpeed) >= shootRPM+shootMargin) {
-  //       atSpeed = true;
-  //     }
+      if (Math.abs(shooterSpeed) <= shootRPM+shootMargin && Math.abs(shooterSpeed) >= shootRPM+shootMargin) {
+        atSpeed = true;
+      }
 
-  //     if (atSpeed) {
-  //       if(timer.get() >= 1){
-  //         timeHold = true;
-  //       }
-  //     }
-  //     else {
-  //       timer.reset();
-  //     }
+      if (atSpeed) {
+        if(timer.get() >= 1){
+          timeHold = true;
+        }
+      }
+      else {
+        timer.reset();
+      }
 
-  //     if(atSpeed && timeHold) {
-  //       shooterReady = true;
-  //     }
-  //     else {
-  //       shooterReady = false;
-  //     }
-  //   }
-  //   else {
-  //     m_shooter.setShooter(0);
-  //   }
-  // }
+      if(atSpeed && timeHold) {
+        shooterReady = true;
+      }
+      else {
+        shooterReady = false;
+      }
+    }
+    else {
+      m_shooter.setShooter(0);
+    }
+  }
 
   public void resetVars() {
     isFinished = false;

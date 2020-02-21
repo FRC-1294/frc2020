@@ -27,7 +27,7 @@ public class WallChecker extends CommandBase {
     this.amount = amount;
     isFinished = false;
     dracula = ultraBurst;
-    whee = new DriveAutoSubsystem();
+    whee = driver;
     myStalker = stalker;
   }
 

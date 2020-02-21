@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -48,50 +41,28 @@ public class ShootingBall extends SubsystemBase {
   //every loop it will check if any of the buttons are pressed and will do the coresponding task related with it
   @Override
   public void periodic() {
-    if(Robot.m_oi.getYButtonPressed()){
-      //once clicked, it swaps the task, if it was off before, then it is on (true)
-      //if it was on, then it will become off (false)
-      toShoot = (!toShoot);
-    } 
+   double shooterSpeed = shooter.getSelectedSensorVelocity()/ticksPerRev;
+   SmartDashboard.putNumber("Shooter RPM", shooterSpeed);
 
-    
+    //indexer
+    if(gameJoystick.getAButtonPressed()){
+      toIndex = !toIndex;
 
-
-
-    //exact same concept with the intake as the shoot, just that it controls intaker motor instead
-    if(Robot.m_oi.getXButtonPressed()){
-      toIntake = (!toIntake);
+      if (toIndex) {
+      setSRXSpeed(indexer, 0.3
+      );
+      }
+      else {
+        setSRXSpeed(indexer, 0);
+      }
     }
 
-    if(Robot.m_oi.getBButtonHeld()) {
-
-      setSRXSpeed(intaker, -1);
-
-      setFXSpeed(shooter, -.1);
-
-
-
-    } else {
-    if(toIntake){
-      setSRXSpeed(intaker, 1);
-      //setIntaker(1);
-    } else {
+    //intaker
+    if(triggerDrive() != 0){
+      setSRXSpeed(intaker, -triggerDrive());
+    }
+    else {
       setSRXSpeed(intaker, 0);
-      //setIntaker(0);
-    }
-
-    if(toShoot){
-      //if it just become on, then it will set max speed
-      setFXSpeed(shooter, 1);//SHOULD NOT BE 1, WILL BE CHANGED TO MATCH 5200 RPM REQUIREMENT
-    } else {
-      //if it just turned off, then it will set speed to 0
-      setFXSpeed(shooter, 0);
-    }
-  }
-
-    //this is the indexer which runs at the speed of how much the trigger is pressed and it is not pressed then is off.
-    if(Robot.m_oi.getTriggerRight() != 0){
-      setSRXSpeed(indexer, Robot.m_oi.getTriggerRight());
     }
 
     //shooter
@@ -124,26 +95,26 @@ public class ShootingBall extends SubsystemBase {
     controller.set(TalonFXControlMode.PercentOutput, speed);
   }
 
-  // public void setIndexer(double speed) {
-  //   indexer.set(ControlMode.PercentOutput, speed);
-  // }
+  public void setIndexer(double speed) {
+    indexer.set(ControlMode.PercentOutput, speed);
+  }
 
-  // public void setShooterPID(double velocity) {
-  //   shooter.set(TalonFXControlMode.Velocity, velocity);
-  // }
+  public void setShooterPID(double velocity) {
+    shooter.set(TalonFXControlMode.Velocity, velocity);
+  }
 
-  // public void setShooter(double speed) {
-  //   shooter.set(TalonFXControlMode.PercentOutput, speed);
-  // }
+  public void setShooter(double speed) {
+    shooter.set(TalonFXControlMode.PercentOutput, speed);
+  }
 
-  // public int getShooterVelocity() {
-  //   return shooter.getSelectedSensorVelocity();
-  // }
+  public int getShooterVelocity() {
+    return shooter.getSelectedSensorVelocity();
+  }
 
   public void setZero() {
-  //  setSRXSpeed(intaker, 0);
-   // setSRXSpeed(indexer, 0);
-    // setSRXSpeed(colorWheel, 0);
-    // setFXSpeed(shooter, 0);
+    setSRXSpeed(intaker, 0);
+    setSRXSpeed(indexer, 0);
+    setSRXSpeed(colorWheel, 0);
+    setFXSpeed(shooter, 0);
   }
 }

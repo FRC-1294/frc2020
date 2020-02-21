@@ -4,6 +4,7 @@ import frc.robot.commands.AutoNavCommand;
 import frc.robot.commands.DictatorLocator;
 import frc.robot.commands.StalkerRoomba;
 import frc.robot.commands.TurnByCommand;
+import frc.robot.commands.VisionFinder;
 import frc.robot.commands.WallChecker;
 import frc.robot.subsystems.UltrasonicSubsystem;
 import frc.robot.subsystems.TwentyThreeStabWounds;
@@ -62,7 +63,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = new StalkerRoomba(5 * 12, m_driveAuto, ultrasonic);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);//new DictatorLocator(cassius, driveAuto);
+    m_autonomousCommand = new VisionFinder(m_driveAuto, cassius);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);
 
     // schedule the autonomous command (example)
     if (!m_autonomousCommand.isScheduled()) {
