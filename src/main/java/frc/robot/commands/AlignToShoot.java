@@ -22,7 +22,7 @@ public class AlignToShoot extends CommandBase {
   TwentyThreeStabWounds m_vision;
   WallChecker glasses;
 
-  AutoPath autoPath;
+  MoveByCommand autoPath;
   DictatorLocator alignToTarget;
   FeedShooterCommand feedShooterCommand;
   UltraFuseCommand ultraFuse;
@@ -76,7 +76,7 @@ public class AlignToShoot extends CommandBase {
     startAmount = new double[] {m_driveAuto.getAmountTraveled(0), m_driveAuto.getAmountTraveled(1)};
     left1 = false;
     left2 = false;
-    autoPath = new AutoPath(xTarget, yTarget, left1, left2, m_driveAuto);
+    autoPath = new MoveByCommand(xTarget, m_driveAuto, 0);
     ultraFuse = new UltraFuseCommand(m_driveAuto, m_ultra);
     feedShooterCommand = new FeedShooterCommand(m_shooter, shootTime);
     alignToTarget = new DictatorLocator(m_vision, m_driveAuto);
@@ -91,6 +91,9 @@ public class AlignToShoot extends CommandBase {
     double xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0) + startAmount[0]);
     double yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1) + startAmount[1]);
 
+    System.out.println("Step: " + step + " " + autoPath.isScheduled());
+    System.out.println(!autoPath.isScheduled() && !alignToTarget.isScheduled() && !feedShooterCommand.isScheduled() && ultraFuse.isScheduled() && !glasses.isScheduled());
+
     if (shouldShoot) checkShooter();
 
     //if current leg of path finished, schedule next in sequence
@@ -98,43 +101,46 @@ public class AlignToShoot extends CommandBase {
       if (Math.abs(xRem) <= autoPathMargin && Math.abs(yRem) <= autoPathMargin) {
         //align with hoop and shoot && get shooter ready
         if (step == 0) {
+          alignToTarget = new DictatorLocator(m_vision, m_driveAuto);
           alignToTarget.schedule();
           shooter = true;
           step++;
-          m_driveAuto.setWall(true);
+          m_driveAuto.setWall(false);
         }
+        //check wall
         else if(step == 1){
-          if(m_driveAuto.getWall()){
-            glasses = new WallChecker(20, m_driveAuto, m_ultra);
-            glasses.schedule();
-          }
-          else{
-            m_driveAuto.setWall(true);
+          // if(!m_driveAuto.getWall()){
+          //   glasses = new WallChecker(20, m_driveAuto, m_ultra);
+          //   glasses.schedule();
+          // }
+          // else{
+          //   m_driveAuto.setWall(false);
             step++;
-          }
+          // }
         }
         //move until shooting distance
         else if (step == 2) {
           xTarget = (int)m_ultra.getSensourLeft() - shootDis;
-          left1 = false;
-          left2 = false;
-          targetAngle = 270;
-          System.out.println((int)m_ultra.getSensourLeft() + "," + shootDis);
-          autoPath = new AutoPath(xTarget, 0, left1, left2, m_driveAuto);
+          autoPath = new MoveByCommand(xTarget, m_driveAuto, 0);
           autoPath.schedule();
           step++;
         }
-        //SHOOT
+        //realign
         else if (step == 3) {
-          if (shooterReady) {
-            feedShooterCommand = new FeedShooterCommand(m_shooter, shootTime);
-            feedShooterCommand.schedule();
-            step++;
-          }
+          alignToTarget = new DictatorLocator(m_vision, m_driveAuto);
+          alignToTarget.schedule();
           step++;
         }
-        //end command
+        //SHOOT
         else if (step == 4) {
+          // if (shooterReady) {
+          //   feedShooterCommand = new FeedShooterCommand(m_shooter, shootTime);
+          //   feedShooterCommand.schedule();
+          step++;
+          // }
+        }
+        //end command
+        else if (step >= 5) {
           shooter = false;
           isFinished = true;
         }
@@ -143,25 +149,25 @@ public class AlignToShoot extends CommandBase {
     
 
     //if obstacle detected during PID ONLY
-    if (!ultraFuse.isScheduled() && !alignToTarget.isScheduled() && !feedShooterCommand.isScheduled()) {
-      //if stopping necessary
-      if ((!m_driveAuto.getTurning() && !alignToTarget.isScheduled())) {
-        autoPath.cancel();
+    // if (!ultraFuse.isScheduled() && !alignToTarget.isScheduled() && !feedShooterCommand.isScheduled()) {
+    //   //if stopping necessary
+    //   if ((!m_driveAuto.getTurning() && !alignToTarget.isScheduled())) {
+    //     autoPath.cancel();
 
-        if (m_ultra.getSensourLeft() <= m_ultra.MIN_DIS) {
-          //avoid?
-        }
-        else {
-          //resechedule path if obstacle avoided
-          if (xRem >= autoPathMargin || yRem >= autoPathMargin) {
-            autoPath = new AutoPath(xRem, yRem, left1, left2, m_driveAuto);
-            autoPath.schedule();
-          }
-        }
-      }
-      //keep ultraFuse running to check if obstacle moves
-      ultraFuse.schedule();
-    }
+    //     if (m_ultra.getSensourLeft() <= m_ultra.MIN_DIS) {
+    //       //avoid?
+    //     }
+    //     else {
+    //       //resechedule path if obstacle avoided
+    //       if (xRem >= autoPathMargin || yRem >= autoPathMargin) {
+    //         autoPath = new MoveByCommand(xRem, m_driveAuto, 0);
+    //         autoPath.schedule();
+    //       }
+    //     }
+    //   }
+    //   //keep ultraFuse running to check if obstacle moves
+    //   ultraFuse.schedule();
+    // }
   }
 
   // Called once the command ends or is interrupted.
@@ -172,6 +178,7 @@ public class AlignToShoot extends CommandBase {
     m_driveAuto.setRearLeftSpeed(0);
     m_driveAuto.setRearRightSpeed(0);
     m_shooter.setShooter(0);
+    m_driveAuto.setCurrentAngle(0);
   }
 
   // Returns true when the command should end.

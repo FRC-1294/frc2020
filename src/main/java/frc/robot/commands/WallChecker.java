@@ -7,24 +7,27 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
 
 public class WallChecker extends CommandBase {
   final int PIDSlot = 1;
+  final double margin = 12;
   int HAL9000 = 0;
   int amount = 0;
   UltrasonicSubsystem dracula;
   DriveAutoSubsystem whee;
   double[] threeMusketeers = new double[3];
-  double margin = 6;
+  double[] threeAngles = new double[3];
   TurnByCommand tokyoDrift;
   boolean isFinished;
 
+  Timer timer = new Timer();
+
   public WallChecker(int amount, DriveAutoSubsystem driver, UltrasonicSubsystem ultraBurst) {
     this.amount = amount;
-    isFinished = false;
     dracula = ultraBurst;
     whee = driver;
   }
@@ -36,9 +39,17 @@ public class WallChecker extends CommandBase {
     whee.setRearLeftSpeed(0);
     whee.setRearRightSpeed(0);
     
+    threeMusketeers = new double[3];
+    threeAngles = new double[3];
+
+    timer = new Timer();
+    timer.start();
+    timer.reset();
+    
     HAL9000 = 1;
     isFinished = false;
     threeMusketeers[0] = dracula.getSensourLeft();
+    threeAngles[0] = whee.getCurrentAngle();
     tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
     tokyoDrift.schedule();
   }
@@ -48,36 +59,40 @@ public class WallChecker extends CommandBase {
   public void execute() {
     if(!tokyoDrift.isScheduled()){
       if(HAL9000 == 1) {
-        System.out.println();
-        threeMusketeers[HAL9000] = dracula.getSensourLeft();
-        tokyoDrift = new TurnByCommand(-amount * 2, whee, PIDSlot);
-        tokyoDrift.schedule();
-        HAL9000 = 2;
+        if (timer.get() > 1) {
+          System.out.println();
+          threeMusketeers[HAL9000] = dracula.getSensourLeft();
+          tokyoDrift = new TurnByCommand(-amount * 2, whee, PIDSlot);
+          tokyoDrift.schedule();
+          HAL9000 = 2;
+        }
       }
       else if(HAL9000 == 2) {
-        threeMusketeers[HAL9000] = dracula.getSensourLeft();
-        tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
-        tokyoDrift.schedule();
-        HAL9000 = 3;
+        if (timer.get() > 1) {
+          threeMusketeers[HAL9000] = dracula.getSensourLeft();
+          threeAngles[HAL9000-1] = whee.getCurrentAngle();
+          tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
+          tokyoDrift.schedule();
+          HAL9000 = 3;
+        }
       }
       else {
-        // double baseValLeft = threeMusketeers[0];
-        // double baseValRight = threeMusketeers[1];
-        // double baseVal = (baseValLeft + baseValRight)/2;
+        threeAngles[HAL9000-1] = whee.getCurrentAngle();
+
         double baseVal = threeMusketeers[0];
 
         // if (baseValLeft <= baseValRight + margin && baseValLeft >= baseValRight - margin) {
           
         if (baseVal <= baseVal + margin && baseVal >= baseVal - margin) {
-          if (threeMusketeers[1] * Math.abs(Math.cos(amount)) > baseVal + margin) {
+          if (threeMusketeers[1] * Math.abs(Math.cos(amount * Math.PI / 180)) > baseVal + margin) {
             whee.setWall(false);
           }
-          else if (threeMusketeers[2] * Math.abs(Math.cos(amount)) > baseVal + margin) {
+          else if (threeMusketeers[2] * Math.abs(Math.cos(amount* Math.PI / 180)) > baseVal + margin) {
             whee.setWall(false);
           }
           else {
             whee.setWall(true);
-            
+
           }
         }
         else {
@@ -86,6 +101,9 @@ public class WallChecker extends CommandBase {
 
         isFinished = true;
       }
+    }
+    else {
+      timer.reset();
     }
   }
 
@@ -99,8 +117,8 @@ public class WallChecker extends CommandBase {
 
     System.out.println("\n\n\n\n");
     System.out.println(threeMusketeers[0]);
-    System.out.println(threeMusketeers[1] * Math.abs(Math.cos(amount)));
-    System.out.println(threeMusketeers[2] * Math.abs(Math.cos(amount)));
+    System.out.println(threeMusketeers[1]);// * Math.abs(Math.cos(amount * Math.PI / 180)));
+    System.out.println(threeMusketeers[2]);// * Math.abs(Math.cos(amount * Math.PI / 180)));
 
     System.out.println(whee.getWall() + " ENDED");
     System.out.println("\n\n\n\n");

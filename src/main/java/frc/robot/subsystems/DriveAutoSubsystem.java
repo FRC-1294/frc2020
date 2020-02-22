@@ -22,7 +22,6 @@ import frc.robot.Constants;
 import frc.robot.Gains;
 import frc.robot.Robot;
 import frc.robot.commands.AlignToShoot;
-import frc.robot.commands.DictatorLocator;
 
 public class DriveAutoSubsystem extends SubsystemBase {
   private CANSparkMax frontLeftSpark = new CANSparkMax(Constants.frontLeftSpark, MotorType.kBrushless);
@@ -43,7 +42,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private final double targetPositionRotations = 0.54;
   private static int currentAngle;
   private static double[] amountTraveled = new double[] {0, 0};
-  private final Gains defaultPID = new Gains(0.2, 0.00001, 0.6, 0.0, 0.0, -0.5, 0.5, 0);
+  private final Gains defaultPID = new Gains(0.2, 0.00001, 0.4, 0.0, 0.0, -0.5, 0.5, 0);
   private final Gains lowDisPID = new Gains(0.2, 0.00001, 0.4, 0.0, 0.0, -0.7, 0.7, 1);
   private Timer timer = new Timer();
   private Timer rumbleTime = new Timer();
@@ -131,10 +130,12 @@ public class DriveAutoSubsystem extends SubsystemBase {
     //   Robot.cassius.setPipeline(1);
     // }
 
-    if (driveJoystick.getAButtonPressed() && !visionMove.isScheduled() && Robot.ultrasonic.getSensourLeft() < 190) {
+    System.out.println("Is scheded: " + visionMove.isScheduled());
+    if (driveJoystick.getAButtonPressed() && !visionMove.isScheduled()) {
       rumble = 0;
       visionMove = new AlignToShoot(this, Robot.ultrasonic, Robot.letsShoot, Robot.cassius, 5*12, false);
       visionMove.schedule();
+      System.out.println("Scheduling visionMove");
     }
     else {
       rumble = 8;

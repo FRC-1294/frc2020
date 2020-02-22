@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class UltrasonicSubsystem extends SubsystemBase {
-  public static final int MIN_DIS = 48;
+  public static final int MIN_DIS = 42;
   private static final double kValueToInches = 0.0528;
   private final static AnalogInput m_ultrasonicLeft = new AnalogInput(0);
   private static final byte k_deviceAddress = 0x62;

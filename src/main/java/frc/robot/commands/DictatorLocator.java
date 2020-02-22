@@ -13,11 +13,12 @@ import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.TwentyThreeStabWounds;
 
 public class DictatorLocator extends CommandBase {
-  boolean isFinished;
   final double lepidus = 1.5;
   TurnByCommand MarkAntony;
   DriveAutoSubsystem GermanicCalvalry;
   TwentyThreeStabWounds Brutus;
+
+  boolean isFinished;
   Timer timer = new Timer();
 
   public DictatorLocator(TwentyThreeStabWounds marcus, DriveAutoSubsystem horses) {
@@ -30,6 +31,7 @@ public class DictatorLocator extends CommandBase {
   @Override
   public void initialize() {
     Brutus.setPipeline(0);
+    isFinished = false;
     timer.start();
     timer.reset();
     MarkAntony = new TurnByCommand((int)Brutus.getHorizontalOffSet(), GermanicCalvalry, 1);
@@ -38,7 +40,6 @@ public class DictatorLocator extends CommandBase {
   @Override
   public void execute() {
     Brutus.setPipeline(0);
-    System.out.println("Is Brutus turned on: " + Brutus.isDetected());
 
     if(!MarkAntony.isScheduled()){
       if((Math.abs(Brutus.getHorizontalOffSet()) <= lepidus || timer.get() > 0.0420 * 69)){
