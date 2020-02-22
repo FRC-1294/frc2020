@@ -14,7 +14,7 @@ import frc.robot.subsystems.UltrasonicSubsystem;
 
 public class WallChecker extends CommandBase {
   final int PIDSlot = 1;
-  final double margin = 12;
+  final double margin = 3;
   int HAL9000 = 0;
   int amount = 0;
   UltrasonicSubsystem dracula;
@@ -59,7 +59,7 @@ public class WallChecker extends CommandBase {
   public void execute() {
     if(!tokyoDrift.isScheduled()){
       if(HAL9000 == 1) {
-        if (timer.get() > 1) {
+        if (timer.get() > 0.5) {
           System.out.println();
           threeMusketeers[HAL9000] = dracula.getSensourLeft();
           tokyoDrift = new TurnByCommand(-amount * 2, whee, PIDSlot);
@@ -68,7 +68,7 @@ public class WallChecker extends CommandBase {
         }
       }
       else if(HAL9000 == 2) {
-        if (timer.get() > 1) {
+        if (timer.get() > 0.5) {
           threeMusketeers[HAL9000] = dracula.getSensourLeft();
           threeAngles[HAL9000-1] = whee.getCurrentAngle();
           tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
@@ -79,15 +79,26 @@ public class WallChecker extends CommandBase {
       else {
         threeAngles[HAL9000-1] = whee.getCurrentAngle();
 
-        double baseVal = threeMusketeers[0];
+        double baseVal = threeMusketeers[0] * Math.abs(Math.cos(amount * Math.PI / 180));
 
         // if (baseValLeft <= baseValRight + margin && baseValLeft >= baseValRight - margin) {
           
         if (baseVal <= baseVal + margin && baseVal >= baseVal - margin) {
-          if (threeMusketeers[1] * Math.abs(Math.cos(amount * Math.PI / 180)) > baseVal + margin) {
+          double[] lowVal = new double[3];
+          
+          for (int i = 0; i < 3; i++) {
+            if (threeAngles[i] < -margin) {
+              lowVal[i] = threeAngles[i] + margin;
+            }
+            else if (threeAngles[i] > margin) {
+              lowVal[i] = threeAngles[i] - margin;
+            }
+          }
+
+          if (threeMusketeers[1] * Math.abs(Math.cos(amount * Math.PI / 180)) > threeMusketeers[1] * Math.abs(Math.cos(lowVal[1] * Math.PI / 180))) {
             whee.setWall(false);
           }
-          else if (threeMusketeers[2] * Math.abs(Math.cos(amount* Math.PI / 180)) > baseVal + margin) {
+          else if (threeMusketeers[2] * Math.abs(Math.cos(amount* Math.PI / 180)) > threeMusketeers[2] * Math.abs(Math.cos(lowVal[2] * Math.PI / 180))) {
             whee.setWall(false);
           }
           else {
@@ -116,9 +127,9 @@ public class WallChecker extends CommandBase {
     whee.setRearLeftSpeed(0);
 
     System.out.println("\n\n\n\n");
-    System.out.println(threeMusketeers[0]);
-    System.out.println(threeMusketeers[1]);// * Math.abs(Math.cos(amount * Math.PI / 180)));
-    System.out.println(threeMusketeers[2]);// * Math.abs(Math.cos(amount * Math.PI / 180)));
+    System.out.println(threeMusketeers[0] + " " + threeAngles[0]);
+    System.out.println(threeMusketeers[1] * Math.abs(Math.cos(amount * Math.PI / 180)) + " " + threeAngles[1]);
+    System.out.println(threeMusketeers[2] * Math.abs(Math.cos(amount * Math.PI / 180)) + " " + threeAngles[2]);
 
     System.out.println(whee.getWall() + " ENDED");
     System.out.println("\n\n\n\n");

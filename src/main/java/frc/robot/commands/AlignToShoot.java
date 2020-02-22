@@ -91,14 +91,14 @@ public class AlignToShoot extends CommandBase {
     double xRem = Math.abs(xTarget - m_driveAuto.getAmountTraveled(0) + startAmount[0]);
     double yRem = Math.abs(yTarget - m_driveAuto.getAmountTraveled(1) + startAmount[1]);
 
-    System.out.println("Step: " + step + " " + autoPath.isScheduled());
-    System.out.println(!autoPath.isScheduled() && !alignToTarget.isScheduled() && !feedShooterCommand.isScheduled() && ultraFuse.isScheduled() && !glasses.isScheduled());
+    // System.out.println("Step: " + step + " " + autoPath.isScheduled());
+    // System.out.println(!autoPath.isScheduled() && !alignToTarget.isScheduled() && !feedShooterCommand.isScheduled() && ultraFuse.isScheduled() && !glasses.isScheduled());
 
     if (shouldShoot) checkShooter();
 
     //if current leg of path finished, schedule next in sequence
     if (!autoPath.isScheduled() && !alignToTarget.isScheduled() && !feedShooterCommand.isScheduled() && ultraFuse.isScheduled() && !glasses.isScheduled()) {
-      if (Math.abs(xRem) <= autoPathMargin && Math.abs(yRem) <= autoPathMargin) {
+      //if (Math.abs(xRem) <= autoPathMargin && Math.abs(yRem) <= autoPathMargin) {
         //align with hoop and shoot && get shooter ready
         if (step == 0) {
           alignToTarget = new DictatorLocator(m_vision, m_driveAuto);
@@ -109,14 +109,14 @@ public class AlignToShoot extends CommandBase {
         }
         //check wall
         else if(step == 1){
-          // if(!m_driveAuto.getWall()){
-          //   glasses = new WallChecker(20, m_driveAuto, m_ultra);
-          //   glasses.schedule();
-          // }
-          // else{
-          //   m_driveAuto.setWall(false);
+          if(!m_driveAuto.getWall()){
+            glasses = new WallChecker(20, m_driveAuto, m_ultra);
+            glasses.schedule();
+          }
+          else{
+            m_driveAuto.setWall(false);
             step++;
-          // }
+          }
         }
         //move until shooting distance
         else if (step == 2) {
@@ -144,7 +144,7 @@ public class AlignToShoot extends CommandBase {
           shooter = false;
           isFinished = true;
         }
-      } 
+      //} 
     }
     
 

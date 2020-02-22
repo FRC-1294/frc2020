@@ -130,7 +130,6 @@ public class DriveAutoSubsystem extends SubsystemBase {
     //   Robot.cassius.setPipeline(1);
     // }
 
-    System.out.println("Is scheded: " + visionMove.isScheduled());
     if (driveJoystick.getAButtonPressed() && !visionMove.isScheduled()) {
       rumble = 0;
       visionMove = new AlignToShoot(this, Robot.ultrasonic, Robot.letsShoot, Robot.cassius, 5*12, false);
