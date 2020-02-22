@@ -14,7 +14,7 @@ import frc.robot.subsystems.UltrasonicSubsystem;
 
 public class WallChecker extends CommandBase {
   final int PIDSlot = 1;
-  final double margin = 3;
+  final double margin = 90;
   int HAL9000 = 0;
   int amount = 0;
   UltrasonicSubsystem dracula;
@@ -59,55 +59,52 @@ public class WallChecker extends CommandBase {
   public void execute() {
     if(!tokyoDrift.isScheduled()){
       if(HAL9000 == 1) {
+        if (threeMusketeers[1] == 0) {
+          threeMusketeers[1] = dracula.getSensourLeft();
+          threeAngles[1] = whee.getCurrentAngle();
+        }
+
         if (timer.get() > 0.5) {
           System.out.println();
-          threeMusketeers[HAL9000] = dracula.getSensourLeft();
           tokyoDrift = new TurnByCommand(-amount * 2, whee, PIDSlot);
           tokyoDrift.schedule();
           HAL9000 = 2;
         }
       }
       else if(HAL9000 == 2) {
+        if (threeMusketeers[2] == 0) {
+          threeMusketeers[2] = dracula.getSensourLeft();
+          threeAngles[2] = whee.getCurrentAngle();
+        }
+
         if (timer.get() > 0.5) {
-          threeMusketeers[HAL9000] = dracula.getSensourLeft();
-          threeAngles[HAL9000-1] = whee.getCurrentAngle();
           tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
           tokyoDrift.schedule();
           HAL9000 = 3;
         }
       }
-      else {
-        threeAngles[HAL9000-1] = whee.getCurrentAngle();
-
+      else if (HAL9000 == 3) {
         double baseVal = threeMusketeers[0] * Math.abs(Math.cos(amount * Math.PI / 180));
-
-        // if (baseValLeft <= baseValRight + margin && baseValLeft >= baseValRight - margin) {
-          
-        if (baseVal <= baseVal + margin && baseVal >= baseVal - margin) {
-          double[] lowVal = new double[3];
-          
-          for (int i = 0; i < 3; i++) {
-            if (threeAngles[i] < -margin) {
-              lowVal[i] = threeAngles[i] + margin;
-            }
-            else if (threeAngles[i] > margin) {
-              lowVal[i] = threeAngles[i] - margin;
-            }
+        double[] lowVal = new double[3];
+        
+        for (int i = 0; i < 3; i++) {
+          if (threeAngles[i] < -margin) {
+            lowVal[i] = threeAngles[i] + margin;
           }
-
-          if (threeMusketeers[1] * Math.abs(Math.cos(amount * Math.PI / 180)) > threeMusketeers[1] * Math.abs(Math.cos(lowVal[1] * Math.PI / 180))) {
-            whee.setWall(false);
-          }
-          else if (threeMusketeers[2] * Math.abs(Math.cos(amount* Math.PI / 180)) > threeMusketeers[2] * Math.abs(Math.cos(lowVal[2] * Math.PI / 180))) {
-            whee.setWall(false);
-          }
-          else {
-            whee.setWall(true);
-
+          else if (threeAngles[i] > margin) {
+            lowVal[i] = threeAngles[i] - margin;
           }
         }
-        else {
+
+        if (threeMusketeers[1] * Math.abs(Math.cos(amount * Math.PI / 180)) > baseVal+margin) {
           whee.setWall(false);
+        }
+        else if (threeMusketeers[2] * Math.abs(Math.cos(amount* Math.PI / 180)) > baseVal+margin) {
+          whee.setWall(false);
+        }
+        else {
+          whee.setWall(true);
+
         }
 
         isFinished = true;
@@ -127,9 +124,10 @@ public class WallChecker extends CommandBase {
     whee.setRearLeftSpeed(0);
 
     System.out.println("\n\n\n\n");
-    System.out.println(threeMusketeers[0] + " " + threeAngles[0]);
-    System.out.println(threeMusketeers[1] * Math.abs(Math.cos(amount * Math.PI / 180)) + " " + threeAngles[1]);
-    System.out.println(threeMusketeers[2] * Math.abs(Math.cos(amount * Math.PI / 180)) + " " + threeAngles[2]);
+    System.out.println(threeMusketeers[0] * Math.abs(Math.cos(threeAngles[0] * Math.PI / 180)) + " " + threeAngles[0]);
+    System.out.println(threeMusketeers[1] * Math.abs(Math.cos(threeAngles[1] * Math.PI / 180)) + " " + threeAngles[1]);
+    System.out.println(threeMusketeers[2] * Math.abs(Math.cos(threeAngles[2] * Math.PI / 180)) + " " + threeAngles[2]);
+    System.out.println(Math.abs(Math.cos(60 * Math.PI / 180)));
 
     System.out.println(whee.getWall() + " ENDED");
     System.out.println("\n\n\n\n");

@@ -145,10 +145,9 @@ public class AutoNavCommand extends CommandBase {
     
 
     //if obstacle detected during PID
-    if (!ultraFuse.isScheduled() && !turner.isScheduled()) {
+    if (!ultraFuse.isScheduled() && !finder.isScheduled() && !turner.isScheduled() && !alignToTarget.isScheduled()) {
       //if stopping necessary
       if ((!m_driveAuto.getTurning() && !alignToTarget.isScheduled())) {
-        autoPath.cancel();
         mover.cancel();
 
         if (m_ultra.getSensourLeft() <= m_ultra.MIN_DIS) {
