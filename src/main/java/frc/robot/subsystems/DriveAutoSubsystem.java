@@ -50,6 +50,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private boolean isTurning = false;
   int rumble = 0;
   private AlignToShoot visionMove;
+  private boolean isWall;
   
   public DriveAutoSubsystem() {
     UsbCamera usbcamera = CameraServer.getInstance().startAutomaticCapture(0);
@@ -95,12 +96,13 @@ public class DriveAutoSubsystem extends SubsystemBase {
     frontRightSpark.setInverted(true);
     rearLeftSpark.setInverted(false);
     rearRightSpark.setInverted(false);
+    isWall = false;
 
     rearLeftSpark.follow(frontLeftSpark);
     rearRightSpark.follow(frontRightSpark);
 
     visionMove = new AlignToShoot(this, Robot.ultrasonic, Robot.letsShoot, Robot.cassius, 5*12, false);
-    
+
     timer.start();
     rumbleTime.start();
   }
@@ -121,6 +123,13 @@ public class DriveAutoSubsystem extends SubsystemBase {
     else {
       setMode("coast");
     }
+
+    // if (driveJoystick.getYButton()) {
+    //   Robot.cassius.setPipeline(0);
+    // }
+    // else {
+    //   Robot.cassius.setPipeline(1);
+    // }
 
     if (driveJoystick.getAButtonPressed() && !visionMove.isScheduled() && Robot.ultrasonic.getSensourLeft() < 190) {
       rumble = 0;
@@ -146,6 +155,14 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   public void arcadeDrive(double forward, double turn) {
     sparkDrive.arcadeDrive(turn*0.5, -forward);
+  }
+
+  public void setWall(boolean thiss){
+    this.isWall = thiss;
+  }
+
+  public boolean getWall(){
+    return this.isWall;
   }
 
   public void setTurning(boolean val) {

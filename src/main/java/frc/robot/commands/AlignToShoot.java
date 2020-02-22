@@ -20,6 +20,7 @@ public class AlignToShoot extends CommandBase {
   UltrasonicSubsystem m_ultra;
   ShootingBall m_shooter;
   TwentyThreeStabWounds m_vision;
+  WallChecker glasses;
 
   AutoPath autoPath;
   DictatorLocator alignToTarget;
@@ -47,7 +48,7 @@ public class AlignToShoot extends CommandBase {
   final int robotFollowDis = 5*12;
   final int shootRPM = 4200;
   final int shootMargin = 50;
-  final double shootTime = 5.0;
+  final double shootTime = 1.0;
 
   int step = 0;
 
@@ -59,6 +60,7 @@ public class AlignToShoot extends CommandBase {
 
     shootDis = targetDis;
     shouldShoot = shoot;
+    glasses = new WallChecker(40, m_driveAuto, m_ultra);
   }
 
   // Called when the command is initially scheduled.
@@ -92,16 +94,27 @@ public class AlignToShoot extends CommandBase {
     if (shouldShoot) checkShooter();
 
     //if current leg of path finished, schedule next in sequence
-    if (!autoPath.isScheduled() && !alignToTarget.isScheduled() && !feedShooterCommand.isScheduled() && ultraFuse.isScheduled()) {
+    if (!autoPath.isScheduled() && !alignToTarget.isScheduled() && !feedShooterCommand.isScheduled() && ultraFuse.isScheduled() && !glasses.isScheduled()) {
       if (Math.abs(xRem) <= autoPathMargin && Math.abs(yRem) <= autoPathMargin) {
         //align with hoop and shoot && get shooter ready
         if (step == 0) {
           alignToTarget.schedule();
           shooter = true;
           step++;
+          m_driveAuto.setWall(true);
+        }
+        else if(step == 1){
+          if(m_driveAuto.getWall()){
+            glasses = new WallChecker(20, m_driveAuto, m_ultra);
+            glasses.schedule();
+          }
+          else{
+            m_driveAuto.setWall(true);
+            step++;
+          }
         }
         //move until shooting distance
-        else if (step == 1) {
+        else if (step == 2) {
           xTarget = (int)m_ultra.getSensourLeft() - shootDis;
           left1 = false;
           left2 = false;
@@ -112,7 +125,7 @@ public class AlignToShoot extends CommandBase {
           step++;
         }
         //SHOOT
-        else if (step == 2) {
+        else if (step == 3) {
           if (shooterReady) {
             feedShooterCommand = new FeedShooterCommand(m_shooter, shootTime);
             feedShooterCommand.schedule();
@@ -121,7 +134,7 @@ public class AlignToShoot extends CommandBase {
           step++;
         }
         //end command
-        else if (step == 3) {
+        else if (step == 4) {
           shooter = false;
           isFinished = true;
         }

@@ -39,81 +39,81 @@ public class StalkerRoomba extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_robotDrive.setFrontLeftSpeed(0);
-    m_robotDrive.setFrontRightSpeed(0);
-    m_robotDrive.setRearLeftSpeed(0);
-    m_robotDrive.setRearRightSpeed(0);
+  //   m_robotDrive.setFrontLeftSpeed(0);
+  //   m_robotDrive.setFrontRightSpeed(0);
+  //   m_robotDrive.setRearLeftSpeed(0);
+  //   m_robotDrive.setRearRightSpeed(0);
 
-    resetVars();
+  //   resetVars();
 
-    wallChecker = new WallChecker(40, m_robotDrive, m_ultra, this);
-    turner = new TurnByCommand(90, m_robotDrive, 0);
-    wallCheckTimer.reset();
-    wallCheckTimer.start();
-    ultraUpdateTimer.reset();
-    ultraUpdateTimer.start();
-  }
+  //   wallChecker = new WallChecker(40, m_robotDrive, m_ultra);
+  //   turner = new TurnByCommand(90, m_robotDrive, 0);
+  //   wallCheckTimer.reset();
+  //   wallCheckTimer.start();
+  //   ultraUpdateTimer.reset();
+  //   ultraUpdateTimer.start();
+  // }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    currentDistance = m_ultra.getDistance();
+  // // Called every time the scheduler runs while the command is scheduled.
+  // @Override
+  // public void execute() {
+  //   currentDistance = m_ultra.getDistance();
     
-    if (!wallChecker.isScheduled()) { //if code isn't simultaneously (shut up skye) running
-      if (shouldCheckWall && !hasChecked) { //if needs to check
-        System.out.println("Wall Checker Scheduled");
-        hasChecked = true;
-        //wallChecker.schedule();
-      }
-      else if (!isWall)  {//if should continue moving because is not wall
-        if(currentDistance < targetDis + offSet){
-          System.out.println("IN RANGE");
+  //   if (!wallChecker.isScheduled()) { //if code isn't simultaneously (shut up skye) running
+  //     if (shouldCheckWall && !hasChecked) { //if needs to check
+  //       System.out.println("Wall Checker Scheduled");
+  //       hasChecked = true;
+  //       //wallChecker.schedule();
+  //     }
+  //     else if (!isWall)  {//if should continue moving because is not wall
+  //       if(currentDistance < targetDis + offSet){
+  //         System.out.println("IN RANGE");
 
-          if (wallCheckTimer.get() >= 1) { // if it's been a second since last checking wall
-            shouldCheckWall = true;
-          }
+  //         if (wallCheckTimer.get() >= 1) { // if it's been a second since last checking wall
+  //           shouldCheckWall = true;
+  //         }
 
-          //setting speed
-          m_robotDrive.setFrontLeftSpeed(0);
-          m_robotDrive.setFrontRightSpeed(0);
-          m_robotDrive.setRearLeftSpeed(0);
-          m_robotDrive.setRearRightSpeed(0);
-        }
-        else {
-          System.out.println("OUT OF RANGE");
-          wallChecker.cancel();
-          wallCheckTimer.reset();
-          hasChecked = false;
-          shouldCheckWall = false;
+  //         //setting speed
+  //         m_robotDrive.setFrontLeftSpeed(0);
+  //         m_robotDrive.setFrontRightSpeed(0);
+  //         m_robotDrive.setRearLeftSpeed(0);
+  //         m_robotDrive.setRearRightSpeed(0);
+  //       }
+  //       else {
+  //         System.out.println("OUT OF RANGE");
+  //         wallChecker.cancel();
+  //         wallCheckTimer.reset();
+  //         hasChecked = false;
+  //         shouldCheckWall = false;
 
-          //setting speed
-          m_robotDrive.setFrontLeftSpeed(0.3);
-          m_robotDrive.setFrontRightSpeed(0.3);
-          m_robotDrive.setRearLeftSpeed(0.3);
-          m_robotDrive.setRearRightSpeed(0.3);
-        }
-      }
-      //if at a wall
-      else if (isWall) {
-        if (!turner.isScheduled() ) { //if turner isn't alreado scheduled
-          //first time, rotate left
-          if (!hasTurned) {
-            System.out.println("Turner Scheduled");
-            //turner.schedule();
-            hasTurned = true;
-          }
+  //         //setting speed
+  //         m_robotDrive.setFrontLeftSpeed(0.3);
+  //         m_robotDrive.setFrontRightSpeed(0.3);
+  //         m_robotDrive.setRearLeftSpeed(0.3);
+  //         m_robotDrive.setRearRightSpeed(0.3);
+  //       }
+  //     }
+  //     //if at a wall
+  //     else if (isWall) {
+  //       if (!turner.isScheduled() ) { //if turner isn't alreado scheduled
+  //         //first time, rotate left
+  //         if (!hasTurned) {
+  //           System.out.println("Turner Scheduled");
+  //           //turner.schedule();
+  //           hasTurned = true;
+  //         }
 
-          // phillip stop doing whateve ryou're doing 
-          // izzy shut up/skye shut up TM
+  //         // phillip stop doing whateve ryou're doing 
+  //         // izzy shut up/skye shut up TM
 
-          //once rotated, end command
-          else if (hasTurned) {
-            System.out.println("Command Finished");
-            isFinished = true;
-          }
-        }
-      }
-    }
+  //         //once rotated, end command
+  //         else if (hasTurned) {
+  //           System.out.println("Command Finished");
+  //           isFinished = true;
+  //         }
+  //       }
+  //     }
+  //   }
   }
 
   // Called once the command ends or is interrupted.

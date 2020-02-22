@@ -21,7 +21,6 @@ public class AutoNavCommand extends CommandBase {
   TwentyThreeStabWounds m_vision;
 
   AutoPath autoPath;
-  StalkerRoomba moveUntilWall;
   VisionFinder finder;
   AlignToShoot alignToTarget;
   TurnByCommand turner;
@@ -148,7 +147,7 @@ public class AutoNavCommand extends CommandBase {
     //if obstacle detected during PID
     if (!ultraFuse.isScheduled() && !turner.isScheduled()) {
       //if stopping necessary
-      if ((!m_driveAuto.getTurning() && !moveUntilWall.isScheduled() && !alignToTarget.isScheduled())) {
+      if ((!m_driveAuto.getTurning() && !alignToTarget.isScheduled())) {
         autoPath.cancel();
         mover.cancel();
 

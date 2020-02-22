@@ -17,18 +17,16 @@ public class WallChecker extends CommandBase {
   int amount = 0;
   UltrasonicSubsystem dracula;
   DriveAutoSubsystem whee;
-  StalkerRoomba myStalker;
   double[] threeMusketeers = new double[3];
   double margin = 6;
   TurnByCommand tokyoDrift;
   boolean isFinished;
 
-  public WallChecker(int amount, DriveAutoSubsystem driver, UltrasonicSubsystem ultraBurst, StalkerRoomba stalker) {
+  public WallChecker(int amount, DriveAutoSubsystem driver, UltrasonicSubsystem ultraBurst) {
     this.amount = amount;
     isFinished = false;
     dracula = ultraBurst;
     whee = driver;
-    myStalker = stalker;
   }
 
   @Override
@@ -72,17 +70,18 @@ public class WallChecker extends CommandBase {
           
         if (baseVal <= baseVal + margin && baseVal >= baseVal - margin) {
           if (threeMusketeers[1] * Math.abs(Math.cos(amount)) > baseVal + margin) {
-            myStalker.isWall = false;
+            whee.setWall(false);
           }
           else if (threeMusketeers[2] * Math.abs(Math.cos(amount)) > baseVal + margin) {
-            myStalker.isWall = false;
+            whee.setWall(false);
           }
           else {
-            myStalker.isWall = true;
+            whee.setWall(true);
+            
           }
         }
         else {
-          myStalker.isWall = false;
+          whee.setWall(false);
         }
 
         isFinished = true;
@@ -98,13 +97,13 @@ public class WallChecker extends CommandBase {
     whee.setRearRightSpeed(0);
     whee.setRearLeftSpeed(0);
 
-    System.out.println("\n\n\\n\n");
+    System.out.println("\n\n\n\n");
     System.out.println(threeMusketeers[0]);
     System.out.println(threeMusketeers[1] * Math.abs(Math.cos(amount)));
     System.out.println(threeMusketeers[2] * Math.abs(Math.cos(amount)));
 
-    System.out.println(myStalker.isWall + " ENDED");
-    System.out.println("\n\n\\n\n");
+    System.out.println(whee.getWall() + " ENDED");
+    System.out.println("\n\n\n\n");
   }
 
   // Returns true when the command should end.

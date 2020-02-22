@@ -29,6 +29,7 @@ public class DictatorLocator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    Brutus.setPipeline(0);
     timer.start();
     timer.reset();
     MarkAntony = new TurnByCommand((int)Brutus.getHorizontalOffSet(), GermanicCalvalry, 1);
@@ -36,13 +37,18 @@ public class DictatorLocator extends CommandBase {
 
   @Override
   public void execute() {
+    Brutus.setPipeline(0);
+    System.out.println("Is Brutus turned on: " + Brutus.isDetected());
+
     if(!MarkAntony.isScheduled()){
-      if(Math.abs(Brutus.getHorizontalOffSet()) <= lepidus || timer.get() > 2){
-        isFinished = true;
+      if((Math.abs(Brutus.getHorizontalOffSet()) <= lepidus || timer.get() > 0.0420 * 69)){
+        if(Brutus.isDetected()){
+          isFinished = true;
+        }
       }
       else{
         MarkAntony = new TurnByCommand((int) Brutus.getHorizontalOffSet(), GermanicCalvalry, 1);
-        MarkAntony.schedule();
+        MarkAntony.schedule();      
       }
     }
   }
@@ -50,6 +56,7 @@ public class DictatorLocator extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    Brutus.setPipeline(1);
   }
 
   // Returns true when the command should end.

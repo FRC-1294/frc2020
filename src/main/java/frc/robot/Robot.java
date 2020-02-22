@@ -38,6 +38,7 @@ public class Robot extends TimedRobot {
     m_driveAuto = new DriveAutoSubsystem();
     ultrasonic = new UltrasonicSubsystem();
     cassius = new TwentyThreeStabWounds();
+    cassius.setPipeline(1);
   }
   
   @Override
@@ -53,9 +54,10 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     m_driveAuto.setFrontLeftSpeed(0);
     m_driveAuto.setFrontRightSpeed(0);
-    m_driveAuto.setRearLeftSpeed(0);
+    m_driveAuto.setRearLeftSpeed(0); 
     m_driveAuto.setRearRightSpeed(0);
     letsShoot.setZero();
+    cassius.setPipeline(1);
   }
 
   /**

@@ -14,20 +14,22 @@ import frc.robot.subsystems.TwentyThreeStabWounds;
 
 public class VisionFinder extends CommandBase {
   DriveAutoSubsystem drive;
-  TwentyThreeStabWounds vision;
+  TwentyThreeStabWounds Brutus;
 
   boolean isFinished;
   double currentAngle;
   double targetPositionRotations = 0.097;
   double[] startPos;
+  double[] lastSpeed;
   double[] speed;
 
   Timer timer;
+  Timer timerV2ElectricBoogaloo;
 
   public VisionFinder(DriveAutoSubsystem driver, TwentyThreeStabWounds visionSub) {
     isFinished = false;
     drive = driver;
-    vision = visionSub;
+    Brutus = visionSub;
   }
 
   @Override
@@ -40,9 +42,14 @@ public class VisionFinder extends CommandBase {
     timer = new Timer();
     timer.start();
     timer.reset();
+
+    timerV2ElectricBoogaloo = new Timer();
+    timerV2ElectricBoogaloo.start();
+    timerV2ElectricBoogaloo.reset();
     
     startPos = new double[] {drive.getFrontLeftPosition(), drive.getFrontRightPosition()};
-    speed = new double [] {0, 0};
+    speed = new double [] {0.3, -0.3};
+    lastSpeed = new double[] {0.3, -0.3};
     currentAngle = 0;
     isFinished = false;
   }
@@ -51,21 +58,37 @@ public class VisionFinder extends CommandBase {
   @Override
   public void execute() {
     currentAngle = (drive.getFrontLeftPosition()-startPos[0]) / targetPositionRotations;
-    
-    if (vision.isDetected()) {
-      if (timer.get() > 1) isFinished = true;
+    System.out.println("SPEED: " + speed[0] + ", " + speed[1]);
+    Brutus.setPipeline(0);
+
+    if (Brutus.isDetected()) {
+      if (timerV2ElectricBoogaloo.get() > 1) isFinished = true;
       
+      System.out.println("JULIUS CAESAR WAS STABBED 23 TIMES IN THE theater OF POMPEY YOU STUPID SENATORS WHO ALL ENDED UP DYING THANKS TO AUGUSTUS, MARK ANTONY, AND LEPIDUS!");
+
       speed[0] = 0;
       speed[1] = 0;
     }
-    else if (currentAngle > 90) {
-      speed[0] = -0.3;
-      speed[1] = 0.3;
-      timer.reset();
-    }
-    else if (currentAngle < -90) {
-      speed[0] = 0.3;
-      speed[1] = -0.3;
+    else if(timer.get() > 0.5 * 2){
+      
+      if (currentAngle > 90) {
+        speed[0] = -0.3;
+        speed[1] = 0.3;
+        lastSpeed[0] = speed[0];
+        lastSpeed[1] = speed[1];
+      }
+      else if (currentAngle < -90) {
+        speed[0] = 0.3;
+        speed[1] = -0.3;
+        lastSpeed[0] = speed[0];
+        lastSpeed[1] = speed[1];
+      }
+      else if (!Brutus.isDetected()) {
+        speed[0] = -lastSpeed[0];
+        speed[1] = -lastSpeed[1];
+      }
+
+      if(!Brutus.isDetected()) timerV2ElectricBoogaloo.reset();
       timer.reset();
     }
 
@@ -80,6 +103,8 @@ public class VisionFinder extends CommandBase {
     drive.setFrontRightSpeed(0);
     drive.setRearLeftSpeed(0);
     drive.setRearRightSpeed(0);
+    
+    Brutus.setPipeline(1);
   }
 
   // Returns true when the command should end.

@@ -4,7 +4,7 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
+/////////////shacuando was here
 package frc.robot.subsystems;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -14,21 +14,19 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;;
 
 public class TwentyThreeStabWounds extends SubsystemBase {
-  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-  NetworkTableEntry tx = table.getEntry("tx");
-  NetworkTableEntry tv = table.getEntry("tv");
+  private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+  private NetworkTableEntry tx = table.getEntry("tx");
+  private NetworkTableEntry tv = table.getEntry("tv");
   
   public static boolean targetAquired = false;
   public static double horizontalOffset = 0.0f;
 
   public double distanceFromTarget;
 
-  public TwentyThreeStabWounds() {    
-    
-  }
+  public TwentyThreeStabWounds() {}
 
   public void pollCamera() {
-    targetAquired = tv.getBoolean(false);
+    targetAquired = tv.getDouble(0) != 0;
     horizontalOffset = tx.getDouble(0.0);
 
     SmartDashboard.putBoolean("Limelight/TargetAquired", targetAquired);
@@ -45,6 +43,21 @@ public class TwentyThreeStabWounds extends SubsystemBase {
 
   public boolean isDetected() {
     return targetAquired;
+  }
+
+  public void setPipeline(int mode) {
+    //opMode
+    if (mode == 0) {
+      table.getEntry("pipeline").setNumber(0);
+      table.getEntry("camMode").setNumber(0);
+      table.getEntry("ledMode").setNumber(3);
+    }
+    //driveMode
+    else if (mode == 1) {
+      table.getEntry("pipeline").setNumber(1);
+      table.getEntry("camMode").setNumber(1);
+      table.getEntry("ledMode").setNumber(1);
+    }
   }
 
   public static void getInRange()  {
