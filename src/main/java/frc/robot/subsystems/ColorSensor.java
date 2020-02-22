@@ -7,10 +7,15 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -23,13 +28,15 @@ public class ColorSensor extends SubsystemBase {
    */
   private XboxController controller = new XboxController(0);
   private static ColorSensorV3 colour;
+  private String desiredColor;
   private static I2C.Port pourt = I2C.Port.kOnboard;
   private static final int red = Integer.parseInt("bf7dec", 16);
   private static final int blue = Integer.parseInt("52739c", 16);
   private static final int yellow = Integer.parseInt("989682", 16);
   private static final int green = Integer.parseInt("638164", 16);
-  private static String currentColor; 
-  public CANSparkMax colorMotor = new CANSparkMax(3, MotorType.kbrushless);
+  private static final ArrayList<String> colorValList = new ArrayList<String>(List.of("RED", "YELLOW", "BLUE", "GREEN"));
+  private String currentColor; 
+  public TalonSRX colorMotor = new TalonSRX(3);
 
   public ColorSensor() {
     colour = new ColorSensorV3(pourt);
@@ -39,13 +46,14 @@ public class ColorSensor extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putString("Colour", Integer.toString(colour.hashCode()));
     String hexString = colour.getColor().toString();
-    readColorClosest(hexString);
-
-  }
-  public static void readColorRange(String hexString){
     Scanner parser = new Scanner(hexString).useDelimiter("@");
     parser.next();
     String hex = parser.next();
+    parser.close();
+    readColorClosest(hex);
+
+  }
+  public void readColorRange(String hex){
     // System.out.println(hex);
     String color = hex.substring(0, 6);
     int colVal = Integer.parseInt(color, 16);
@@ -64,10 +72,7 @@ public class ColorSensor extends SubsystemBase {
   }
 
 
-  public static void readColorClosest(String hexString) {
-    Scanner parser = new Scanner(hexString).useDelimiter("@");
-    parser.next();
-    String hex = parser.next();
+  public static void readColorClosest(String hex) {
     // System.out.println(hex);
     String color = hex.substring(0, 6);
     int colVal = Integer.parseInt(color, 16);
@@ -91,6 +96,16 @@ public class ColorSensor extends SubsystemBase {
       System.out.println("HAHA RIP \n");
     }
   }
+
+  public String getColor(){
+    int index = colorValList.indexOf(currentColor);
+    index += 2;
+    if(index > 3){
+      index -= 4;
+    }
+    return colorValList.get(index);
+  }
+
   public static int closeTo(int value, int comp1, int comp2, int comp3, int comp4){
     int dif1 = Math.abs(value - comp1);
     int dif2 = Math.abs(value - comp2);
@@ -120,6 +135,10 @@ public class ColorSensor extends SubsystemBase {
     }
   }
 
+  public void setSpeed(double speed){
+    colorMotor.set(ControlMode.PercentOutput, speed);
+  }
+
 /**
    * This function is called every robot packet, no matter the mode. Use this for items like
    * diagnostics that you want ran during disabled, autonomous, teleoperated and test.
@@ -129,7 +148,7 @@ public class ColorSensor extends SubsystemBase {
    */
   public void robotPeriodic() {
     if(controller.getYButtonPressed()){
-      CommandScheduler.getInstance().schedule(new turnReadColor(currentColor));
+      CommandScheduler.getInstance().schedule(new turnReadColor(this, desiredColor));
     }
     
   }

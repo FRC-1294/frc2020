@@ -7,23 +7,43 @@
 
 package frc.robot.commands;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.ColorSensor;
 
 public class turnReadColor extends CommandBase {
   private String color;
+  private ColorSensor colorReader;
+  private boolean done = false;
+  private String desired;
+  private Timer timer;
 
-  public turnReadColor(String color) {
-    this.color = color;
+  public turnReadColor(ColorSensor colorReader, String desired) {
+    this.colorReader = colorReader;
+    this.desired = desired;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    timer.start();
+    timer.reset();
+    colorReader.setSpeed(0.5);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    color = colorReader.getColor();
+    if(color.equals(desired)){
+      colorReader.setSpeed(0);
+      if (timer.get() > 1) done = true;
+    } else {
+      colorReader.setSpeed(0.5);
+      timer.reset();
+    }
   }
 
   // Called once the command ends or is interrupted.
@@ -34,6 +54,6 @@ public class turnReadColor extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return done;
   }
 }
