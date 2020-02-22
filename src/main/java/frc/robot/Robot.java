@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.ColorSensor;
 //import java.awt.Color;
+import frc.robot.subsystems.LinearActuator;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -25,7 +26,8 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  public ColorSensor colour = new ColorSensor();
+  public static LinearActuator raiser = new LinearActuator();
+  public static ColorSensor colour = new ColorSensor();
   
 
   /*
