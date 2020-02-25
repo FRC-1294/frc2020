@@ -47,7 +47,7 @@ public class AlignToShoot extends CommandBase {
   final int autoPathMargin = 2;
   final int robotFollowDis = 5*12;
   final double ticksPerRev = -2.59;
-  final double shootRPM = 6300 * ticksPerRev;
+  final double shootRPM = 6300;
   final int shootMargin = 50;
   final double shootTime = 1.0;
 
