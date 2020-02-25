@@ -28,4 +28,6 @@ public final class Constants {
 
     public static final int driveJoystick = 0;
     public static final int gameJoystick = 1;
+
+    public static final int linearActuator = 1;
 }

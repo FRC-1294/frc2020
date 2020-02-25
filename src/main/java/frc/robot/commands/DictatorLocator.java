@@ -13,7 +13,7 @@ import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.TwentyThreeStabWounds;
 
 public class DictatorLocator extends CommandBase {
-  final double lepidus = 1.5;
+  final double lepidus = 1;
   TurnByCommand MarkAntony;
   DriveAutoSubsystem GermanicCalvalry;
   TwentyThreeStabWounds Brutus;
@@ -42,7 +42,7 @@ public class DictatorLocator extends CommandBase {
     Brutus.setPipeline(0);
 
     if(!MarkAntony.isScheduled()){
-      if((Math.abs(Brutus.getHorizontalOffSet()) <= lepidus || timer.get() > 0.0420 * 69)){
+      if((Math.abs(Brutus.getHorizontalOffSet()) <= lepidus || timer.get() > 8)){
         if(Brutus.isDetected()){
           isFinished = true;
         }

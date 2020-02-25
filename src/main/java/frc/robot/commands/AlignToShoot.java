@@ -40,13 +40,14 @@ public class AlignToShoot extends CommandBase {
   int targetAngle;
   int xTarget;
   int yTarget;
-  int shooterSpeed;
+  double shooterSpeed;
   int shootDis;
   double[] startAmount;
 
   final int autoPathMargin = 2;
   final int robotFollowDis = 5*12;
-  final int shootRPM = 4200;
+  final double ticksPerRev = -2.59;
+  final double shootRPM = 6300 * ticksPerRev;
   final int shootMargin = 50;
   final double shootTime = 1.0;
 
@@ -103,7 +104,6 @@ public class AlignToShoot extends CommandBase {
         if (step == 0) {
           alignToTarget = new DictatorLocator(m_vision, m_driveAuto);
           alignToTarget.schedule();
-          shooter = true;
           step++;
           m_driveAuto.setWall(false);
         }
@@ -120,24 +120,25 @@ public class AlignToShoot extends CommandBase {
         }
         //move until shooting distance
         else if (step == 2) {
-          xTarget = (int)m_ultra.getSensourLeft() - shootDis;
-          autoPath = new MoveByCommand(xTarget, m_driveAuto, 0);
-          autoPath.schedule();
+          // xTarget = (int)m_ultra.getSensourLeft() - shootDis;
+          // autoPath = new MoveByCommand(xTarget, m_driveAuto, 0);
+          // autoPath.schedule();
           step++;
         }
         //realign
         else if (step == 3) {
+          shooter = true;
           alignToTarget = new DictatorLocator(m_vision, m_driveAuto);
           alignToTarget.schedule();
           step++;
         }
         //SHOOT
         else if (step == 4) {
-          // if (shooterReady) {
-          //   feedShooterCommand = new FeedShooterCommand(m_shooter, shootTime);
-          //   feedShooterCommand.schedule();
-          step++;
-          // }
+          if (shooterReady) {
+            feedShooterCommand = new FeedShooterCommand(m_shooter, shootTime);
+            feedShooterCommand.schedule();
+            step++;
+          }
         }
         //end command
         else if (step >= 5) {
@@ -148,26 +149,26 @@ public class AlignToShoot extends CommandBase {
     }
     
 
-    //if obstacle detected during PID ONLY
-    // if (!ultraFuse.isScheduled() && !alignToTarget.isScheduled() && !feedShooterCommand.isScheduled()) {
-    //   //if stopping necessary
-    //   if ((!m_driveAuto.getTurning() && !alignToTarget.isScheduled())) {
-    //     autoPath.cancel();
+    // if obstacle detected during PID ONLY
+    if (!ultraFuse.isScheduled() && !alignToTarget.isScheduled() && !feedShooterCommand.isScheduled()) {
+      //if stopping necessary
+      if ((!m_driveAuto.getTurning() && !alignToTarget.isScheduled())) {
+        autoPath.cancel();
 
-    //     if (m_ultra.getSensourLeft() <= m_ultra.MIN_DIS) {
-    //       //avoid?
-    //     }
-    //     else {
-    //       //resechedule path if obstacle avoided
-    //       if (xRem >= autoPathMargin || yRem >= autoPathMargin) {
-    //         autoPath = new MoveByCommand(xRem, m_driveAuto, 0);
-    //         autoPath.schedule();
-    //       }
-    //     }
-    //   }
-    //   //keep ultraFuse running to check if obstacle moves
-    //   ultraFuse.schedule();
-    // }
+        if (m_ultra.getSensourLeft() <= m_ultra.MIN_DIS) {
+          //avoid?
+        }
+        else {
+          //resechedule path if obstacle avoided
+          if (xRem >= autoPathMargin || yRem >= autoPathMargin) {
+            autoPath = new MoveByCommand(xRem, m_driveAuto, 0);
+            autoPath.schedule();
+          }
+        }
+      }
+      //keep ultraFuse running to check if obstacle moves
+      ultraFuse.schedule();
+    }
   }
 
   // Called once the command ends or is interrupted.
@@ -189,31 +190,27 @@ public class AlignToShoot extends CommandBase {
 
   public void checkShooter() {
     if (shooter) {
-      shooterSpeed = m_shooter.getShooterVelocity();
+      shooterSpeed = m_shooter.getShooterVelocity()/ticksPerRev;
       m_shooter.setShooterPID(shootRPM);
 
       boolean atSpeed = false;
       boolean timeHold = false;
 
-      if (Math.abs(shooterSpeed) <= shootRPM+shootMargin && Math.abs(shooterSpeed) >= shootRPM+shootMargin) {
+      System.out.println(shooterSpeed + " " + (shootRPM + shootMargin));
+
+      if(Math.abs(shooterSpeed) <= shootRPM + shootMargin && Math.abs(shooterSpeed) >= shootRPM - shootMargin)
         atSpeed = true;
-      }
 
-      if (atSpeed) {
-        if(timer.get() >= 1){
+      if (atSpeed) 
+        if(timer.get() >= 1)
           timeHold = true;
-        }
-      }
-      else {
+      else
         timer.reset();
-      }
 
-      if(atSpeed && timeHold) {
+      if(atSpeed && timeHold) 
         shooterReady = true;
-      }
-      else {
+      else
         shooterReady = false;
-      }
     }
     else {
       m_shooter.setShooter(0);

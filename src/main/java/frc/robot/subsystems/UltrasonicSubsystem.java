@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import java.nio.ByteBuffer;
-
 import edu.wpi.first.hal.I2CJNI;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.I2C;
@@ -10,10 +9,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class UltrasonicSubsystem extends SubsystemBase {
+  // private static final double kValueToInches = 0.0528;
+  // private final static AnalogInput m_ultrasonicLeft = new AnalogInput(0);
+  
   public static final int MIN_DIS = 42;
-  private static final double kValueToInches = 0.0528;
-  private final static AnalogInput m_ultrasonicLeft = new AnalogInput(0);
-  private static final byte k_deviceAddress = 0x62;
 	private final byte m_port;
 	private final ByteBuffer m_buffer = ByteBuffer.allocateDirect(2);
   public I2C i2c;
@@ -63,13 +62,13 @@ public class UltrasonicSubsystem extends SubsystemBase {
 		m_buffer.put(0, (byte) address);
 		m_buffer.put(1, (byte) value);
 
-		return I2CJNI.i2CWrite(m_port, k_deviceAddress, m_buffer, (byte) 2);
+		return I2CJNI.i2CWrite(m_port, deviceAddress, m_buffer, (byte) 2);
 	}
 
 	private short readShort(int address) {
 		m_buffer.put(0, (byte) address);
-		I2CJNI.i2CWrite(m_port, k_deviceAddress, m_buffer, (byte) 1);
-		I2CJNI.i2CRead(m_port, k_deviceAddress, m_buffer, (byte) 2);
+		I2CJNI.i2CWrite(m_port, deviceAddress, m_buffer, (byte) 1);
+		I2CJNI.i2CRead(m_port, deviceAddress, m_buffer, (byte) 2);
 		return m_buffer.getShort(0);
 	}
 

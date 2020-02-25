@@ -89,28 +89,23 @@ public class AutoNavCommand extends CommandBase {
     //if current leg of path finished, schedule next in sequence
     if (!finder.isScheduled() && !turner.isScheduled() && !mover.isScheduled() && !alignToTarget.isScheduled() && ultraFuse.isScheduled()) {
         //find edge of vision target
-        if (step == 0) {
-          finder = new VisionFinder(m_driveAuto, m_vision);
-          finder.schedule();
-          step++;
-        }
 
         //align and shoot
-        if (step == 1) {
+        if (step == 0) {
           alignToTarget = new AlignToShoot(m_driveAuto, m_ultra, m_shooter, m_vision, shootDis, true);
           alignToTarget.schedule();
           step++;
         }
 
         //turn around
-        else if (step == 2) {
+        else if (step == 1) {
           turner = new TurnByCommand(180, m_driveAuto, 0);
           turner.schedule();
           step++;
         }
 
         //return to startPoint
-        else if (step == 3) {
+        else if (step == 2) {
           xTarget = 0;
           yTarget = 0;
           moveAmount = (int) Math.sqrt(Math.pow(m_driveAuto.getAmountTraveled(0), 2) + Math.pow(m_driveAuto.getAmountTraveled(1), 2));
@@ -120,7 +115,7 @@ public class AutoNavCommand extends CommandBase {
         }
 
         //turn to the dark (our) side
-        else if (step == 4) {
+        else if (step == 3) {
           moveAmount = 0;
           turner = new TurnByCommand(0-m_driveAuto.getCurrentAngle(), m_driveAuto, 0);
           turner.schedule();
@@ -128,7 +123,7 @@ public class AutoNavCommand extends CommandBase {
         }
 
         //move past auto line
-        else if (step == 5) {
+        else if (step == 4) {
           xTarget = 0;
           yTarget = 0;
           moveAmount = amountPastAutoLine;
@@ -138,7 +133,7 @@ public class AutoNavCommand extends CommandBase {
         }
 
         //end command
-        else if (step == 6) {
+        else if (step >= 5) {
           isFinished = true;
         }
     }

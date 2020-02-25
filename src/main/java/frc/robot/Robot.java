@@ -1,7 +1,9 @@
 package frc.robot;
 
+import frc.robot.commands.AlignToShoot;
 import frc.robot.commands.AutoNavCommand;
 import frc.robot.commands.DictatorLocator;
+import frc.robot.commands.MoveByCommand;
 import frc.robot.commands.StalkerRoomba;
 import frc.robot.commands.TurnByCommand;
 import frc.robot.commands.VisionFinder;
@@ -26,6 +28,7 @@ public class Robot extends TimedRobot {
   public static TwentyThreeStabWounds cassius;
   public static ShootingBall letsShoot;
   public static DriveAutoSubsystem m_driveAuto;
+  public static MoveByCommand chacharealmooth;
  
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -65,7 +68,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = new VisionFinder(m_driveAuto, cassius);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);
+    m_autonomousCommand = new MoveByCommand(5 * 12, m_driveAuto, 0); //new AlignToShoot(m_driveAuto, ultrasonic, letsShoot, cassius, 10*12, true);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);
+    
 
     // schedule the autonomous command (example)
     if (!m_autonomousCommand.isScheduled()) {

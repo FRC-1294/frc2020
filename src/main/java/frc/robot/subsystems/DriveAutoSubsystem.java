@@ -22,6 +22,7 @@ import frc.robot.Constants;
 import frc.robot.Gains;
 import frc.robot.Robot;
 import frc.robot.commands.AlignToShoot;
+import frc.robot.commands.DictatorLocator;
 
 public class DriveAutoSubsystem extends SubsystemBase {
   private CANSparkMax frontLeftSpark = new CANSparkMax(Constants.frontLeftSpark, MotorType.kBrushless);
@@ -42,13 +43,15 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private final double targetPositionRotations = 0.54;
   private static int currentAngle;
   private static double[] amountTraveled = new double[] {0, 0};
-  private final Gains defaultPID = new Gains(0.2, 0.00001, 0.4, 0.0, 0.0, -0.5, 0.5, 0);
+  private final Gains defaultPID = new Gains(0.05, 0.00001, 0.7, 0.0, 0.0, -0.5, 0.5, 0);
   private final Gains lowDisPID = new Gains(0.2, 0.00001, 0.4, 0.0, 0.0, -0.7, 0.7, 1);
   private Timer timer = new Timer();
   private Timer rumbleTime = new Timer();
   private boolean isTurning = false;
   int rumble = 0;
+  double factor = 1;
   private AlignToShoot visionMove;
+  private DictatorLocator visionRotate;
   private boolean isWall;
   
   public DriveAutoSubsystem() {
@@ -101,6 +104,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
     rearRightSpark.follow(frontRightSpark);
 
     visionMove = new AlignToShoot(this, Robot.ultrasonic, Robot.letsShoot, Robot.cassius, 5*12, false);
+    visionRotate = new DictatorLocator(Robot.cassius, this);
 
     timer.start();
     rumbleTime.start();
@@ -123,6 +127,15 @@ public class DriveAutoSubsystem extends SubsystemBase {
       setMode("coast");
     }
 
+    if (driveJoystick.getBumperPressed(Hand.kLeft)) {
+      if (factor == 1) {
+        factor = 0.5;
+      }
+      else {
+        factor = 1;
+      }
+    }
+
     // if (driveJoystick.getYButton()) {
     //   Robot.cassius.setPipeline(0);
     // }
@@ -130,10 +143,12 @@ public class DriveAutoSubsystem extends SubsystemBase {
     //   Robot.cassius.setPipeline(1);
     // }
 
-    if (driveJoystick.getAButtonPressed() && !visionMove.isScheduled()) {
+    if (driveJoystick.getAButtonPressed() && !visionMove.isScheduled() && !visionRotate.isScheduled()) {
       rumble = 0;
-      visionMove = new AlignToShoot(this, Robot.ultrasonic, Robot.letsShoot, Robot.cassius, 5*12, false);
-      visionMove.schedule();
+      // visionMove = new AlignToShoot(this, Robot.ultrasonic, Robot.letsShoot, Robot.cassius, 5*12, false);
+      // visionMove.schedule();
+      visionRotate = new DictatorLocator(Robot.cassius, this);
+      visionRotate.schedule();
       System.out.println("Scheduling visionMove");
     }
     else {
@@ -154,7 +169,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   }
 
   public void arcadeDrive(double forward, double turn) {
-    sparkDrive.arcadeDrive(turn*0.5, -forward);
+    sparkDrive.arcadeDrive(turn*0.5*factor, -forward);
   }
 
   public void setWall(boolean thiss){
