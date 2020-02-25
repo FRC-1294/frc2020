@@ -54,27 +54,16 @@ public class ShootingBall extends SubsystemBase {
    SmartDashboard.putNumber("Shooter RPM", shooterSpeed);
    SmartDashboard.putBoolean("Indexering", toIndex);
 
-    if(gameJoystick.getBButtonPressed()){
-      toReversed = !toReversed;
-
-      if(toReversed){
-        setSRXSpeed(indexer, -0.3);
-        currentSpeed = -500-offset;
-      }
-      else{
-        setSRXSpeed(indexer, 0);
-        currentSpeed = 0;
-      }
-    }
-
     //indexer
     if(gameJoystick.getAButtonPressed()){
       toIndex = !toIndex;
 
       if (toIndex){// && shooterSpeed > currentSpeed - 300 && shooterSpeed < currentSpeed + 300) {
+        toReverse = false;
         setSRXSpeed(indexer, 0.5);
       }
       else {
+        toReverse = false;
         setSRXSpeed(indexer, 0);
       }
     }
@@ -87,22 +76,33 @@ public class ShootingBall extends SubsystemBase {
       setSRXSpeed(intaker, 0);
     }
 
-    // //shooter
-    // if(gameJoystick.getY(Hand.kLeft) != 0){
-    //   setFXSpeed(shooter, gameJoystick.getY(Hand.kLeft));
-    // }
-    // else {
-    //   setFXSpeed(shooter, 0);
-    // }
+    //shooter
+    if(gameJoystick.getBButtonPressed()){
+      toReversed = !toReversed;
 
+      if(toReversed){
+        toShoot = true;
+        setSRXSpeed(indexer, -0.3);
+        currentSpeed = -500-offset;
+      }
+      else{
+        toShoot = false;
+        setSRXSpeed(indexer, 0);
+        currentSpeed = 0;
+      }
+    }
     if (gameJoystick.getBumperPressed(Hand.kLeft)) {
       toShoot = !toShoot;
+      toReverse = false;
       currentSpeed = 6000 + offset;
     }
     if (gameJoystick.getBumperPressed(Hand.kRight)) {
       toShoot = !toShoot;
+      toReverse = false;
       currentSpeed = 5600 + offset;
     }    
+    
+    //shooter PID
     if (toShoot) {
       shooter.set(TalonFXControlMode.Velocity, currentSpeed * ticksPerRev);
     }
