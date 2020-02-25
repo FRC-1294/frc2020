@@ -9,7 +9,7 @@ public class TurnByCommand extends CommandBase {
   DriveAutoSubsystem m_driveAuto;
   int m_amount;
   //CHANGE TO ADJUST DEGREE FACTOR (if overshoots - lower, and vice versa)
-  double targetPositionRotations = 0.097;
+  double targetPositionRotations = 0.12;
   double m_targetLeft;
   double m_targetRight;
   double startingGyro;

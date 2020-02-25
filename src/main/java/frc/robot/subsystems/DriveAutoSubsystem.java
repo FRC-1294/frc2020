@@ -44,7 +44,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private static int currentAngle;
   private static double[] amountTraveled = new double[] {0, 0};
   private final Gains defaultPID = new Gains(0.05, 0.00001, 0.7, 0.0, 0.0, -0.5, 0.5, 0);
-  private final Gains lowDisPID = new Gains(0.2, 0.00001, 0.4, 0.0, 0.0, -0.7, 0.7, 1);
+  private final Gains lowDisPID = new Gains(0.05, 0.00001, 0.7, 0.0, 0.0, -0.7, 0.7, 1);
   private Timer timer = new Timer();
   private Timer rumbleTime = new Timer();
   private boolean isTurning = false;

@@ -72,7 +72,7 @@ public class ShootingBall extends SubsystemBase {
       toIndex = !toIndex;
 
       if (toIndex){// && shooterSpeed > currentSpeed - 300 && shooterSpeed < currentSpeed + 300) {
-        setSRXSpeed(indexer, 0.3);
+        setSRXSpeed(indexer, 0.5);
       }
       else {
         setSRXSpeed(indexer, 0);
@@ -81,7 +81,7 @@ public class ShootingBall extends SubsystemBase {
 
     //intaker
     if(triggerDrive() != 0){
-      setSRXSpeed(intaker, -triggerDrive()*0.3);
+      setSRXSpeed(intaker, -triggerDrive()*0.5);
     }
     else {
       setSRXSpeed(intaker, 0);

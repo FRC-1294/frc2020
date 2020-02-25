@@ -17,6 +17,7 @@ public class UltrasonicSubsystem extends SubsystemBase {
 	private final ByteBuffer m_buffer = ByteBuffer.allocateDirect(2);
   public I2C i2c;
   public double offset;
+  
   I2C LidarPort;
   private static final byte deviceAddress = 0x62;
   

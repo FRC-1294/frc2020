@@ -68,7 +68,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = new MoveByCommand(5 * 12, m_driveAuto, 0); //new AlignToShoot(m_driveAuto, ultrasonic, letsShoot, cassius, 10*12, true);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);
+    m_autonomousCommand = new TurnByCommand(-10, m_driveAuto, 1); //new AlignToShoot(m_driveAuto, ultrasonic, letsShoot, cassius, 10*12, true);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);
     
 
     // schedule the autonomous command (example)
