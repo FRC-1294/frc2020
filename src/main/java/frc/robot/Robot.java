@@ -41,6 +41,12 @@ public class Robot extends TimedRobot {
     m_driveAuto = new DriveAutoSubsystem();
     ultrasonic = new UltrasonicSubsystem();
     cassius = new TwentyThreeStabWounds();
+    
+    m_driveAuto.setFrontLeftSpeed(0);
+    m_driveAuto.setFrontRightSpeed(0);
+    m_driveAuto.setRearLeftSpeed(0); 
+    m_driveAuto.setRearRightSpeed(0);
+    letsShoot.setZero();
     cassius.setPipeline(1);
   }
   
@@ -68,7 +74,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = new TurnByCommand(-10, m_driveAuto, 1); //new AlignToShoot(m_driveAuto, ultrasonic, letsShoot, cassius, 10*12, true);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);
+    m_autonomousCommand = new AlignToShoot(m_driveAuto, ultrasonic, letsShoot, cassius, 112, true);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);
     
 
     // schedule the autonomous command (example)

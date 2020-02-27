@@ -41,7 +41,7 @@ public class AlignToShoot extends CommandBase {
   int xTarget;
   int yTarget;
   double shooterSpeed;
-  int shootDis;
+  int shootDis = 110;
   double[] startAmount;
 
   final int autoPathMargin = 2;
@@ -49,7 +49,7 @@ public class AlignToShoot extends CommandBase {
   final double ticksPerRev = -2.59;
   final double shootRPM = 6300;
   final int shootMargin = 50;
-  final double shootTime = 1.0;
+  final double shootTime = 5.0;
 
   int step = 0;
 
@@ -59,7 +59,6 @@ public class AlignToShoot extends CommandBase {
     m_shooter = shooter;
     m_vision = vision;
 
-    shootDis = targetDis;
     shouldShoot = shoot;
     glasses = new WallChecker(40, m_driveAuto, m_ultra);
   }
@@ -109,7 +108,7 @@ public class AlignToShoot extends CommandBase {
         }
         //check wall
         else if(step == 1){
-          if(!m_driveAuto.getWall()){
+          if(!m_driveAuto.getWall() && shouldShoot){
             glasses = new WallChecker(20, m_driveAuto, m_ultra);
             glasses.schedule();
           }
@@ -120,9 +119,9 @@ public class AlignToShoot extends CommandBase {
         }
         //move until shooting distance
         else if (step == 2) {
-          // xTarget = (int)m_ultra.getSensourLeft() - shootDis;
-          // autoPath = new MoveByCommand(xTarget, m_driveAuto, 0);
-          // autoPath.schedule();
+          xTarget = (int)m_ultra.getSensourLeft() - shootDis;
+          autoPath = new MoveByCommand(xTarget, m_driveAuto, 0);
+          autoPath.schedule();
           step++;
         }
         //realign
@@ -134,9 +133,14 @@ public class AlignToShoot extends CommandBase {
         }
         //SHOOT
         else if (step == 4) {
-          if (shooterReady) {
-            feedShooterCommand = new FeedShooterCommand(m_shooter, shootTime);
-            feedShooterCommand.schedule();
+          if (shouldShoot) {
+            if (shooterReady) {
+              feedShooterCommand = new FeedShooterCommand(m_shooter, shootTime);
+              feedShooterCommand.schedule();
+              step++;
+            }
+          }
+          else {
             step++;
           }
         }
@@ -147,6 +151,8 @@ public class AlignToShoot extends CommandBase {
         }
       //} 
     }
+
+    System.out.println(shooterReady);
     
 
     // if obstacle detected during PID ONLY
@@ -191,14 +197,14 @@ public class AlignToShoot extends CommandBase {
   public void checkShooter() {
     if (shooter) {
       shooterSpeed = m_shooter.getShooterVelocity()/ticksPerRev;
-      m_shooter.setShooterPID(shootRPM);
+      m_shooter.setShooterPID(7650*ticksPerRev);
 
       boolean atSpeed = false;
       boolean timeHold = false;
 
       System.out.println(shooterSpeed + " " + (shootRPM + shootMargin));
 
-      if(Math.abs(shooterSpeed) <= shootRPM + shootMargin && Math.abs(shooterSpeed) >= shootRPM - shootMargin)
+      if(Math.abs(shooterSpeed) <= 6350 && Math.abs(shooterSpeed) >= 6250)
         atSpeed = true;
 
       if (atSpeed) 

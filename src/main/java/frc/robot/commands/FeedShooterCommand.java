@@ -24,6 +24,7 @@ public class FeedShooterCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    timer = new Timer();
     timer.start();
     timer.reset();
   }

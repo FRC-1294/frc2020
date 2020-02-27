@@ -64,7 +64,7 @@ public class WallChecker extends CommandBase {
           threeAngles[1] = whee.getCurrentAngle();
         }
 
-        if (timer.get() > 0.5) {
+        if (timer.get() > 0.2) {
           System.out.println();
           tokyoDrift = new TurnByCommand(-amount * 2, whee, PIDSlot);
           tokyoDrift.schedule();
@@ -77,7 +77,7 @@ public class WallChecker extends CommandBase {
           threeAngles[2] = whee.getCurrentAngle();
         }
 
-        if (timer.get() > 0.5) {
+        if (timer.get() > 0.2) {
           tokyoDrift = new TurnByCommand(amount, whee, PIDSlot);
           tokyoDrift.schedule();
           HAL9000 = 3;

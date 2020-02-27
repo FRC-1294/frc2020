@@ -24,7 +24,7 @@ public class ShootingBall extends SubsystemBase {
   private boolean toIntake = false;
   private boolean toColor = false;
   private boolean toShoot = false;
-  private double offset = 500.0;
+  private double offset = 0.0;
   private boolean extendColor = false;
   private double ticksPerRev = -2.59;
   private double currentSpeed = 0.0;
@@ -35,10 +35,10 @@ public class ShootingBall extends SubsystemBase {
    */
   public ShootingBall() {
     shooter.configOpenloopRamp(5);
-    shooter.configClosedloopRamp(5);
-    shooter.config_kP(0, 0.5);//TO BE TWEAKED
-    shooter.config_kI(0, 0);
-    shooter.config_kD(0, 0.5);//TO BE TWEAKED
+    shooter.configClosedloopRamp(1);
+    shooter.config_kP(0, 0.2);
+    shooter.config_kI(0, 0.000095);
+    shooter.config_kD(0, 1);
 
     shooter.setNeutralMode(NeutralMode.Coast);
     shooter.configNominalOutputForward(0);
@@ -59,11 +59,11 @@ public class ShootingBall extends SubsystemBase {
       toIndex = !toIndex;
 
       if (toIndex){// && shooterSpeed > currentSpeed - 300 && shooterSpeed < currentSpeed + 300) {
-        toReverse = false;
-        setSRXSpeed(indexer, 0.5);
+        toReversed = false;
+        setSRXSpeed(indexer, 0.2);
       }
       else {
-        toReverse = false;
+        toReversed = false;
         setSRXSpeed(indexer, 0);
       }
     }
@@ -77,7 +77,17 @@ public class ShootingBall extends SubsystemBase {
     }
 
     //shooter
-    if(gameJoystick.getBButtonPressed()){
+    if (gameJoystick.getBumperPressed(Hand.kLeft)) {
+      toShoot = !toShoot;
+      toReversed = false;
+      currentSpeed = 6200 + offset;
+    }
+    else if (gameJoystick.getBumperPressed(Hand.kRight)) {
+      toShoot = !toShoot;
+      toReversed = false;
+      currentSpeed = 5600 + offset;
+    }    
+    else if(gameJoystick.getBButtonPressed()){
       toReversed = !toReversed;
 
       if(toReversed){
@@ -88,32 +98,21 @@ public class ShootingBall extends SubsystemBase {
       else{
         toShoot = false;
         setSRXSpeed(indexer, 0);
-        currentSpeed = 0;
       }
     }
-    if (gameJoystick.getBumperPressed(Hand.kLeft)) {
-      toShoot = !toShoot;
-      toReverse = false;
-      currentSpeed = 6000 + offset;
-    }
-    if (gameJoystick.getBumperPressed(Hand.kRight)) {
-      toShoot = !toShoot;
-      toReverse = false;
-      currentSpeed = 5600 + offset;
-    }    
     
     //shooter PID
     if (toShoot) {
       shooter.set(TalonFXControlMode.Velocity, currentSpeed * ticksPerRev);
     }
     else {
-      shooter.set(TalonFXControlMode.PercentOutput, 0);
+      setFXSpeed(shooter, 0);
     }
 
     if (gameJoystick.getYButtonPressed()) {
       extendColor = !extendColor;
       if (extendColor) {
-        linActuator.set(0.609);
+        linActuator.set(0.62);
       }
       else {
         linActuator.set(0.2);
