@@ -7,7 +7,7 @@ import com.revrobotics.ControlType;
 
 public class TurnByCommand extends CommandBase {
   DriveAutoSubsystem m_driveAuto;
-  int m_amount;
+  double m_amount;
   //CHANGE TO ADJUST DEGREE FACTOR (if overshoots - lower, and vice versa)
   double targetPositionRotations = 0.12;
   double m_targetLeft;
@@ -21,7 +21,7 @@ public class TurnByCommand extends CommandBase {
   double leftSpeed;
   double rightSpeed;
 
-  public TurnByCommand(int amount, DriveAutoSubsystem driveAuto, int pidType) {
+  public TurnByCommand(double amount, DriveAutoSubsystem driveAuto, int pidType) {
     m_driveAuto = driveAuto;
     m_amount = amount;
     m_pidType = pidType;

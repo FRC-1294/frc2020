@@ -41,7 +41,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   public final XboxController driveJoystick = new XboxController(Constants.driveJoystick);
 
   private final double targetPositionRotations = 0.54;
-  private static int currentAngle;
+  private static double currentAngle;
   private static double[] amountTraveled = new double[] {0, 0};
   private final Gains defaultPID = new Gains(0.05, 0.00001, 0.7, 0.0, 0.0, -0.5, 0.5, 0);
   private final Gains lowDisPID = new Gains(0.05, 0.00001, 0.7, 0.0, 0.0, -1, 1, 1);
@@ -207,7 +207,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
     pidController.setOutputRange(pidSet.kMinOutput, pidSet.kMaxOutput, slot);
   }
 
-  public int getCurrentAngle() {
+  public double getCurrentAngle() {
     return currentAngle;
   }
 
@@ -255,8 +255,8 @@ public class DriveAutoSubsystem extends SubsystemBase {
     return isTurning;
   }
 
-  public void setCurrentAngle(int val) {
-    currentAngle = val;
+  public void setCurrentAngle(double d) {
+    currentAngle = d;
   }
 
   public void setAmountTraveled(int id, double val) {
