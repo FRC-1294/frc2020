@@ -120,8 +120,8 @@ public class ShootingBall extends SubsystemBase {
     }
 
     //colorer
-    if(Math.abs(gameJoystick.getX(Hand.kRight)) >= 0.05){
-      setSRXSpeed(colorWheel, -gameJoystick.getX(Hand.kRight));
+    if(Math.abs(gameJoystick.getY(Hand.kRight)) >= 0.05){
+      setSRXSpeed(colorWheel, +gameJoystick.getY(Hand.kRight));
     }
     else {
       setSRXSpeed(colorWheel, 0);
