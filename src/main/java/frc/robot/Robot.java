@@ -8,6 +8,7 @@ import frc.robot.commands.StalkerRoomba;
 import frc.robot.commands.TurnByCommand;
 import frc.robot.commands.VisionFinder;
 import frc.robot.commands.WallChecker;
+import frc.robot.commands.alignTestCommand;
 import frc.robot.subsystems.UltrasonicSubsystem;
 import frc.robot.subsystems.TwentyThreeStabWounds;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -74,7 +75,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = new AlignToShoot(m_driveAuto, ultrasonic, letsShoot, cassius, 112, true);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);
+    m_autonomousCommand = new alignTestCommand(m_driveAuto, cassius);//AlignToShoot(m_driveAuto, ultrasonic, letsShoot, cassius, 112, true);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);
     
 
     // schedule the autonomous command (example)

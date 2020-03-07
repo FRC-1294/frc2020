@@ -52,7 +52,7 @@ public class TwentyThreeStabWounds extends SubsystemBase {
       table.getEntry("camMode").setNumber(0);
       table.getEntry("ledMode").setNumber(3);
     }
-    //driveMode
+    // driveMode
     else if (mode == 1) {
       table.getEntry("pipeline").setNumber(1);
       table.getEntry("camMode").setNumber(1);
