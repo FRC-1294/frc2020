@@ -11,7 +11,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj. XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -44,7 +43,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private static int currentAngle;
   private static double[] amountTraveled = new double[] {0, 0};
   private final Gains defaultPID = new Gains(0.05, 0.00001, 0.7, 0.0, 0.0, -0.5, 0.5, 0);
-  private final Gains lowDisPID = new Gains(0.05, 0.00001, 0.7, 0.0, 0.0, -1, 1, 1);
+  private final Gains lowDisPID  = new Gains(0.05, 0.00001, 0.7, 0.0, 0.0,   -1,   1, 1);
   private Timer timer = new Timer();
   private Timer rumbleTime = new Timer();
   private boolean isTurning = false;
@@ -55,7 +54,8 @@ public class DriveAutoSubsystem extends SubsystemBase {
   private boolean isWall;
   
   public DriveAutoSubsystem() {
-    UsbCamera usbcamera = CameraServer.getInstance().startAutomaticCapture(0);
+    UsbCamera intakeCam = CameraServer.getInstance().startAutomaticCapture(0);
+    UsbCamera indexCam = CameraServer.getInstance().startAutomaticCapture(1);
     frontLeftSpark.restoreFactoryDefaults(true);
     frontRightSpark.restoreFactoryDefaults(true);
     rearLeftSpark.restoreFactoryDefaults(true);
@@ -112,12 +112,20 @@ public class DriveAutoSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    sparkDrive.feedWatchdog();
+
     SmartDashboard.putString("AmountTraveled", getAmountTraveled(0) + " , " + getAmountTraveled(1));
     SmartDashboard.putNumber("currentAngle", getCurrentAngle());
+    SmartDashboard.putNumber("encoder", getFrontLeftPosition());
     SmartDashboard.putNumber("Ultrasonic Value", Robot.ultrasonic.getSensourLeft());
 
     if (driveJoystick.getStartButtonPressed()) {
-      CommandScheduler.getInstance().cancelAll();
+      if (visionMove.isScheduled()) {
+        visionMove.cancel();
+      }
+      if (visionRotate.isScheduled()) {
+        visionRotate.cancel();
+      }
     }
 
     if (driveJoystick.getBumper(Hand.kRight)) {
@@ -147,9 +155,13 @@ public class DriveAutoSubsystem extends SubsystemBase {
       rumble = 0;
       visionMove = new AlignToShoot(this, Robot.ultrasonic, Robot.letsShoot, Robot.cassius, 10*12, false);
       visionMove.schedule();
-      // visionRotate = new DictatorLocator(Robot.cassius, this);
-      // visionRotate.schedule();
       System.out.println("Scheduling visionMove");
+    }
+    else if (driveJoystick.getAButtonPressed() && !visionMove.isScheduled() && !visionRotate.isScheduled()) {
+      rumble = 0;
+      visionRotate = new DictatorLocator(Robot.cassius, this);
+      visionRotate.schedule();
+      System.out.println("Scheduling visionRotate");
     }
     else {
       rumble = 8;

@@ -10,6 +10,7 @@ import frc.robot.commands.VisionFinder;
 import frc.robot.commands.WallChecker;
 import frc.robot.subsystems.UltrasonicSubsystem;
 import frc.robot.subsystems.TwentyThreeStabWounds;
+import edu.wpi.first.hal.I2CJNI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -29,6 +30,8 @@ public class Robot extends TimedRobot {
   public static ShootingBall letsShoot;
   public static DriveAutoSubsystem m_driveAuto;
   public static MoveByCommand chacharealmooth;
+
+  public static boolean inAuto = false;
  
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -57,6 +60,13 @@ public class Robot extends TimedRobot {
   
   @Override
   public void disabledInit() {
+    // CommandScheduler.getInstance().cancelAll();
+    m_driveAuto.setFrontLeftSpeed(0);
+    m_driveAuto.setFrontRightSpeed(0);
+    m_driveAuto.setRearLeftSpeed(0);
+    m_driveAuto.setRearRightSpeed(0);
+    letsShoot.setZero();
+    cassius.setPipeline(1);
   }
 
   @Override
@@ -74,7 +84,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = new AlignToShoot(m_driveAuto, ultrasonic, letsShoot, cassius, 112, true);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);
+    m_autonomousCommand = new DictatorLocator(cassius, m_driveAuto);//new TurnByCommand(360, m_driveAuto, 0);//new AlignToShoot(m_driveAuto, ultrasonic, letsShoot, cassius, 112, true);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);//new AutoNavCommand(m_driveAuto, ultrasonic, letsShoot, cassius);
     
 
     // schedule the autonomous command (example)
@@ -89,6 +99,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    inAuto = true;
     // if (!m_autonomousCommand.isFinished() && !m_autonomousCommand.isScheduled()) {
     //   m_autonomousCommand =  new AutoNavCommand(driveAuto, ultrasonic);
     //   m_autonomousCommand.schedule();
@@ -100,6 +111,9 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    ultrasonic.close();
+
   }
 
   /**
@@ -108,6 +122,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     CommandScheduler.getInstance().run();
+    inAuto = false;
   }
 
   @Override

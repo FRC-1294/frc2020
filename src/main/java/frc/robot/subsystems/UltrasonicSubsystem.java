@@ -28,11 +28,17 @@ public class UltrasonicSubsystem extends SubsystemBase {
 
     SmartDashboard.setDefaultNumber("Offset", -4);
     startMeasuring();
+    
   } 
 
+
+  public void close() {
+    I2CJNI.i2CClose(m_port);
+    I2CJNI.i2CInitialize(m_port);
+  }
   @Override
   public void periodic() {
-    offset = SmartDashboard.getNumber("OffsetIn", -4);
+    offset = SmartDashboard.getNumber("OffsetIn", -4); 
     SmartDashboard.putNumber("Distance", getSensourLeft());
     SmartDashboard.putNumber("DistanceCm", getDistance() + offset*2.54f);
   }

@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -29,7 +30,7 @@ public class ShootingBall extends SubsystemBase {
   private double ticksPerRev = -2.59;
   private double currentSpeed = 0.0;
   private XboxController gameJoystick = new XboxController(Constants.gameJoystick);
-  public static Servo linActuator = new Servo(Constants.linearActuator);;
+  public static Servo linActuator = new Servo(Constants.linearActuator);
   /**
    * Creates a new linearActuatorSubsystem.
    */
@@ -53,19 +54,25 @@ public class ShootingBall extends SubsystemBase {
    double shooterSpeed = shooter.getSelectedSensorVelocity()/ticksPerRev;
    SmartDashboard.putNumber("Shooter RPM", shooterSpeed);
    SmartDashboard.putBoolean("Indexering", toIndex);
+   SmartDashboard.putBoolean("Shooting", toShoot);
 
     //indexer
-    if(gameJoystick.getAButtonPressed()){
-      toIndex = !toIndex;
+    if(gameJoystick.getAButton()){
+      toIndex = true;
 
-      if (toIndex){// && shooterSpeed > currentSpeed - 300 && shooterSpeed < currentSpeed + 300) {
+      if (toReversed) {
         toReversed = false;
-        setSRXSpeed(indexer, 0.2);
+        toShoot = false;
       }
-      else {
-        toReversed = false;
-        setSRXSpeed(indexer, 0);
-      }
+    }
+    else {
+      toIndex = false;
+    }
+    if (toIndex){
+      setSRXSpeed(indexer, 0.5);
+    }
+    else {
+      if (!toReversed && !Robot.inAuto) setSRXSpeed(indexer, 0);
     }
 
     //intaker
@@ -78,14 +85,25 @@ public class ShootingBall extends SubsystemBase {
 
     //shooter
     if (gameJoystick.getBumperPressed(Hand.kLeft)) {
-      toShoot = !toShoot;
-      toReversed = false;
-      currentSpeed = 6200 + offset;
+      if ((!toShoot && shooterSpeed < 1000) || toShoot) {
+        toShoot = !toShoot;
+        toReversed = false;
+        currentSpeed = 6300 + offset;
+      }
     }
     else if (gameJoystick.getBumperPressed(Hand.kRight)) {
-      toShoot = !toShoot;
-      toReversed = false;
-      currentSpeed = 5600 + offset;
+      if ((!toShoot && shooterSpeed < 1000) || toShoot) {
+        toShoot = !toShoot;
+        toReversed = false;
+        currentSpeed = 7000 + offset;
+      }
+    }  
+    else if (gameJoystick.getXButtonPressed()) {
+      if ((!toShoot && shooterSpeed < 1000) || toShoot) {
+        toShoot = !toShoot;
+        toReversed = false;
+        currentSpeed = 5900 + offset;
+      }
     }    
     else if(gameJoystick.getBButtonPressed()){
       toReversed = !toReversed;
@@ -143,6 +161,10 @@ public class ShootingBall extends SubsystemBase {
 
   public void setIndexer(double speed) {
     indexer.set(ControlMode.PercentOutput, speed);
+  }
+
+  public void setIntaker(double speed) {
+    intaker.set(ControlMode.PercentOutput, speed);
   }
 
   public void setShooterPID(double velocity) {

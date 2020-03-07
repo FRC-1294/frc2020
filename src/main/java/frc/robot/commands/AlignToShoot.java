@@ -96,6 +96,8 @@ public class AlignToShoot extends CommandBase {
 
     if (shouldShoot) checkShooter();
 
+    // System.out.println(step);
+
     //if current leg of path finished, schedule next in sequence
     if (!autoPath.isScheduled() && !alignToTarget.isScheduled() && !feedShooterCommand.isScheduled() && ultraFuse.isScheduled() && !glasses.isScheduled()) {
       //if (Math.abs(xRem) <= autoPathMargin && Math.abs(yRem) <= autoPathMargin) {
@@ -144,15 +146,20 @@ public class AlignToShoot extends CommandBase {
             step++;
           }
         }
+        //reverse
+        else if (step == 5) {
+          autoPath = new MoveByCommand(-50, m_driveAuto, 0);
+          autoPath.schedule();
+          step++;
+        }
         //end command
-        else if (step >= 5) {
+        else if (step >= 6) {
           shooter = false;
           isFinished = true;
         }
-      //} 
     }
 
-    System.out.println(shooterReady);
+    // System.out.println(shooterReady);
     
 
     // if obstacle detected during PID ONLY
@@ -197,21 +204,25 @@ public class AlignToShoot extends CommandBase {
   public void checkShooter() {
     if (shooter) {
       shooterSpeed = m_shooter.getShooterVelocity()/ticksPerRev;
-      m_shooter.setShooterPID(7650*ticksPerRev);
+      m_shooter.setShooterPID(7750*ticksPerRev);
 
       boolean atSpeed = false;
       boolean timeHold = false;
 
       System.out.println(shooterSpeed + " " + (shootRPM + shootMargin));
 
-      if(Math.abs(shooterSpeed) <= 6350 && Math.abs(shooterSpeed) >= 6250)
+      if(Math.abs(shooterSpeed) >= 6300 && Math.abs(shooterSpeed) <= 6400) {
         atSpeed = true;
+      }
 
-      if (atSpeed) 
-        if(timer.get() >= 1)
+      if (atSpeed) {
+        if(timer.get() >= 1) {
           timeHold = true;
-      else
+        }
+      }
+      else {
         timer.reset();
+      }
 
       if(atSpeed && timeHold) 
         shooterReady = true;
