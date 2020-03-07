@@ -48,7 +48,7 @@ public class DictatorLocator extends CommandBase {
         }
       }
       else{
-        MarkAntony = new TurnByCommand((int) Brutus.getHorizontalOffSet(), GermanicCalvalry, 1);
+        MarkAntony = new TurnByCommand(Brutus.getHorizontalOffSet(), GermanicCalvalry, 1);
         MarkAntony.schedule();      
       }
     }
