@@ -10,10 +10,14 @@ import frc.robot.commands.VisionFinder;
 import frc.robot.commands.WallChecker;
 import frc.robot.subsystems.UltrasonicSubsystem;
 import frc.robot.subsystems.TwentyThreeStabWounds;
+
+import com.revrobotics.jni.DistanceSensorJNIWrapper;
+
 import edu.wpi.first.hal.I2CJNI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.DistanceSensour;
 import frc.robot.subsystems.DriveAutoSubsystem;
 import frc.robot.subsystems.ShootingBall;
 
@@ -30,6 +34,7 @@ public class Robot extends TimedRobot {
   public static ShootingBall letsShoot;
   public static DriveAutoSubsystem m_driveAuto;
   public static MoveByCommand chacharealmooth;
+  public static DistanceSensour revDist;
 
   public static boolean inAuto = false;
  
@@ -44,6 +49,7 @@ public class Robot extends TimedRobot {
     m_driveAuto = new DriveAutoSubsystem();
     ultrasonic = new UltrasonicSubsystem();
     cassius = new TwentyThreeStabWounds();
+    revDist = new DistanceSensour(); 
     
     m_driveAuto.setFrontLeftSpeed(0);
     m_driveAuto.setFrontRightSpeed(0);
