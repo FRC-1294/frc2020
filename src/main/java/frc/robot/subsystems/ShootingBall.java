@@ -36,9 +36,9 @@ public class ShootingBall extends SubsystemBase {
    */
   public ShootingBall() {
     shooter.configOpenloopRamp(5);
-    shooter.configClosedloopRamp(1);
-    shooter.config_kP(0, 0.2);
-    shooter.config_kI(0, 0.000095);
+    shooter.configClosedloopRamp(0.5);
+    shooter.config_kP(0, 0.1);
+    shooter.config_kI(0, 0.00014);
     shooter.config_kD(0, 1);
 
     shooter.setNeutralMode(NeutralMode.Coast);
@@ -55,6 +55,8 @@ public class ShootingBall extends SubsystemBase {
    SmartDashboard.putNumber("Shooter RPM", shooterSpeed);
    SmartDashboard.putBoolean("Indexering", toIndex);
    SmartDashboard.putBoolean("Shooting", toShoot);
+
+   System.out.println(shooterSpeed);
 
     //indexer
     if(gameJoystick.getAButton()){

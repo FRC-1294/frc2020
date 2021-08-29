@@ -157,7 +157,7 @@ public class DriveAutoSubsystem extends SubsystemBase {
       visionMove.schedule();
       System.out.println("Scheduling visionMove");
     }
-    else if (driveJoystick.getAButtonPressed() && !visionMove.isScheduled() && !visionRotate.isScheduled()) {
+    else if (driveJoystick.getBButtonPressed() && !visionMove.isScheduled() && !visionRotate.isScheduled()) {
       rumble = 0;
       visionRotate = new DictatorLocator(Robot.cassius, this);
       visionRotate.schedule();
